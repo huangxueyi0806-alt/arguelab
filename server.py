@@ -487,7 +487,7 @@ class APIHandler(BaseHTTPRequestHandler):
             subs = load_subscribers()
             self._send_json({"count": len(subs), "subscribers": [{k: s[k] for k in ("email","name","subscribed_at")} for s in subs]})
         elif self.path == "/api/health":
-            self._send_json({"status": "ok", "subscribers": len(load_subscribers()), "smtp_configured": bool(SMTP_HOST)})
+            self._send_json({"status": "ok", "subscribers": len(load_subscribers()), "email_configured": bool(RESEND_API_KEY or SMTP_HOST)})
         elif self.path == "/api/preview":
             # Show latest briefing preview
             briefing_dir = BASE_DIR.parent / "guardian-agent" / "briefings"
@@ -507,7 +507,16 @@ class APIHandler(BaseHTTPRequestHandler):
     def do_POST(self):
         content_length = int(self.headers.get("Content-Length", 0))
         body = self.rfile.read(content_length) if content_length else b"{}"
-        data = json.loads(body)
+        content_type = self.headers.get("Content-Type", "")
+
+        # Handle both JSON and URL-encoded form data
+        if "application/json" in content_type:
+            try:
+                data = json.loads(body)
+            except json.JSONDecodeError:
+                data = {}
+        else:
+            data = {k: v[0] for k, v in parse_qs(body.decode("utf-8")).items()}
 
         if self.path == "/api/subscribe":
             email = data.get("email", "").strip()

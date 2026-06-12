@@ -1163,7 +1163,7 @@
     btn.textContent = '提交中…'; btn.disabled = true;
     var surveyData = { email: email, level: document.getElementById('survey-level').value, goals: getSelectedChips('survey-goals'), topics: getSelectedChips('survey-topics') };
     try {
-      var resp = await fetch('http://localhost:8080/api/subscribe', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(surveyData) });
+      var resp = await fetch('/api/subscribe', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(surveyData) });
       var data = await resp.json();
       if (data.success) { btn.textContent = '已加入 ✓'; btn.style.background = '#16a34a'; btn.style.borderColor = '#16a34a'; document.querySelector('.cta .section-desc').textContent = '检查你的收件箱！你的第一期训练内容即将发送。'; }
       else { btn.textContent = data.error || '提交失败'; btn.disabled = false; setTimeout(function(){ btn.textContent = '免费加入'; }, 2000); }
