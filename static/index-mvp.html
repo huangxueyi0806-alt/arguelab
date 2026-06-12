@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>ArgueLab — 用外刊议题训练英文表达</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans SC', sans-serif; color: #1a1a2e; background: #fff; line-height: 1.7; }
+  a { color: #2563eb; text-decoration: none; }
+
+  /* Layout */
+  .wrap { max-width: 680px; margin: 0 auto; padding: 0 20px; }
+  section { padding: 56px 0; }
+  section + section { border-top: 1px solid #f0f0f0; }
+
+  /* Hero */
+  .hero { padding: 72px 0 56px; text-align: center; }
+  .hero .tag { display: inline-block; font-size: 12px; color: #2563eb; background: #eff6ff; padding: 4px 14px; border-radius: 20px; margin-bottom: 20px; font-weight: 500; }
+  .hero h1 { font-size: 28px; font-weight: 700; line-height: 1.35; letter-spacing: -0.5px; }
+  .hero h1 em { color: #2563eb; font-style: normal; }
+  .hero .sub { font-size: 16px; color: #555; margin: 16px auto 28px; max-width: 480px; }
+  .hero .cta-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .btn { display: inline-block; padding: 12px 28px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; border: none; }
+  .btn-primary { background: #2563eb; color: #fff; }
+  .btn-primary:hover { background: #1d4ed8; }
+  .btn-secondary { background: #f0f0f0; color: #333; }
+  .hero .note { font-size: 12px; color: #999; margin-top: 12px; }
+
+  /* Section headers */
+  .sec-label { font-size: 11px; font-weight: 600; letter-spacing: 1.5px; color: #2563eb; text-transform: uppercase; margin-bottom: 8px; }
+  .sec-title { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+  .sec-desc { font-size: 15px; color: #555; margin-bottom: 32px; }
+
+  /* Pain points */
+  .pains { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .pain-card { background: #fafafa; border-radius: 10px; padding: 20px; border: 1px solid #f0f0f0; }
+  .pain-card .icon { font-size: 20px; margin-bottom: 8px; }
+  .pain-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+  .pain-card p { font-size: 13px; color: #666; line-height: 1.6; }
+  .why-close { text-align: center; margin-top: 28px; font-size: 15px; color: #333; font-weight: 500; }
+  .why-close em { color: #2563eb; font-style: normal; }
+
+  /* What you get */
+  .get-list { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .get-item { display: flex; gap: 14px; padding: 18px; background: #fafafa; border-radius: 10px; border: 1px solid #f0f0f0; }
+  .get-num { font-size: 20px; font-weight: 800; color: #2563eb; opacity: 0.35; flex-shrink: 0; line-height: 1; }
+  .get-item h3 { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
+  .get-item p { font-size: 13px; color: #666; line-height: 1.6; }
+  .get-item .time { font-size: 11px; color: #999; margin-top: 4px; }
+
+  /* Sample */
+  .sample-box { background: #fafafa; border-radius: 10px; border: 1px solid #e5e7eb; overflow: hidden; }
+  .sample-header { background: #eff6ff; padding: 14px 20px; font-size: 13px; font-weight: 600; color: #2563eb; }
+  .sample-body { padding: 20px; }
+  .sample-body h4 { font-size: 14px; font-weight: 600; color: #2563eb; margin: 18px 0 8px; }
+  .sample-body h4:first-child { margin-top: 0; }
+  .sample-body p { font-size: 14px; color: #333; line-height: 1.8; margin-bottom: 8px; }
+  .sample-body blockquote { border-left: 3px solid #2563eb; padding: 10px 16px; background: #f0f4ff; border-radius: 0 6px 6px 0; margin: 12px 0; font-size: 13px; color: #333; line-height: 1.7; }
+  .sample-body .en { font-family: Georgia, serif; font-style: italic; color: #1a1a2e; }
+  .sample-body table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 13px; }
+  .sample-body th { background: #f0f4ff; padding: 8px 12px; text-align: left; font-weight: 600; color: #2563eb; border-bottom: 1px solid #e5e7eb; }
+  .sample-body td { padding: 8px 12px; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
+  .sample-body .chain { background: #f0f4ff; padding: 14px 18px; border-radius: 8px; margin: 10px 0; font-size: 13px; line-height: 2; }
+  .sample-body .chain .arrow { color: #2563eb; font-weight: 600; }
+
+  /* Beta plan */
+  .beta-box { background: #fafafa; border-radius: 10px; padding: 28px; border: 1px solid #f0f0f0; }
+  .beta-box h3 { font-size: 17px; font-weight: 700; margin-bottom: 12px; }
+  .beta-box ul { list-style: none; padding: 0; }
+  .beta-box li { padding: 6px 0; font-size: 14px; color: #333; padding-left: 20px; position: relative; }
+  .beta-box li::before { content: '→'; position: absolute; left: 0; color: #2563eb; font-weight: 600; }
+  .beta-note { margin-top: 16px; padding: 14px 18px; background: #eff6ff; border-radius: 8px; font-size: 13px; color: #333; line-height: 1.7; }
+  .beta-note em { color: #2563eb; font-style: normal; font-weight: 500; }
+
+  /* Signup */
+  .signup { text-align: center; padding: 56px 0 72px; }
+  .signup h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+  .signup p { font-size: 15px; color: #555; margin-bottom: 24px; }
+  .signup-form { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; max-width: 420px; margin: 0 auto; }
+  .signup-form input { flex: 1; min-width: 200px; padding: 12px 16px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; outline: none; }
+  .signup-form input:focus { border-color: #2563eb; }
+  .signup .form-note { font-size: 12px; color: #999; margin-top: 12px; }
+  .signup .count { font-size: 13px; color: #2563eb; font-weight: 600; margin-top: 10px; }
+
+  /* Footer */
+  footer { text-align: center; padding: 28px 0; font-size: 12px; color: #999; border-top: 1px solid #f0f0f0; }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 22px; }
+    .pains, .get-list { grid-template-columns: 1fr; }
+    .sec-title { font-size: 19px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="wrap">
+    <div class="tag">内测中 · Beta</div>
+    <h1>用真实外刊议题，<em>训练你的英文 argument 能力</em></h1>
+    <p class="sub">不是精读，不是背单词——是把中文想法，转成有逻辑的英文表达。</p>
+    <div class="cta-row">
+      <a href="#signup" class="btn btn-primary">加入内测等待名单</a>
+      <a href="#sample" class="btn btn-secondary">看看每期长什么样</a>
+    </div>
+    <p class="note">前 100 位用户免费 · 无需信用卡</p>
+  </div>
+</section>
+
+<!-- Pain Points -->
+<section id="why">
+  <div class="wrap">
+    <div class="sec-label">为什么需要</div>
+    <h2 class="sec-title">普通外刊精读，解决不了这件事</h2>
+    <p class="sec-desc">读得懂外刊，不等于能用英文表达有分量的观点。</p>
+    <div class="pains">
+      <div class="pain-card">
+        <div class="icon">📖</div>
+        <h3>读得懂，写不出</h3>
+        <p>外刊每个词都认识，自己写 argument 就回到中式英语。</p>
+      </div>
+      <div class="pain-card">
+        <div class="icon">🏗️</div>
+        <h3>有观点，没结构</h3>
+        <p>中文能说清楚，转成英文就变成简单句的堆砌。</p>
+      </div>
+      <div class="pain-card">
+        <div class="icon">🔤</div>
+        <h3>词汇会背，不会用</h3>
+        <p>AWL 背了，写作时还是只能用 good / important / think。</p>
+      </div>
+      <div class="pain-card">
+        <div class="icon">🛑</div>
+        <h3>精读营「毕业即止」</h3>
+        <p>跟了半年，停下来就不知道读什么、怎么练。</p>
+      </div>
+    </div>
+    <p class="why-close">ArgueLab 想解决的就是这件事。</p>
+  </div>
+</section>
+
+<!-- What You Get -->
+<section id="what">
+  <div class="wrap">
+    <div class="sec-label">每期内容</div>
+    <h2 class="sec-title">15 分钟，一个完整训练闭环</h2>
+    <p class="sec-desc">每期围绕一个真实外刊议题，从输入到输出走完一圈。</p>
+    <div class="get-list">
+      <div class="get-item">
+        <div class="get-num">1</div>
+        <div>
+          <h3>今日议题背景</h3>
+          <p>中文解释当天外刊议题，不依赖 VPN。</p>
+          <div class="time">约 5 分钟</div>
+        </div>
+      </div>
+      <div class="get-item">
+        <div class="get-num">2</div>
+        <div>
+          <h3>外刊核心段落</h3>
+          <p>精选 1–2 段原文，带中文导读。</p>
+          <div class="time">约 3 分钟</div>
+        </div>
+      </div>
+      <div class="get-item">
+        <div class="get-num">3</div>
+        <div>
+          <h3>5 个可迁移表达</h3>
+          <p>不是单词表——附使用场景和 argument 功能标签。</p>
+          <div class="time">约 4 分钟</div>
+        </div>
+      </div>
+      <div class="get-item">
+        <div class="get-num">4</div>
+        <div>
+          <h3>1 个高级句型拆解</h3>
+          <p>拆解外刊复杂句，标注可模仿的句式结构。</p>
+          <div class="time">约 2 分钟</div>
+        </div>
+      </div>
+      <div class="get-item">
+        <div class="get-num">5</div>
+        <div>
+          <h3>中文观点 → Argument Chain</h3>
+          <p>引导你用今天学的表达，搭建完整 argument。</p>
+          <div class="time">约 4 分钟</div>
+        </div>
+      </div>
+      <div class="get-item">
+        <div class="get-num">6</div>
+        <div>
+          <h3>输出任务 + 参考答案</h3>
+          <p>100 词写作或 1 分钟口语——附范例，不是标准答案。</p>
+          <div class="time">约 5 分钟</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Sample -->
+<section id="sample">
+  <div class="wrap">
+    <div class="sec-label">样例内容</div>
+    <h2 class="sec-title">看看每期长什么样</h2>
+    <p class="sec-desc">这是一期完整 briefing 的精简版，可以直接用在每天的训练里。</p>
+
+    <div class="sample-box">
+      <div class="sample-header">📅 2026-06-11 · AI 与学术诚信</div>
+      <div class="sample-body">
+
+        <h4>① 今日议题背景</h4>
+        <p>多所大学开始允许学生在作业中使用 AI，但评分标准尚未统一。这场争论的核心不是「能不能用」，而是「用了之后，什么才算你的思考」。</p>
+
+        <h4>② 外刊核心段落</h4>
+        <blockquote class="en">"The University of Cambridge has announced that students may use AI tools in assessed coursework, provided they declare their use. The move has divided faculty, with some arguing it represents a necessary adaptation to a changing world, others warning it risks eroding the very skills a university education is meant to cultivate."<br>
+        <span style="font-size:12px;color:#999;font-style:normal;">— The Guardian, 2026-06-10</span></blockquote>
+
+        <h4>③ 5 个可迁移表达</h4>
+        <table>
+          <tr><th>表达</th><th>功能</th><th>例句</th></tr>
+          <tr>
+            <td><strong>provided (that)</strong></td>
+            <td>条件限定</td>
+            <td><em>AI tools are allowed, provided students declare their use.</em></td>
+          </tr>
+          <tr>
+            <td><strong>divided faculty</strong></td>
+            <td>描述分歧</td>
+            <td><em>The proposal has divided faculty across departments.</em></td>
+          </tr>
+          <tr>
+            <td><strong>represents a necessary adaptation</strong></td>
+            <td>正面论证</td>
+            <td><em>This is not a compromise but a necessary adaptation.</em></td>
+          </tr>
+          <tr>
+            <td><strong>risks eroding</strong></td>
+            <td>负面后果</td>
+            <td><em>Over-reliance risks eroding critical thinking skills.</em></td>
+          </tr>
+          <tr>
+            <td><strong>meant to cultivate</strong></td>
+            <td>目的表达</td>
+            <td><em>These are the skills a liberal education is meant to cultivate.</em></td>
+          </tr>
+        </table>
+
+        <h4>④ 中文观点 → 英文 Argument Chain</h4>
+        <p style="font-size:13px;color:#555;margin-bottom:10px;">中文观点：「允许用 AI 是好事，但学校必须教学生怎么用，而不是只说可以用。」</p>
+        <div class="chain">
+          <div><strong>Thesis:</strong> Permitting AI use is a constructive step, but universities must go further.</div>
+          <div class="arrow">↓</div>
+          <div><strong>Premise 1:</strong> Permission without guidance creates a false equivalence between using AI and thinking.</div>
+          <div class="arrow">↓</div>
+          <div><strong>Premise 2:</strong> What needs to be taught is not how to prompt, but how to evaluate AI output.</div>
+          <div class="arrow">↓</div>
+          <div><strong>Counter-argument:</strong> Some argue this is inevitable—we cannot put the genie back in the bottle.</div>
+          <div class="arrow">↓</div>
+          <div><strong>Response:</strong> True, but "inevitable" does not mean "unguided".</div>
+          <div class="arrow">↓</div>
+          <div><strong>Conclusion:</strong> The goal is not to ban AI, but to ensure it remains a tool, not a substitute for thought.</div>
+        </div>
+
+        <h4>⑤ 输出任务</h4>
+        <p><strong>写作（TEM-8 / IELTS Task 2）：</strong> Some people think universities should allow students to use AI tools in their assignments. To what extent do you agree or disagree? <em>（建议 280–320 词）</em></p>
+        <p style="margin-top:10px;"><strong>口语（IELTS Part 3）：</strong> Do you think AI will change how we define "original work"? Explain your view. <em>（建议 1–1.5 分钟）</em></p>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Beta Plan -->
+<section id="beta">
+  <div class="wrap">
+    <div class="sec-label">内测方案</div>
+    <h2 class="sec-title">7 天内测，直接体验</h2>
+    <div class="beta-box">
+      <h3>免费内测内容</h3>
+      <ul>
+        <li>每周 3 期 briefing，直接发到你的邮箱</li>
+        <li>不需要安装任何东西，不需要开 VPN</li>
+        <li>前 100 位用户永久免费（内测结束后继续享受免费版）</li>
+      </ul>
+      <div class="beta-note">
+        <strong>内测期间的小承诺：</strong>我会亲自看每一份提交的输出任务，给手写反馈。<br>
+        是的，真的会看。<em>—— ArgueLab 创始人</em>
+      </div>
+      <div style="margin-top:18px;">
+        <h3>内测结束后</h3>
+        <ul>
+          <li><strong>免费版：</strong>每周 1 期</li>
+          <li><strong>付费版（规划中）：</strong>每周 3 期 + 输出批改反馈</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Signup -->
+<section id="signup" class="signup">
+  <div class="wrap">
+    <div class="sec-label">加入内测</div>
+    <h2>前 100 位用户，永久免费</h2>
+    <p>不用填问卷，留个邮箱就好。随时退出，不废话。</p>
+    <form class="signup-form" onsubmit="return false;">
+      <input type="email" placeholder="your@email.com" id="email-input" style="max-width:280px;">
+      <button class="btn btn-primary" type="submit" onclick="subscribe(this)">加入等待名单</button>
+    </form>
+    <p class="form-note">你的邮箱只用来发 briefing，不会卖给任何人。</p>
+    <p class="count" id="count-text">已有 <strong>—</strong> 人加入等待名单</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    ArgueLab · 用外刊议题训练英文表达 · <a href="#">Unsubscribe</a>
+  </div>
+</footer>
+
+<script>
+  function subscribe(btn) {
+    const email = document.getElementById('email-input').value.trim();
+    if (!email || !email.includes('@')) {
+      alert('请输入有效的邮箱地址');
+      return;
+    }
+    btn.textContent = '提交中…';
+    fetch('http://localhost:8080/api/subscribe', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({email})
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) {
+        btn.textContent = '已加入 ✓';
+        btn.style.background = '#16a34a';
+        document.querySelector('.form-note').textContent = '检查你的收件箱！确认邮件已发送。';
+      } else {
+        btn.textContent = data.error || '提交失败，请重试';
+        setTimeout(() => btn.textContent = '加入等待名单', 2000);
+      }
+    })
+    .catch(() => {
+      btn.textContent = '服务器未启动';
+      setTimeout(() => btn.textContent = '加入等待名单', 2000);
+    });
+  }
+
+  // Smooth scroll for anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      document.querySelector(a.getAttribute('href')).scrollIntoView({behavior:'smooth'});
+    });
+  });
+</script>
+
+</body>
+</html>

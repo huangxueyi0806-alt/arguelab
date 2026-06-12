@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ArgueLab — 外刊议题 → 英文表达训练</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --ink: #e2e5ec;
+    --slate: #959fb2;
+    --muted: #6a7285;
+    --accent: #889dc4;
+    --accent-hover: #a3b8de;
+    --accent-subtle: rgba(136,157,196,0.10);
+    --accent-glow: rgba(136,157,196,0.16);
+    --warm: #c4954a;
+    --warm-subtle: rgba(196,149,74,0.10);
+    --bg: #0a0d12;
+    --bg-elevated: #11141c;
+    --card: #141821;
+    --card-hover: #1a1f2a;
+    --border: #1e2332;
+    --border-hover: #2d3548;
+    --accent-bg: rgba(136,157,196,0.06);
+    --warm-bg: rgba(196,149,74,0.08);
+    --green-tint: rgba(110,168,120,0.08);
+    --serif: 'Georgia', 'Noto Serif SC', serif;
+    --sans: -apple-system, 'Segoe UI', 'Noto Sans SC', sans-serif;
+  }
+  body { font-family: var(--sans); color: var(--ink); background: var(--bg); line-height: 1.75; -webkit-font-smoothing: antialiased; font-size: 15px; }
+  a { color: var(--accent); text-decoration: none; transition: color 0.2s; }
+  a:hover { color: var(--accent-hover); }
+
+  /* ── Header ── */
+  header { position: sticky; top: 0; z-index: 100; background: rgba(10,13,18,0.88); backdrop-filter: blur(18px); border-bottom: 1px solid var(--border); }
+  .nav { max-width: 1080px; margin: 0 auto; padding: 0 28px; height: 62px; display: flex; align-items: center; justify-content: space-between; }
+  .logo { font-family: var(--serif); font-size: 20px; font-weight: 700; color: var(--ink); letter-spacing: -0.3px; }
+  .logo span { color: var(--accent); }
+  .logo-tagline { font-size: 10.5px; color: var(--muted); margin-left: 8px; font-family: var(--sans); font-weight: 400; letter-spacing: 0; display: inline-block; transform: translateY(-1px); }
+  .nav-links { display: flex; gap: 28px; font-size: 13.5px; color: var(--slate); }
+  .nav-links a { color: var(--slate); transition: color 0.2s; }
+  .nav-links a:hover { color: var(--ink); text-decoration: none; }
+  .nav-cta { font-size: 13px; font-weight: 600; background: rgba(136,157,196,0.14); color: var(--accent); padding: 7px 16px; border-radius: 6px; transition: all 0.2s; border: 1px solid rgba(136,157,196,0.2); }
+  .nav-cta:hover { background: rgba(136,157,196,0.22); border-color: var(--accent); text-decoration: none; color: var(--accent-hover); }
+  header.scrolled { background: rgba(10,13,18,0.96); box-shadow: 0 1px 12px rgba(0,0,0,0.35); border-bottom-color: rgba(136,157,196,0.1); }
+  .nav-links a.active { color: var(--accent); }
+
+  /* ── Hero ── */
+  .hero { position: relative; overflow: hidden; }
+  .hero::before {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(136,157,196,0.04) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 50% at 85% 50%, rgba(136,157,196,0.025) 0%, transparent 70%);
+  }
+  /* subtle grid */
+  .hero::after {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(136,157,196,0.018) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(136,157,196,0.018) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse 65% 55% at 50% 25%, black 0%, transparent 70%);
+    -webkit-mask-image: radial-gradient(ellipse 65% 55% at 50% 25%, black 0%, transparent 70%);
+  }
+  .hero-inner {
+    max-width: 1080px; margin: 0 auto; padding: 130px 28px 88px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: center;
+    position: relative; z-index: 1;
+  }
+  .hero-left { min-width: 0; }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 10.5px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--accent); background: rgba(136,157,196,0.06);
+    padding: 5px 15px; border-radius: 20px; margin-bottom: 40px;
+    border: 1px solid rgba(136,157,196,0.08);
+  }
+  .hero-badge .bdot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+  .hero h1 {
+    font-family: var(--serif); font-weight: 700; line-height: 1.06; color: var(--ink);
+    margin: 0 0 22px; letter-spacing: -1px;
+  }
+  .hero h1 .en { display: block; font-size: clamp(38px, 5.8vw, 68px); letter-spacing: -1.6px; }
+  .hero h1 .cn {
+    display: block; font-size: clamp(19px, 2.5vw, 26px); font-weight: 600;
+    color: var(--slate); letter-spacing: 0; margin-top: 10px;
+    font-family: var(--sans); line-height: 1.5;
+  }
+  .hero-sub {
+    font-size: 15px; color: var(--muted); max-width: 440px; line-height: 1.8; margin-bottom: 42px;
+  }
+  .hero-cta { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn-primary { display: inline-flex; align-items: center; gap: 6px; background: var(--accent); color: #0a0d12; padding: 13px 28px; border-radius: 6px; font-size: 14.5px; font-weight: 600; border: none; cursor: pointer; transition: all 0.25s; font-family: var(--sans); }
+  .btn-primary:hover { background: var(--accent-hover); color: #0a0d12; text-decoration: none; }
+  .btn-outline { display: inline-flex; align-items: center; gap: 6px; background: transparent; color: var(--slate); padding: 13px 28px; border-radius: 6px; font-size: 14.5px; font-weight: 600; border: 1px solid var(--border); cursor: pointer; transition: all 0.25s; font-family: var(--sans); }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent-hover); text-decoration: none; }
+
+  /* Right panel — argument lab card */
+  .hero-right { display: flex; align-items: center; justify-content: center; }
+  .arg-card {
+    width: 100%; max-width: 420px;
+    background: rgba(20,24,33,0.64);
+    backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px);
+    border: 1px solid rgba(136,157,196,0.07);
+    border-radius: 14px; padding: 44px 38px 38px;
+    position: relative; overflow: hidden;
+  }
+  .arg-card::before {
+    content: ''; position: absolute; top: -1px; left: 44px; right: 44px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(136,157,196,0.18), transparent);
+  }
+  .arg-card .arg-label {
+    font-size: 9px; font-weight: 600; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 30px;
+    font-family: var(--sans);
+  }
+  .arg-card .arg-step {
+    display: flex; align-items: flex-start; gap: 14px; margin-bottom: 14px;
+    padding: 12px 16px; border-radius: 8px;
+    background: rgba(136,157,196,0.025);
+    border-left: 2px solid rgba(136,157,196,0.12);
+    transition: border-color 0.35s, background 0.35s;
+    position: relative; z-index: 1;
+  }
+  .arg-card .arg-step:last-child { margin-bottom: 0; }
+  .arg-card .arg-step:hover {
+    border-left-color: var(--accent);
+    background: rgba(136,157,196,0.06);
+  }
+  .arg-step .step-icon {
+    width: 26px; height: 26px; border-radius: 7px;
+    background: rgba(136,157,196,0.08);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; font-size: 11px; color: var(--accent);
+    font-family: var(--serif); font-weight: 700;
+  }
+  .arg-step .step-body { flex: 1; min-width: 0; }
+  .arg-step .step-head {
+    font-size: 10.5px; font-weight: 600; color: var(--accent);
+    letter-spacing: 0.6px; margin-bottom: 3px; font-family: var(--sans);
+  }
+  .arg-step .step-text {
+    font-size: 12.5px; color: var(--slate); line-height: 1.6;
+  }
+  .arg-step .step-text em {
+    font-style: italic; color: #c8cfde;
+  }
+  .arg-card .arg-glow {
+    position: absolute; top: 50%; right: -60px; transform: translateY(-50%);
+    width: 160px; height: 160px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(136,157,196,0.05) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  /* ── Responsive: Hero ── */
+  @media (max-width: 768px) {
+    .hero-inner { grid-template-columns: 1fr; gap: 44px; padding: 100px 24px 64px; text-align: center; }
+    .hero h1 .en { font-size: clamp(30px, 9vw, 42px); }
+    .hero h1 .cn { font-size: clamp(17px, 5vw, 21px); }
+    .hero-sub { margin-left: auto; margin-right: auto; font-size: 14.5px; }
+    .hero-cta { justify-content: center; }
+    .hero-right { justify-content: center; }
+    .arg-card { max-width: 340px; padding: 32px 24px 28px; }
+    .arg-card::before { left: 28px; right: 28px; }
+  }
+
+  /* ── Metrics Strip ── */
+  .metrics { background: var(--bg-elevated); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 40px 0; }
+  .metrics-inner { max-width: 1080px; margin: 0 auto; padding: 0 28px; display: flex; justify-content: center; gap: 72px; flex-wrap: wrap; text-align: center; }
+  .metric-num { font-family: var(--serif); font-size: 34px; font-weight: 700; color: var(--accent); line-height: 1.1; }
+  .metric-num small { font-size: 16px; font-weight: 400; color: var(--muted); }
+  .metric-label { font-size: 12.5px; color: var(--slate); margin-top: 5px; letter-spacing: 0.3px; }
+
+  /* ── Section commons ── */
+  .section-inner { max-width: 1080px; margin: 0 auto; padding: 0 28px; }
+  .section-label { font-size: 10.5px; font-weight: 600; letter-spacing: 1.8px; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+  .section-title { font-family: var(--serif); font-size: clamp(24px, 3.2vw, 36px); font-weight: 700; margin-bottom: 14px; line-height: 1.25; letter-spacing: -0.3px; }
+  .section-desc { color: var(--slate); font-size: 15.5px; max-width: 560px; line-height: 1.7; }
+
+  /* ── Why This Exists ── */
+  .why { padding: 96px 0; background: var(--bg-elevated); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .why-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 24px; margin-top: 48px; }
+  .why-card { padding: 32px 28px; border: 1px solid var(--border); border-radius: 8px; background: var(--card); transition: all 0.3s ease; }
+  .why-card:hover { border-color: rgba(136,157,196,0.25); background: var(--card-hover); transform: translateY(-3px); box-shadow: 0 8px 32px rgba(0,0,0,0.25), 0 0 0 1px rgba(136,157,196,0.1); }
+  .why-num { font-size: 10.5px; font-weight: 600; letter-spacing: 1.2px; color: var(--muted); text-transform: uppercase; margin-bottom: 16px; }
+  .why-card h3 { font-size: 16.5px; font-weight: 700; margin-bottom: 10px; line-height: 1.35; }
+  .why-card p { font-size: 14px; color: var(--slate); line-height: 1.7; }
+  .why-card .cn { font-size: 12.5px; color: var(--muted); margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
+
+  /* ── What You Receive ── */
+  .receive { padding: 96px 0; background: var(--bg); }
+  .receive-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 22px; margin-top: 44px; }
+  .receive-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 32px 28px; position: relative; transition: all 0.3s ease; }
+  .receive-card:hover { border-color: rgba(136,157,196,0.25); background: var(--card-hover); transform: translateY(-3px); box-shadow: 0 8px 32px rgba(0,0,0,0.25), 0 0 0 1px rgba(136,157,196,0.1); }
+  .receive-card .icon { font-size: 28px; margin-bottom: 16px; }
+  .receive-card h3 { font-size: 16.5px; font-weight: 700; margin-bottom: 8px; }
+  .receive-card .en-sub { font-size: 12px; color: var(--muted); font-style: italic; margin-bottom: 12px; }
+  .receive-card p { font-size: 14px; color: var(--slate); line-height: 1.7; }
+  .receive-card .example { background: rgba(136,157,196,0.06); border-radius: 6px; padding: 14px 16px; margin-top: 16px; font-size: 13px; color: var(--slate); line-height: 1.6; border: 1px solid rgba(136,157,196,0.08); }
+  .receive-card .example strong { color: var(--accent); font-weight: 600; }
+
+  /* ── Sample Issue ── */
+  .sample { padding: 96px 0; background: var(--bg-elevated); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .sample-tabs { display: flex; gap: 0; margin-top: 40px; border-bottom: 1px solid var(--border); overflow-x: auto; }
+  .sample-tab { padding: 12px 24px; font-size: 13.5px; font-weight: 600; color: var(--slate); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.2s; white-space: nowrap; }
+  .sample-tab:hover { color: var(--ink); }
+  .sample-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .sample-body { background: var(--card); border: 1px solid var(--border); border-top: none; border-radius: 0 0 8px 8px; padding: 36px; position: relative; overflow: hidden; }
+  .sample-pane { display: none; opacity: 0; transform: translateY(8px); transition: opacity 0.35s ease, transform 0.35s ease; }
+  .sample-pane.active { display: block; }
+  .sample-pane.anim-in { opacity: 1; transform: none; }
+  .sample-pane h3 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+  .sample-pane .pane-sub { font-size: 13.5px; color: var(--muted); margin-bottom: 22px; }
+  .pane-block { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 20px 22px; margin-bottom: 16px; }
+  .pane-block:last-child { margin-bottom: 0; }
+  .pane-block .block-title { font-size: 13px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; }
+  .pane-block p { font-size: 14.5px; line-height: 1.75; color: var(--ink); }
+  .pane-block .en { font-family: var(--serif); font-size: 14.5px; line-height: 1.8; color: var(--slate); }
+  .pane-block .zh { font-size: 13.5px; color: var(--slate); line-height: 1.7; }
+  .pane-block code { background: rgba(136,157,196,0.12); color: var(--accent); padding: 1px 7px; border-radius: 4px; font-size: 13px; }
+  .pane-block .tag { display: inline-block; font-size: 11px; background: var(--warm-subtle); color: var(--warm); padding: 2px 10px; border-radius: 4px; font-weight: 600; margin-bottom: 8px; letter-spacing: 0.3px; }
+  .checklist { list-style: none; font-size: 14px; color: var(--slate); }
+  .checklist li { padding: 5px 0 5px 24px; position: relative; line-height: 1.6; }
+  .checklist li::before { content: "✓"; position: absolute; left: 0; color: #6ea878; font-weight: 700; }
+
+  /* ── Card Deck (Learning Loop) ── */
+  .how { padding: 112px 0; background: var(--bg); }
+  .deck-wrapper { margin-top: 52px; }
+  /* Stage — the viewport where cards are positioned */
+  .deck-stage { position: relative; width: 100%; max-width: 880px; margin: 0 auto; overflow: hidden; }
+  /* Cards */
+  .deck-card { position: absolute; top: 50%; left: 50%; width: 100%; max-width: 600px; transform: translate(-50%,-50%) scale(.74); opacity: 0; filter: blur(8px); transition: transform .65s cubic-bezier(.22,1,.36,1), opacity .5s cubic-bezier(.22,1,.36,1), filter .5s cubic-bezier(.22,1,.36,1); pointer-events: none; z-index: 1; background: rgba(20,24,33,.68); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid rgba(136,157,196,.08); border-radius: 14px; padding: 56px 52px; text-align: center; }
+  .deck-card.active { transform: translate(-50%,-50%) scale(1); opacity: 1; filter: blur(0); z-index: 5; pointer-events: auto; background: rgba(20,24,33,.88); border-color: rgba(136,157,196,.2); box-shadow: 0 8px 48px rgba(0,0,0,.4), 0 0 0 1px rgba(136,157,196,.06) inset; }
+  .deck-card.peek-left { transform: translate(calc(-50% - 272px),-50%) scale(.86); opacity: .22; filter: blur(4px); z-index: 2; }
+  .deck-card.peek-right { transform: translate(calc(-50% + 272px),-50%) scale(.86); opacity: .22; filter: blur(4px); z-index: 3; }
+  /* Card content */
+  .deck-card .step-num { font-size: 10.5px; font-weight: 600; letter-spacing: 2.5px; color: var(--accent); text-transform: uppercase; margin-bottom: 14px; }
+  .deck-card .step-en { font-family: var(--serif); font-size: 52px; font-weight: 700; color: var(--ink); line-height: 1; letter-spacing: -1px; margin-bottom: 10px; }
+  .deck-card .step-cn { font-size: 17px; font-weight: 600; color: var(--slate); margin-bottom: 28px; letter-spacing: .3px; }
+  .deck-card .divider { width: 40px; height: 2px; background: var(--accent); margin: 0 auto 28px; opacity: .5; border-radius: 1px; }
+  .deck-card p { font-size: 14.5px; color: var(--slate); line-height: 1.9; max-width: 480px; margin: 0 auto; }
+  .deck-card .en-quote { font-size: 13.5px; color: var(--muted); margin-top: 24px; font-style: italic; font-family: var(--serif); letter-spacing: .2px; }
+  /* Controls */
+  .deck-controls { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 32px; }
+  .deck-progress { font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: 1.5px; min-width: 40px; text-align: center; font-variant-numeric: tabular-nums; }
+  .deck-btn { display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; background: rgba(20,24,33,.6); border: 1px solid rgba(136,157,196,.12); color: var(--slate); cursor: pointer; transition: all .25s; font-size: 18px; line-height: 1; font-family: var(--sans); }
+  .deck-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); background: rgba(136,157,196,.1); }
+  .deck-btn:disabled { opacity: .18; cursor: default; }
+  .deck-dots { display: flex; gap: 7px; align-items: center; }
+  .deck-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--border); cursor: pointer; transition: all .35s; border: none; padding: 0; }
+  .deck-dot:hover { background: var(--muted); }
+  .deck-dot.active { background: var(--accent); width: 21px; border-radius: 3px; }
+  /* Mobile — single card, no peek */
+  @media (max-width: 768px) {
+    .deck-stage { overflow: visible; }
+    .deck-card { position: relative; top: auto; left: auto; transform: none; max-width: 100%; display: none; filter: none; padding: 32px 24px; border-radius: 10px; backdrop-filter: none; -webkit-backdrop-filter: none; background: var(--card); }
+    .deck-card.active { display: block; animation: deckFadeInMobile .45s ease; transform: none; box-shadow: 0 4px 24px rgba(0,0,0,.2); border-color: var(--border); }
+    .deck-card.peek-left, .deck-card.peek-right { display: none; }
+    .deck-card .step-en { font-size: 38px; }
+    .deck-card .step-cn { font-size: 15px; margin-bottom: 20px; }
+    .deck-card p { font-size: 14px; }
+    @keyframes deckFadeInMobile { from { opacity: 0; } to { opacity: 1; } }
+  }
+
+  /* ── Who It Is For ── */
+  .who { padding: 96px 0; background: var(--bg-elevated); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .who-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 22px; margin-top: 44px; }
+  .who-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 32px 28px; transition: all 0.3s ease; }
+  .who-card:hover { border-color: rgba(136,157,196,0.25); background: var(--card-hover); transform: translateY(-3px); box-shadow: 0 8px 32px rgba(0,0,0,0.25), 0 0 0 1px rgba(136,157,196,0.1); }
+  .who-card .who-icon { font-size: 28px; margin-bottom: 16px; }
+  .who-card h3 { font-size: 16.5px; font-weight: 700; margin-bottom: 10px; }
+  .who-card p { font-size: 14px; color: var(--slate); line-height: 1.7; }
+  .who-card .pain { font-size: 13px; color: var(--warm); margin-top: 14px; font-weight: 600; }
+
+  /* ── Comparison table ── */
+  .compare { padding: 96px 0; background: var(--bg); }
+  .compare-table { margin-top: 40px; background: var(--card); border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+  .compare-table table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .compare-table th { background: var(--bg-elevated); color: var(--ink); padding: 14px 20px; text-align: left; font-weight: 600; font-size: 13px; letter-spacing: 0.3px; border-bottom: 1px solid var(--border); }
+  .compare-table th:first-child { width: 20%; }
+  .compare-table td { padding: 13px 20px; border-bottom: 1px solid rgba(30,35,50,0.5); vertical-align: top; font-size: 13.5px; color: var(--slate); }
+  .compare-table tr:last-child td { border-bottom: none; }
+  .compare-table .highlight-col { background: rgba(136,157,196,0.05); }
+  .compare-table .check { color: #6ea878; font-weight: 700; }
+  .compare-table .dash { color: var(--muted); }
+  .compare-table .product-name { font-weight: 700; color: var(--accent); }
+
+  /* ── Pricing / Beta Plan ── */
+  .pricing { padding: 96px 0; background: var(--bg-elevated); border-top: 1px solid var(--border); }
+  .pricing-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 22px; margin-top: 44px; }
+  .price-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 34px 30px; position: relative; transition: all 0.3s ease; }
+  .price-card:hover { border-color: rgba(136,157,196,0.25); transform: translateY(-3px); box-shadow: 0 8px 32px rgba(0,0,0,0.25), 0 0 0 1px rgba(136,157,196,0.1); }
+  .price-card.featured { border-color: var(--accent); background: var(--bg-elevated); }
+  .price-card.featured:hover { border-color: var(--accent-hover); }
+  .price-card.featured::before { content: "Beta 特权"; position: absolute; top: -1px; right: 28px; background: var(--accent); color: #0a0d12; font-size: 10.5px; font-weight: 700; padding: 4px 14px; border-radius: 0 0 6px 6px; letter-spacing: 0.5px; }
+  .price-name { font-size: 15.5px; font-weight: 700; margin-bottom: 6px; }
+  .price-tag { font-size: 36px; font-weight: 800; font-family: var(--serif); margin: 10px 0; }
+  .price-tag small { font-size: 14px; font-weight: 400; color: var(--muted); }
+  .price-desc { font-size: 14px; color: var(--slate); margin-bottom: 22px; line-height: 1.6; }
+  .price-features { list-style: none; font-size: 13.5px; margin-bottom: 26px; color: var(--slate); }
+  .price-features li { padding: 5px 0 5px 22px; position: relative; }
+  .price-features li::before { content: "✓"; position: absolute; left: 0; color: #6ea878; font-weight: 700; }
+  .price-features .no::before { content: "—"; color: var(--muted); }
+  .price-btn { display: block; text-align: center; padding: 13px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.25s; font-family: var(--sans); letter-spacing: 0.3px; }
+  .price-btn-dark { background: var(--ink); color: #0a0d12; border: none; }
+  .price-btn-dark:hover { background: var(--accent-hover); color: #0a0d12; text-decoration: none; }
+  .price-btn-outline { background: transparent; color: var(--slate); border: 1px solid var(--border); }
+  .price-btn-outline:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; }
+
+  /* ── FAQ ── */
+  .faq { padding: 96px 0; background: var(--bg); }
+  .faq-list { margin-top: 40px; max-width: 740px; }
+  .faq-item { border-bottom: 1px solid var(--border); }
+  .faq-q { width: 100%; background: none; border: none; text-align: left; font-size: 15.5px; font-weight: 600; padding: 20px 0; cursor: pointer; display: flex; justify-content: space-between; align-items: center; color: var(--ink); font-family: var(--sans); transition: color 0.2s; }
+  .faq-q:hover { color: var(--accent); }
+  .faq-arrow { font-size: 18px; transition: transform 0.25s; color: var(--muted); }
+  .faq-a { font-size: 14.5px; color: var(--slate); line-height: 1.8; overflow: hidden; max-height: 0; transition: max-height 0.45s cubic-bezier(.22,1,.36,1); }
+  .faq-item.open .faq-a { max-height: 500px; }
+  .faq-item.open .faq-arrow { transform: rotate(180deg); }
+
+  /* ── CTA / Signup ── */
+  .cta { padding: 96px 0; background: var(--bg-elevated); color: var(--ink); text-align: center; border-top: 1px solid var(--border); }
+  .cta .section-title { color: var(--ink); }
+  .cta .section-desc { color: var(--slate); margin-left: auto; margin-right: auto; max-width: 540px; }
+  .cta-form { max-width: 540px; margin: 36px auto 0; text-align: left; }
+  .cta-row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .cta-input { flex: 1; min-width: 200px; padding: 14px 18px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); color: var(--ink); font-size: 15px; outline: none; font-family: var(--sans); transition: border-color 0.25s; }
+  .cta-input::placeholder { color: var(--muted); }
+  .cta-input:focus { border-color: var(--accent); }
+  .cta .btn-primary { border: none; font-size: 15px; }
+  .cta-note { font-size: 12.5px; color: var(--muted); margin-top: 16px; text-align: center; }
+
+  /* Survey fields */
+  .survey-group { margin-top: 16px; }
+  .survey-group label { display: block; font-size: 13px; font-weight: 600; color: var(--slate); margin-bottom: 8px; }
+  .survey-select { width: 100%; padding: 12px 16px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); color: var(--slate); font-size: 14px; outline: none; font-family: var(--sans); cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%236a7285' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; padding-right: 40px; transition: border-color 0.25s; }
+  .survey-select:focus { border-color: var(--accent); outline: none; }
+  .survey-select option { background: var(--bg); color: var(--slate); }
+  .survey-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .survey-chip { padding: 8px 16px; border-radius: 20px; border: 1px solid var(--border); background: var(--bg); color: var(--slate); font-size: 13px; cursor: pointer; transition: all 0.2s; font-family: var(--sans); }
+  .survey-chip:hover { border-color: var(--accent); color: var(--ink); }
+  .survey-chip.selected { background: var(--accent); border-color: var(--accent); color: #0a0d12; font-weight: 600; }
+
+  /* ── Footer ── */
+  footer { background: #070a0f; color: var(--muted); padding: 44px 28px; font-size: 13.5px; border-top: 1px solid var(--border); }
+  .footer-inner { max-width: 1080px; margin: 0 auto; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 24px; }
+  .footer-brand { font-family: var(--serif); font-size: 16px; font-weight: 700; color: var(--ink); }
+  .footer-brand small { display: block; font-size: 12px; color: var(--muted); font-weight: 400; margin-top: 4px; }
+  .footer-links { display: flex; gap: 28px; }
+  .footer-links a { color: var(--muted); font-size: 13.5px; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--slate); text-decoration: none; }
+  .footer-copy { max-width: 1080px; margin: 18px auto 0; padding-top: 18px; border-top: 1px solid rgba(30,35,50,0.4); font-size: 12px; color: var(--muted); }
+  .footer-manifesto { max-width: 1080px; margin: 20px auto 0; font-size: 13px; color: var(--muted); font-style: italic; line-height: 1.7; }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .nav-links { display: none; }
+    .logo-tagline { display: none; }
+    .metrics-inner { gap: 32px; }
+    .metric-item { min-width: 110px; }
+    .metric-num { font-size: 28px; }
+    .compare-table { overflow-x: auto; }
+    .compare-table table { min-width: 640px; }
+    .pricing-grid { grid-template-columns: 1fr; }
+    .cta-row { flex-direction: column; }
+  }
+
+  /* ── Fade-in ── */
+  .fade-in { opacity: 0; transform: translateY(18px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .fade-in.visible { opacity: 1; transform: none; }
+
+  /* ── Mini CTA (sticky bottom bar) ── */
+  .mini-cta { position: fixed; bottom: 0; left: 0; right: 0; z-index: 90; background: rgba(17,20,28,0.96); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-top: 1px solid rgba(136,157,196,0.1); padding: 13px 28px; display: flex; align-items: center; justify-content: center; gap: 18px; transform: translateY(100%); transition: transform 0.45s cubic-bezier(.22,1,.36,1); }
+  .mini-cta.visible { transform: translateY(0); }
+  .mini-cta p { font-size: 14px; color: var(--slate); margin: 0; white-space: nowrap; }
+  .mini-cta p strong { color: var(--ink); font-weight: 700; }
+  .mini-cta .btn-primary { padding: 9px 22px; font-size: 13.5px; border-radius: 6px; white-space: nowrap; }
+  @media (max-width: 768px) {
+    .mini-cta { padding: 10px 16px; gap: 10px; }
+    .mini-cta p { font-size: 13px; }
+    .mini-cta .btn-primary { padding: 8px 16px; font-size: 13px; }
+  }
+
+  /* ── prefers-reduced-motion ── */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══ Header ═══ -->
+<header>
+  <nav class="nav">
+    <div class="logo">Argue<span>Lab</span><span class="logo-tagline">外刊表达训练</span></div>
+    <div class="nav-links">
+      <a href="#why" data-section="why">为什么做这个</a>
+      <a href="#receive" data-section="receive">每期内容</a>
+      <a href="#sample" data-section="sample">内容样例</a>
+      <a href="#how" data-section="how">怎么用</a>
+      <a href="#pricing" data-section="pricing">加入内测</a>
+    </div>
+    <a href="#cta" class="nav-cta">免费加入</a>
+  </nav>
+</header>
+
+<!-- ═══ 1. Hero ═══ -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-left">
+      <div class="hero-badge"><span class="bdot"></span> ArgueLab · Beta</div>
+      <h1>
+        <span class="en">From Reading to Argument.</span>
+        <span class="cn">把外刊议题，转化成可写、可讲、可迁移的英文论证能力</span>
+      </h1>
+      <p class="hero-sub">由学习者创建，面向想认真提高英文论证能力的人。每周两到三期，每期一个议题，约 20 分钟——不是课，不是新闻，而是一个你可以坚持的输出训练。</p>
+      <div class="hero-cta">
+        <a href="#cta" class="btn-primary">免费加入内测 →</a>
+        <a href="#sample" class="btn-outline">查看内容样例</a>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="arg-card">
+        <div class="arg-label">Argument Lab</div>
+        <div class="arg-step">
+          <div class="step-icon">中</div>
+          <div class="step-body">
+            <div class="step-head">Chinese Thought</div>
+            <div class="step-text">社交媒体让人更难专注</div>
+          </div>
+        </div>
+        <div class="arg-step">
+          <div class="step-icon">En</div>
+          <div class="step-body">
+            <div class="step-head">English Concept</div>
+            <div class="step-text">Attention economy + cognitive cost</div>
+          </div>
+        </div>
+        <div class="arg-step">
+          <div class="step-icon">→</div>
+          <div class="step-body">
+            <div class="step-head">Causal Chain</div>
+            <div class="step-text">Engagement algorithms → fragmented attention → reduced deep-reading</div>
+          </div>
+        </div>
+        <div class="arg-step">
+          <div class="step-icon">"</div>
+          <div class="step-body">
+            <div class="step-head">Argument Output</div>
+            <div class="step-text"><em>What social media has engineered is not connection, but the systematic erosion of our capacity for sustained attention.</em></div>
+          </div>
+        </div>
+        <div class="arg-glow"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ Metrics Strip ═══ -->
+<section class="metrics">
+  <div class="metrics-inner">
+    <div class="metric-item">
+      <div class="metric-num">3 <small>期/周</small></div>
+      <div class="metric-label">保持输出节奏</div>
+    </div>
+    <div class="metric-item">
+      <div class="metric-num">6</div>
+      <div class="metric-label">完整训练步骤</div>
+    </div>
+    <div class="metric-item">
+      <div class="metric-num">20 <small>分钟</small></div>
+      <div class="metric-label">平均完成时间</div>
+    </div>
+    <div class="metric-item">
+      <div class="metric-num">5 <small>个/期</small></div>
+      <div class="metric-label">每期可积累</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 2. Why This Exists ═══ -->
+<section class="why" id="why">
+  <div class="section-inner">
+    <div class="section-label fade-in">A Note on Why</div>
+    <h2 class="section-title fade-in">我猜你可能也在经历这些</h2>
+    <p class="section-desc fade-in">外刊读了一堆，写作口语还是「有想法，说不出」。问题不在词汇量，在 argument 迁移能力。</p>
+    <div class="why-grid">
+      <div class="why-card fade-in">
+        <div class="why-num">01</div>
+        <h3>读得懂，写不出</h3>
+        <p>外刊每句话都认识，换自己写 argument，就退回到 <em>"I think… because…"</em> 的初级结构。输入和输出之间有一道墙。</p>
+        <div class="cn">本质：积累了理解，没有训练映射。</div>
+      </div>
+      <div class="why-card fade-in">
+        <div class="why-num">02</div>
+        <h3>有观点，没结构</h3>
+        <p>中文能说清楚，转成英文就变成 simple sentences 的堆砌，没有 <strong>premise → conclusion</strong> 的推进感。</p>
+        <div class="cn">本质：缺少 argument chain 的训练。</div>
+      </div>
+      <div class="why-card fade-in">
+        <div class="why-num">03</div>
+        <h3>背了词汇，不会用</h3>
+        <p>单词表和 AWL 背了，写作时还是只能用 <em>good / important / think</em>——因为没人教你在什么 argument 场景该用哪个表达。</p>
+        <div class="cn">本质：词汇是按「列表」学的，不是按「功能」学的。</div>
+      </div>
+      <div class="why-card fade-in">
+        <div class="why-num">04</div>
+        <h3>精读营「毕业即止」</h3>
+        <p>跟了半年外刊精读营，停下来就不知道读什么、怎么练。没有持续的输出训练路径。</p>
+        <div class="cn">本质：精读是「内容消费」，不是「能力训练」。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 3. What You Receive ═══ -->
+<section class="receive" id="receive">
+  <div class="section-inner">
+    <div class="section-label fade-in">What's Inside</div>
+    <h2 class="section-title fade-in">每期邮件里有什么</h2>
+    <p class="section-desc fade-in">每封邮件包含 6 个模块，围绕一个真实外刊议题展开。内容通过邮件发送，不需要 VPN——议题背景用中文撰写，你可以直接开始训练。</p>
+    <div class="receive-grid">
+      <div class="receive-card fade-in">
+        <div class="icon">📰</div>
+        <h3>今日议题背景（中文）</h3>
+        <div class="en-sub">Topic Background · 建立 context</div>
+        <p>用中文解释今日议题的背景、核心争议和关键概念，帮你快速进入状态。不需要先打开外刊原文，不需要 VPN。</p>
+        <div class="example"><strong>例：</strong>「AI 是否应该被允许在学术写作中使用？」——先理解正反双方的核心关切，再读英文原文。</div>
+      </div>
+      <div class="receive-card fade-in">
+        <div class="icon">✂️</div>
+        <h3>外刊核心段落（英文）</h3>
+        <div class="en-sub">Selected Passage · 论证密度</div>
+        <p>从 Economist / Guardian / NYT 精选 1–2 段有分量、有论证密度的英文段落。不是全文——是「值得拆解的那一段」。</p>
+        <div class="example"><strong>标注：</strong>段落上直接标出 <em>thesis / premise / evidence / counter-argument / conclusion</em> 的位置。</div>
+      </div>
+      <div class="receive-card fade-in">
+        <div class="icon">🔗</div>
+        <h3>5 个可迁移表达</h3>
+        <div class="en-sub">Transferable Expressions · 按功能学</div>
+        <p>不是单词表。每个表达带 argument 功能标注（因果论证 / 让步反驳 / 证据引入 / 结论收束）+ register + collocation 说明。</p>
+        <div class="example"><strong>例：</strong> <code>be engineered to</code> → 标记：<em>因果论证 · formal</em> → 适用：雅思 Task 2 分析问题根源</div>
+      </div>
+      <div class="receive-card fade-in">
+        <div class="icon">🔬</div>
+        <h3>1 个高级句型拆解</h3>
+        <div class="en-sub">Sentence Deconstruction · 从看懂到会用</div>
+        <p>深度拆解一个外刊复杂句式：语法结构、修辞功能、适用场景、仿写模板。不只告诉你「这句话很高级」，而是告诉你「你能在什么场合用它」。</p>
+        <div class="example"><strong>例：</strong>分号并列对照 + 破折号延迟出拳结构 → 仿写模板 → 你的仿写任务</div>
+      </div>
+      <div class="receive-card fade-in">
+        <div class="icon">🔀</div>
+        <h3>中文观点 → 英文 Argument Chain</h3>
+        <div class="en-sub">Guided Argument Construction</div>
+        <p>给你一个中文观点，引导你把模糊的想法展开成有结构的英文 argument chain：thesis → premise → evidence → counter-argument → conclusion。</p>
+        <div class="example"><strong>训练流程：</strong>先自己写 → 再看参考 chain → 对比差距 → 标注可复用的 expression</div>
+      </div>
+      <div class="receive-card fade-in">
+        <div class="icon">✍️</div>
+        <h3>输出任务 + Self-check</h3>
+        <div class="en-sub">Output Task · 写作/口语双通道</div>
+        <p>专四/专八/雅思 Task 2 风格写作命题，或口语 Part 3 / 课堂 presentation 话题。附带结构指引、self-check 清单和 sample answer。</p>
+        <div class="example"><strong>任务样例：</strong>「Some people argue that… To what extent do you agree?」→ 写作 280–320 词 或 口语 1.5–2 分钟</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 4. Sample Issue ═══ -->
+<section class="sample" id="sample">
+  <div class="section-inner">
+    <div class="section-label fade-in">Sample Issue</div>
+    <h2 class="section-title fade-in">看看每期收到的是什么</h2>
+    <p class="section-desc fade-in">以下为完整样例。每期围绕一个外刊议题，按输入→输出训练闭环设计。内容通过邮件发送，不需要打开任何外部网站。</p>
+    <div class="sample-tabs">
+        <div class="sample-tab active" onclick="switchTab(this,'bg')">今日议题</div>
+        <div class="sample-tab" onclick="switchTab(this,'passage')">核心段落</div>
+        <div class="sample-tab" onclick="switchTab(this,'expressions')">表达迁移</div>
+        <div class="sample-tab" onclick="switchTab(this,'sentence')">句型拆解</div>
+        <div class="sample-tab" onclick="switchTab(this,'chain')">Argument Chain</div>
+        <div class="sample-tab" onclick="switchTab(this,'output')">输出任务</div>
+    </div>
+    <div class="sample-body">
+      <!-- Pane: 今日议题 -->
+      <div class="sample-pane active" id="pane-bg">
+        <h3>📰 今日议题（中文）</h3>
+        <div class="pane-sub">不依赖 VPN。先建立 context，再进入外刊。</div>
+        <div class="pane-block">
+          <div class="block-title">议题：优绩主义（Meritocracy）是否正在制造一种系统性的精神疲惫？</div>
+          <p class="zh">「只要够努力，就能成功」——这条承诺曾是美国梦和中国高考叙事的共同内核。但越来越多的社会学研究和外刊评论指出，优绩主义已经从一种「激励性信念」演变为一种「道德负担」：如果你没有成功，那一定是你不够努力。这种叙事正在系统性地制造焦虑、倦怠和自我否定——尤其在年轻一代中。</p>
+          <p class="zh" style="margin-top:12px;"><strong>争议焦点：</strong>一方认为，优绩主义是社会流动的根本驱动力，放弃它意味着放弃对个人奋斗的信仰。另一方则指出，当结构性的不平等被包装成「个人不够努力」的故事时，优绩主义就不再是激励，而是一种隐性的暴力——它让失败者不仅承受失败的后果，还要背负「失败是你自己的错」的道德审判。</p>
+          <p class="zh" style="margin-top:12px;"><strong>为什么选这个议题？</strong></p>
+          <p class="zh">这是 TEM-8 和雅思 Task 2 中「社会价值观」类话题的高频考察方向。它让你练习 <em>problem-solution（问题-对策论证）</em> 和 <em>evaluating a contested concept（对争议性概念的审视）</em> 两种核心 argument 技能。同时，这个话题和你自己的学习生活高度相关——你很可能已经在经历它。</p>
+          <p class="zh" style="margin-top:12px;"><strong>外刊常用 framing：</strong></p>
+          <ul class="checklist" style="margin-top:8px;">
+            <li><em>the tyranny of merit</em>（优绩的暴政）</li>
+            <li><em>burnout as a status symbol</em>（倦怠成为身份象征）</li>
+            <li><em>hustle culture</em>（内卷文化 / 拼搏崇拜）</li>
+            <li><em>self-optimization</em>（自我优化——无止境提升自我的压力）</li>
+            <li><em>structural inequality</em>（结构性不平等——优绩主义掩盖了什么）</li>
+          </ul>
+        </div>
+      </div>
+      <!-- Pane: 核心段落 -->
+      <div class="sample-pane" id="pane-passage">
+        <h3>✂️ 外刊核心段落（英文）</h3>
+        <div class="pane-sub">From: The Atlantic · Ideas · March 2025 — adapted for training</div>
+        <div class="pane-block">
+          <div class="block-title">Argument Structure 标注</div>
+          <p class="en" style="background:var(--bg);padding:16px;border-radius:6px;border-left:3px solid var(--accent);line-height:1.85;">
+          <span style="color:var(--accent);font-weight:700;">[Thesis · 主论点]</span> The promise of meritocracy — that hard work and talent will be rewarded — has become, for many, a source of exhaustion rather than inspiration.<br><br>
+          <span style="color:#16a34a;font-weight:700;">[Premise 1 · 因果链]</span> When failure is framed as a personal deficiency rather than a structural outcome, individuals are left not only with the consequences of failure but with the moral weight of having "deserved" it. This is <em>the tyranny of merit</em> — a system in which success legitimizes itself, and failure blames itself.<br><br>
+          <span style="color:#d97706;font-weight:700;">[Evidence · 数据支撑]</span> A 2024 study in the <em>Journal of Applied Psychology</em> found that employees who internalized meritocratic beliefs were 37% more likely to report chronic burnout — not because they worked harder, but because they attributed every setback to their own inadequacy.<br><br>
+          <span style="color:#7c3aed;font-weight:700;">[Counter-argument · 让步 + 反驳]</span> Proponents maintain that meritocracy, for all its imperfections, remains the least bad system for allocating opportunity — and that abandoning it risks creating a society of complacency. Critics counter that this is a false choice: the alternative is not the abandonment of standards, but the recognition that talent is distributed far more evenly than opportunity ever has been.<br><br>
+          <span style="color:#db2777;font-weight:700;">[Conclusion · 结论]</span> The question is not whether effort should be rewarded — it should. The question is whether we have built a culture that confuses reward with worth, and effort with virtue — a confusion that, in the end, exhausts those it promised to liberate.</p>
+        </div>
+        <div class="pane-block" style="background:var(--accent-bg);">
+          <div class="block-title">📖 阅读指引</div>
+          <p class="zh">这段文字最值得学习的是两个修辞策略：<strong>① 将 meritocracy 重新定义为 tyranny——</strong>不是否认努力的價值，而是揭示当「奖励」被等同于「价值」时，这套话语对失败者的道德伤害。② <strong>最后一句话的平行结构：</strong><em>confuses reward with worth, and effort with virtue</em>——两组对仗在一个从句中完成，节奏感极强，适合在雅思 conclusion 段或 TEM-8 结尾中模仿。</p>
+        </div>
+      </div>
+      <!-- Pane: 表达迁移 -->
+      <div class="sample-pane" id="pane-expressions">
+        <h3>🔗 5 个可迁移表达</h3>
+        <div class="pane-sub">不是背单词。每个表达带 argument 功能标注 + register/collocation 说明。</div>
+        <div class="pane-block">
+          <div class="tag">揭示本质 · high register · 题目概念界定</div>
+          <p><strong>the tyranny of [noun]</strong> <code>nominal phrase · conceptual framing</code></p>
+          <p class="zh">「……的暴政/专制」，极强的批判性框架词。将某个制度/观念重新定义为一种压迫性力量。比 <em>the problem of X</em> 或 <em>the downside of X</em> 有力得多，因为它不仅指出问题，还赋予问题一个道德维度。大学议论文和高分雅思作文中用来「定义题目核心概念」。</p>
+          <p class="zh" style="margin-top:4px;font-size:12.5px;color:var(--muted);"><strong>常见搭配：</strong>the tyranny of merit / the tyranny of choice / the tyranny of productivity / the tyranny of convenience</p>
+          <p class="en" style="font-size:13px;color:var(--slate);margin-top:6px;"><em>Example: In an age of infinite streaming options, we have fallen victim to the tyranny of choice — more options, paradoxically, producing less satisfaction.</em></p>
+        </div>
+        <div class="pane-block">
+          <div class="tag">因果论证 · semi-formal register</div>
+          <p><strong>a recipe for [noun]</strong> <code>noun phrase · causal framing</code></p>
+          <p class="zh">「……的配方/导火索」，用比喻来表达因果关系。比 <em>leads to</em> 或 <em>causes</em> 更有画面感，暗示多个因素的组合必然导向某个结果——就像食谱一样。议论文中用来总结因果链时特别有效。</p>
+          <p class="zh" style="margin-top:4px;font-size:12.5px;color:var(--muted);"><strong>常见搭配：</strong>a recipe for disaster / a recipe for stagnation / a recipe for burnout / a recipe for resentment</p>
+          <p class="en" style="font-size:13px;color:var(--slate);margin-top:6px;"><em>Example: Telling an entire generation that success is purely a function of effort — while ignoring structural barriers — is a recipe for collective burnout and disillusionment.</em></p>
+        </div>
+        <div class="pane-block">
+          <div class="tag">让步反驳 · formal register</div>
+          <p><strong>for all its/their [noun], [subject] remains…</strong> <code>concessive frame</code></p>
+          <p class="zh">「尽管有……的（优点/缺点），某事仍然是……」。高级让步句式——先承认对方观点的合理性（或承认某事物的缺陷），再用 <em>remains</em> 引出自己的判断。比 <em>Although X has advantages, …</em> 更自然、更正式。</p>
+          <p class="zh" style="margin-top:4px;font-size:12.5px;color:var(--muted);"><strong>结构模板：</strong>For all its [positive noun], [system/idea] remains [critical judgment].</p>
+          <p class="en" style="font-size:13px;color:var(--slate);margin-top:6px;"><em>Example: For all its economic dynamism, the gig economy remains a system that externalizes risk onto the most vulnerable workers.</em></p>
+        </div>
+        <div class="pane-block">
+          <div class="tag">对比论证 · academic register</div>
+          <p><strong>X is distributed far more evenly than Y ever has been</strong> <code>comparative structure</code></p>
+          <p class="zh">「X 的分配远比 Y 曾经做到的更加均匀」。这是一个极度优雅的比较结构——用一个简单的比较级揭穿一个系统性谎言。也是议论文中「用事实反驳假设」的高分句型。</p>
+          <p class="zh" style="margin-top:4px;font-size:12.5px;color:var(--muted);"><strong>可替换主语：</strong>talent / intelligence / potential / ambition / capacity for hard work</p>
+          <p class="en" style="font-size:13px;color:var(--slate);margin-top:6px;"><em>Example: The capacity for intellectual achievement is distributed far more evenly than access to quality education ever has been.</em></p>
+        </div>
+        <div class="pane-block">
+          <div class="tag">概念辨析 · evaluative · 结论段专属</div>
+          <p><strong>confuse X with Y</strong> <code>verb phrase · conceptual correction</code></p>
+          <p class="zh">「将 X 与 Y 混为一谈」。议论文 conclusion 段的神器——当你想指出某个流行观念的「混淆」时，这个词组一针见血。它不直接说某观点「错」，而是说它「搞混了两个不同的东西」——这比直接否定更有说服力。</p>
+          <p class="zh" style="margin-top:4px;font-size:12.5px;color:var(--muted);"><strong>常见混淆对：</strong>confuse correlation with causation / confuse effort with virtue / confuse busyness with productivity / confuse access with equality</p>
+          <p class="en" style="font-size:13px;color:var(--slate);margin-top:6px;"><em>Example: We have spent decades confusing busyness with productivity — measuring hours rather than outcomes, presence rather than contribution.</em></p>
+        </div>
+      </div>
+      <!-- Pane: 句型拆解 -->
+      <div class="sample-pane" id="pane-sentence">
+        <h3>🔬 高级句型拆解</h3>
+        <div class="pane-sub">不只是「这句话很高级」，而是「我能在什么场景用它」。</div>
+        <div class="pane-block">
+          <div class="block-title">目标句</div>
+          <p class="en" style="font-size:15px;background:var(--bg);padding:14px;border-radius:6px;"><em>"Proponents maintain that meritocracy, for all its imperfections, remains the least bad system for allocating opportunity — and that abandoning it risks creating a society of complacency. Critics counter that this is a false choice: the alternative is not the abandonment of standards, but the recognition that talent is distributed far more evenly than opportunity ever has been."</em></p>
+        </div>
+        <div class="pane-block">
+          <div class="block-title">结构拆解</div>
+          <p class="zh">这是一个 <strong>double-counterpoint（双重对峙）</strong> 结构。第一句构建正方论证，用 <em>for all its imperfections</em> 做嵌入式让步，用 <em>remains the least bad system</em> 承认其相对合理性。句号后，<em>Critics counter that…</em> 引入反驳——但反駁不是简单的「我不同意」，而是<strong>重新定义问题的框架</strong>：用冒号引出 <em>the alternative is not X, but Y</em> 的 not-A-but-B 结构，把对方的「要么 meritocracy 要么 complacency」二元选择拆解掉。这种「我先承认你说的有道理，但你的问题本身问错了」的论证技巧，是高分写作和高质量学术讨论的标志。</p>
+          <p class="zh" style="margin-top:10px;"><strong>四层结构：</strong></p>
+          <p class="en" style="font-size:13px;background:var(--accent-bg);padding:10px;border-radius:6px;">
+          <code>[Side A] maintains that [X] — for all its [flaw], remains [qualified defense]. [Side B] counters that this is a false choice: the alternative is not [extreme A], but [nuanced B].</code>
+          </p>
+        </div>
+        <div class="pane-block">
+          <div class="block-title">语法要点</div>
+          <ul class="checklist">
+            <li><strong>嵌入式让步：</strong><code>for all its imperfections</code> —— 插入在两个破折号或逗号之间，不打断主句节奏，但瞬间完成了「承认对方部分正确」的动作</li>
+            <li><strong>not A, but B 升级版：</strong><code>the alternative is not the abandonment of standards, but the recognition that…</code> —— 不是简单否定，而是用一个抽象名词 + that-clause 来精准命名「第三条路」</li>
+            <li><strong>冒号的论证功能：</strong><code>this is a false choice:</code> 后的冒号引出对「为什么是 false choice」的解释——英文中用冒号引出解释/例证是学术写作的基础动作</li>
+            <li><strong>far more evenly than… ever has been：</strong>副词 far 加强比较级 + ever 强调「从未」——双重强化制造了论据的不可辩驳感</li>
+          </ul>
+        </div>
+        <div class="pane-block">
+          <div class="block-title">仿写模板</div>
+          <p class="en" style="font-size:14px;"><code>[Group A] maintain(s) that [X], for all its [flaw], remains [qualified positive]; [Group B] counter(s) that this is a false choice: the alternative is not [extreme position], but the recognition that [deeper truth].</code></p>
+          <p class="zh" style="margin-top:10px;"><strong>适用场景：</strong>任何涉及「两种对立观点」的议论文——雅思 Task 2 discuss both views、TEM-8 议论文、甚至口语 Part 3 中对复杂社会议题的深度回答。</p>
+          <p class="zh" style="margin-top:8px;"><strong>你的仿写（参考——用教育话题练手）：</strong></p>
+          <p class="en" style="font-size:13.5px;color:var(--muted);background:var(--bg);padding:10px;border-radius:6px;"><em>Traditionalists maintain that standardized testing, for all its rigidity, remains the fairest mechanism for comparing students across diverse backgrounds; reformers counter that this is a false choice: the alternative is not the elimination of assessment, but the recognition that the capacity to think critically is distributed far more evenly than the capacity to perform well on timed multiple-choice exams.</em></p>
+        </div>
+      </div>
+      <!-- Pane: Argument Chain -->
+      <div class="sample-pane" id="pane-chain">
+        <h3>🔀 中文观点 → 英文 Argument Chain</h3>
+        <div class="pane-sub">最有价值的训练环节。把模糊的中文想法，转成有结构的英文 argument。</div>
+        <div class="pane-block">
+          <div class="block-title">🇨🇳 中文观点</div>
+          <p class="zh" style="font-size:15px;font-weight:600;background:var(--accent-bg);padding:14px;border-radius:6px;">「优绩主义的初衷是好的——奖励努力、鼓励奋斗。但当社会把『成功』完全归因于个人努力时，它忽视了一个基本事实：努力和天赋的分布是均匀的，但机会从来不是。真正的公平不是让所有人都相信『只要努力就能成功』，而是让努力的人——无论出身——都有接近成功的通道。」</p>
+        </div>
+        <div class="pane-block" style="background:var(--bg);">
+          <div class="block-title" style="color:var(--accent);">🏗️ English Core Concept</div>
+          <p class="en" style="font-size:14px;color:var(--slate);"><em>Meritocracy was well-intentioned — it rewards effort. But when societies attribute success entirely to individual effort, they ignore a basic truth: effort and talent are evenly distributed, but opportunity has never been. Real fairness is not convincing everyone they can succeed through hard work, but ensuring that those who work hard — regardless of background — have a pathway to success.</em></p>
+        </div>
+        <div class="pane-block" style="background:var(--bg);">
+          <div class="block-title" style="color:#16a34a;">⛓️ Causal Chain</div>
+          <p class="en" style="font-size:13.5px;background:var(--green-tint);padding:14px;border-radius:6px;line-height:1.9;">
+          <strong>Meritocratic belief</strong> (<em>"success = effort + talent"</em>)<br>
+          <span style="color:var(--accent);">→</span> <strong>Failure internalized</strong> (<em>setbacks attributed to personal inadequacy, not structural barriers</em>)<br>
+          <span style="color:var(--accent);">→</span> <strong>Chronic burnout</strong> (<em>37% higher burnout rate among meritocracy-internalizers, JAP 2024</em>)<br>
+          <span style="color:var(--accent);">→</span> <strong>Self-blame spiral</strong> (<em>burnout → feel inadequate → work harder → more burnout</em>)<br>
+          <span style="color:var(--accent);">→</span> <strong>Systemic illusion reinforced</strong> (<em>the cycle itself becomes evidence that the individual "wasn't good enough"</em>)
+          </p>
+        </div>
+        <div class="pane-block" style="background:var(--bg);">
+          <div class="block-title" style="color:#d97706;">⚖️ Weighing — 为什么「机会公平」比「奖励努力」更根本</div>
+          <p class="en" style="font-size:13.5px;background:var(--warm-bg);padding:14px;border-radius:6px;line-height:1.8;">
+          <strong>Rewarding effort</strong> is necessary but insufficient — effort alone cannot bridge gaps created by unequal starting points. A student working three part-time jobs is "working harder" than a student with tutors, but that effort is being <em>absorbed by survival</em>, not channeled into achievement.<br>
+          <strong>Equalizing opportunity</strong> — through early education investment, accessible mentorship, and structural support — addresses the <em>root asymmetry</em>. It does not guarantee equal outcomes, but it removes the moral burden of failure from those who never had a fair chance. <strong>You cannot tell someone they failed because they didn't try hard enough, when the race was never run on the same track.</strong>
+          </p>
+        </div>
+        <div class="pane-block" style="background:var(--accent-bg);">
+          <div class="block-title" style="color:var(--accent);">✍️ Sample Argument Paragraph</div>
+          <p class="en" style="font-size:14px;line-height:1.85;"><em>Meritocracy, <strong>for all its</strong> rhetorical appeal, has become <strong>a recipe for</strong> collective exhaustion rather than collective motivation. When a society frames every failure as a personal deficiency, it imposes what philosopher Michael Sandel calls <strong>the tyranny of merit</strong> — a system in which those who succeed feel entitled to their success, and those who fail are left not only with the consequences of failure, but with the shame of having "deserved" it. <strong>Critics counter that</strong> abandoning meritocracy would mean abandoning standards altogether — but this is a false choice. The alternative is not the rejection of excellence, but the recognition that <strong>talent is distributed far more evenly than opportunity ever has been</strong>. We do not need to stop rewarding effort; we need to stop <strong>confusing effort with virtue</strong> in a world where not everyone has the same capacity to convert effort into achievement.</em></p>
+          <p class="zh" style="font-size:12.5px;color:var(--muted);margin-top:10px;">📌 注意：这段用了全部 5 个今日表达（<strong>加粗标出</strong>），并且 thesis → causal chain → counter-argument → reframing → conclusion 一气呵成。注意最后一句的节奏：否定 + 肯定在同一句中完成，不拖泥带水。对比你自己的版本，找出差距。</p>
+        </div>
+      </div>
+      <!-- Pane: 输出任务 -->
+      <div class="sample-pane" id="pane-output">
+        <h3>✍️ 今日输出任务</h3>
+        <div class="pane-sub">TEM-8 / IELTS Task 2 / 课堂 presentation 风格。带结构指引和 self-check。</div>
+        <div class="pane-block">
+          <div class="block-title">写作任务（IELTS Task 2 / TEM-8 风格）</div>
+          <p class="zh" style="background:var(--accent-bg);padding:14px;border-radius:6px;font-weight:600;">Some people believe that in a fair society, success should be determined entirely by individual effort and talent. Others argue that external factors — such as family background, education quality, and social connections — play a far greater role, and that the belief in "pure" meritocracy is therefore harmful. Discuss both views and give your own opinion. <em>（建议 280–320 词）</em></p>
+        </div>
+        <div class="pane-block">
+          <div class="block-title">口语任务（IELTS Part 3 / 课堂 presentation）</div>
+          <p class="zh" style="background:var(--accent-bg);padding:14px;border-radius:6px;font-weight:600;">In your country, do young people generally believe that hard work guarantees success? Has this belief changed compared to your parents' generation? Why do you think so? <em>（建议 1.5–2 分钟）</em></p>
+        </div>
+        <div class="pane-block">
+          <div class="block-title">结构指引</div>
+          <ul class="checklist">
+            <li><strong>Step 1 — Thesis：</strong>不要直接说「我同意/不同意」。用 <code>for all its [appeal], X has become…</code> 句式开门见山，既承认对方合理之处，又立自己的论</li>
+            <li><strong>Step 2 — Causal chain：</strong>解释「为什么 meritocracy 会导致 burnout」。用 <code>a recipe for</code> 来总结因果关系</li>
+            <li><strong>Step 3 — Counter-argument：</strong>用 <code>critics counter that this is a false choice…</code> 结构，展示你的论证深度——不是简单反驳，而是重新定义问题的框架</li>
+            <li><strong>Step 4 — Conclusion：</strong>用 <code>confuse X with Y</code> 做最后的 punch line：指出我们混淆了什么，让文章以「概念澄清」收束</li>
+          </ul>
+        </div>
+        <div class="pane-block">
+          <div class="block-title">Self-check 清单——写完后逐条检查</div>
+          <ul class="checklist">
+            <li><strong>□ 概念界定：</strong>第一段有没有清晰地定义「meritocracy」？还是默认读者都知道你在说什么？</li>
+            <li><strong>□ 表达迁移：</strong>是否用了至少 4 个今日 Expression Bank 中的表达？它们的功能标签（因果论证/让步反驳/揭示本质）和你实际使用场景是否匹配？</li>
+            <li><strong>□ 结构完整：</strong>有没有 thesis → causal chain → counter-argument → reframing → conclusion 这五层？缺了任何一层，你的 argument 都会有缺口</li>
+            <li><strong>□ 修辞密度：</strong>有没有至少一处平行结构或 not-A-but-B 句式？如果没有，你的文章可能过于平铺直叙</li>
+            <li><strong>□ 去模板化：</strong>检查有没有 <code>with the development of society</code>、<code>every coin has two sides</code>、<code>as far as I am concerned</code> 等雅思模板——这些是高分作文的第一杀手</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 5. How It Works (Card Deck) ═══ -->
+<section class="how" id="how">
+  <div class="section-inner">
+    <div class="section-label fade-in">How It Works</div>
+    <h2 class="section-title fade-in">完整训练路径：Input → Noticing → Analysis → Output → Reuse</h2>
+    <p class="section-desc fade-in">不是「读了就行」——每一步都对准一个明确的输出能力。每期 20 分钟，完成一个完整闭环。点击卡片或键盘 ← → 切换。</p>
+    <div class="deck-wrapper">
+      <div class="deck-stage" id="deck-stage">
+        <!-- Card 01: Input -->
+        <div class="deck-card active" data-index="0">
+          <div class="step-num">Step 01 / 05</div>
+          <div class="step-en">INPUT</div>
+          <div class="step-cn">输入 — 建立语境，识别论证框架</div>
+          <div class="divider"></div>
+          <p>读今日议题背景（中文）+ 外刊核心段落（英文）。不依赖 VPN，中文背景帮你快速进入议题语境，在不查词典的前提下定位外刊段落的论证框架。</p>
+          <div class="en-quote">Read to notice, not just to understand.</div>
+        </div>
+        <!-- Card 02: Noticing -->
+        <div class="deck-card" data-index="1">
+          <div class="step-num">Step 02 / 05</div>
+          <div class="step-en">NOTICING</div>
+          <div class="step-cn">留意 — 训练识别 argument 结构的眼力</div>
+          <div class="divider"></div>
+          <p>主动标注外刊段落中 thesis / premise / evidence / counter-argument / conclusion 的位置。把「被动阅读」升级为「主动标注」，培养一眼看穿论证结构的习惯。</p>
+          <div class="en-quote">Find the skeleton beneath the prose.</div>
+        </div>
+        <!-- Card 03: Analysis -->
+        <div class="deck-card" data-index="2">
+          <div class="step-num">Step 03 / 05</div>
+          <div class="step-en">ANALYSIS</div>
+          <div class="step-cn">拆解 — 把「看懂了」变成「我能用」</div>
+          <div class="divider"></div>
+          <p>拆解 5 个可迁移表达（带 argument 功能标注 + register / collocation 详解）+ 1 个高级句型（语法结构 + 修辞功能 + 仿写模板）。每个表达都标注了「在什么论证场景里用它」。</p>
+          <div class="en-quote">Words by function, not by list.</div>
+        </div>
+        <!-- Card 04: Output -->
+        <div class="deck-card" data-index="3">
+          <div class="step-num">Step 04 / 05</div>
+          <div class="step-en">OUTPUT</div>
+          <div class="step-cn">输出 — 把学到的表达和结构用出来</div>
+          <div class="divider"></div>
+          <p>完成今日输出任务：专四 / 专八 / 雅思 Task 2 风格写作，或口语 Part 3 / Presentation 话题。附带结构指引 + 5 项 self-check 清单，确保你真正「产出了东西」。</p>
+          <div class="en-quote">From reading comprehension to argument production.</div>
+        </div>
+        <!-- Card 05: Reuse -->
+        <div class="deck-card" data-index="4">
+          <div class="step-num">Step 05 / 05</div>
+          <div class="step-en">REUSE</div>
+          <div class="step-cn">复用 — 一个表达，五个场景</div>
+          <div class="divider"></div>
+          <p>对照 sample answer 反思自己的输出差距。把今日表达存入个人 Expression Bank，同一个表达在环境议题、教育议题、科技议题中反复迁移使用。真正的 fluency 来自跨场景复用，而非一次性记忆。</p>
+          <div class="en-quote">One expression, five contexts, real fluency.</div>
+        </div>
+      </div>
+      <!-- Controls -->
+      <div class="deck-controls">
+        <button class="deck-btn" id="deck-prev" disabled aria-label="Previous">←</button>
+        <div class="deck-dots" id="deck-dots"></div>
+        <button class="deck-btn" id="deck-next" aria-label="Next">→</button>
+      </div>
+      <div class="deck-progress" id="deck-progress" style="margin-top:12px;">01 / 05</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 6. Who It Is For ═══ -->
+<section class="who" id="who">
+  <div class="section-inner">
+    <div class="section-label fade-in">Who It Is For</div>
+    <h2 class="section-title fade-in">适合谁</h2>
+    <p class="section-desc fade-in">不是给每个人的。如果你只是随便看看，这个产品可能不适合你。</p>
+    <div class="who-grid">
+      <div class="who-card fade-in">
+        <div class="who-icon">🎓</div>
+        <h3>英专生（TEM-4 / TEM-8）</h3>
+        <p>能读懂外刊大意，但写作/口语时感到「表达受限」。需要一个系统性的 argument 训练路径，而不只是更多精读材料。从中文想法到英文论证，每一期都在练专八真实考点。</p>
+        <div class="pain">「专八作文写来写去还是 simple sentences。」</div>
+      </div>
+      <div class="who-card fade-in">
+        <div class="who-icon">🌍</div>
+        <h3>IELTS 备考者（写作 6.0→7.5）</h3>
+        <p>Task 2 反复卡在 6.0。问题通常不在词汇量，而在 argument structure 和 cohesive devices 的使用。每期训练让你积累真正能在考场上复用的论证框架。</p>
+        <div class="pain">「写作一直 6.0，不知道怎么突破 7.0。」</div>
+      </div>
+      <div class="who-card fade-in">
+        <div class="who-icon">💬</div>
+        <h3>口语 Part 3 / Presentation 需求者</h3>
+        <p>Part 1–2 没问题，但 Part 3 被追问就「卡壳」。或者课堂 presentation 需要即兴发表有深度的英文观点。训练的是：听到抽象问题 → 快速搭建 argument chain 的能力。</p>
+        <div class="pain">「Part 3 一被追问就退回到 I think… because…」</div>
+      </div>
+      <div class="who-card fade-in">
+        <div class="who-icon">📚</div>
+        <h3>外刊精读营「毕业」学员</h3>
+        <p>跟完精读营，停下来不知道下一步学什么。ArgueLab 是精读的自然延伸——从「读懂这篇文章在说什么」到「这篇文章的 argument，我可以怎么用」。</p>
+        <div class="pain">「精读营学了很多，但自己写还是写不出来。」</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ Comparison ═══ -->
+<section class="compare" id="compare">
+  <div class="section-inner">
+    <div class="section-label fade-in">Why ArgueLab</div>
+    <h2 class="section-title fade-in">和普通外刊精读 / 新闻订阅的区别</h2>
+    <p class="section-desc fade-in">市面上的东西在教「这篇文章讲了什么」；ArgueLab 关心的是「这篇文章的论证方式，你能不能自己用出来」。</p>
+    <div class="compare-table">
+      <table>
+        <tr>
+          <th>对比维度</th>
+          <th>普通外刊精读</th>
+          <th>新闻订阅 / 词汇推送</th>
+          <th class="highlight-col">ArgueLab</th>
+        </tr>
+        <tr>
+          <td><strong>核心目标</strong></td>
+          <td>阅读理解</td>
+          <td>信息获取</td>
+          <td class="highlight-col"><span class="product-name">表达输出</span></td>
+        </tr>
+        <tr>
+          <td><strong>词汇处理</strong></td>
+          <td>逐字逐句翻译</td>
+          <td>单词表 + 释义</td>
+          <td class="highlight-col">collocations + argument 功能标注 + 仿写指引</td>
+        </tr>
+        <tr>
+          <td><strong>句型关注</strong></td>
+          <td>语法分析</td>
+          <td>无</td>
+          <td class="highlight-col">rhetorical structure + argument 功能 + 可迁移句式</td>
+        </tr>
+        <tr>
+          <td><strong>输出训练</strong></td>
+          <td>无 / 可选</td>
+          <td>无</td>
+          <td class="highlight-col"><span class="check">每期输出任务 + 结构指引 + self-check</span></td>
+        </tr>
+        <tr>
+          <td><strong>中文辅助</strong></td>
+          <td>全文翻译</td>
+          <td>无</td>
+          <td class="highlight-col">议题背景（中文）+ argument 分析（英文）——按需使用</td>
+        </tr>
+        <tr>
+          <td><strong>适用阶段</strong></td>
+          <td>中级学习者</td>
+          <td>泛读者</td>
+          <td class="highlight-col">高阶 / 英专 / TEM-8 / IELTS 7+</td>
+        </tr>
+        <tr>
+          <td><strong>用户主动度</strong></td>
+          <td>被动阅读</td>
+          <td>被动阅读</td>
+          <td class="highlight-col"><span class="check">主动输出 · 有训练闭环</span></td>
+        </tr>
+        <tr>
+          <td><strong>VPN 依赖</strong></td>
+          <td><span class="dash">通常需要</span></td>
+          <td><span class="dash">通常需要</span></td>
+          <td class="highlight-col"><span class="check">不需要——内容通过邮件发送</span></td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 7. Pricing / Beta Plan ═══ -->
+<section class="pricing" id="pricing">
+  <div class="section-inner">
+    <div class="section-label fade-in">Where We Are</div>
+    <h2 class="section-title fade-in">一起打磨这个产品</h2>
+    <p class="section-desc fade-in">ArgueLab 正在迭代中。目前接受 Beta 用户免费体验全部内容，你的反馈会直接影响产品方向。</p>
+    <div class="pricing-grid">
+      <div class="price-card featured">
+        <div class="price-name">Beta 内测 · 免费加入</div>
+        <div class="price-tag">¥0 <small>/ Beta 期间</small></div>
+        <div class="price-desc">加入即可在 Beta 阶段免费接收全部训练内容。</div>
+        <ul class="price-features">
+          <li>每周 3 期完整训练内容</li>
+          <li>议题背景（中文）+ 外刊核心段落</li>
+          <li>5 个可迁移表达 + 功能标注</li>
+          <li>1 个高级句型拆解 + 仿写模板</li>
+          <li>中文观点 → Argument Chain 引导</li>
+          <li>输出任务 + 结构指引 + self-check</li>
+        </ul>
+        <a href="#cta" class="price-btn price-btn-dark">免费加入</a>
+      </div>
+      <div class="price-card">
+        <div class="price-name">正式版 · 后续推出</div>
+        <div class="price-tag"><small>价格待定</small></div>
+        <div class="price-desc">Beta 结束后推出。将在现有基础上增加 AI 批改、Expression Bank 等进阶功能。</div>
+        <ul class="price-features">
+          <li>Beta 全部内容</li>
+          <li>输出任务 sample answer</li>
+          <li>AI argument structure 批改</li>
+          <li>Expression Bank 可搜索历史库</li>
+          <li>每周学习进度报告</li>
+          <li>Intensive Bootcamp（线下训练营）</li>
+        </ul>
+        <a href="#cta" class="price-btn price-btn-outline">持续关注</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 8. FAQ ═══ -->
+<section class="faq" id="faq">
+  <div class="section-inner">
+    <div class="section-label fade-in">FAQ</div>
+    <h2 class="section-title fade-in">常见问题</h2>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">ArgueLab 和外刊精读营有什么区别？<span class="faq-arrow">⌄</span></button>
+        <div class="faq-a">精读营的核心是「读懂」——逐字逐句翻译，帮你建立理解。ArgueLab 的核心是「输出」——用外刊的 argument 结构，训练你自己的表达能力。你可以把 ArgueLab 理解为一个「精读之后」的东西：当你不满足于读懂，但还不知道怎么把读到的变成自己能写能说的——这就是 ArgueLab 做的事。</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">ArgueLab 不适合谁？<span class="faq-arrow">⌄</span></button>
+        <div class="faq-a">实话实说——如果你想要的是：零基础学英语 / 单纯的外刊翻译或逐句精读 / 速成应试技巧 / 和老师实时互动——那这个产品不是你需要的。ArgueLab 适合的是已经能读懂大部分外刊、但想突破「有想法，说不清」瓶颈的人。如果还不确定自己属不属于这类，先试几期——不收钱，感受一下就知道了。</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">我的英语水平适合吗？<span class="faq-arrow">⌄</span></button>
+        <div class="faq-a">ArgueLab 面向进阶学习者——大致是 IELTS 6.0+ / 专四通过 / 能读懂外刊大意但「自己写/说」时感到受限的学习者。如果你还处于「每篇外刊有很多单词不认识」的阶段，建议先巩固基础再回来。Beta 阶段可以免费试用，判断是否适合。</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">每周几期？每期需要多少时间？<span class="faq-arrow">⌄</span></button>
+        <div class="faq-a">Beta 阶段每周 3 期（周一、周三、周五发送）。每期约 20 分钟：议题背景（3 分钟）+ 外刊段落（5 分钟）+ 表达+句型（7 分钟）+ 输出任务（5 分钟）。你可以灵活调整——但即使只做「表达+句型」部分，也是在积累 usable expressions。</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">需要 VPN 吗？需要打开外刊原文吗？<span class="faq-arrow">⌄</span></button>
+        <div class="faq-a">不需要。所有内容通过邮件发送，外刊段落已内嵌在邮件中，议题背景用中文撰写。你不需要访问任何外部网站就能完成一期完整的训练。当然，如果方便的话，我们也鼓励你去读原文——但这不是训练的必要条件。</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">Beta 阶段持续多久？什么时候收费？<span class="faq-arrow">⌄</span></button>
+        <div class="faq-a">Beta 预计持续 2–3 个月，期间完全免费。正式版推出时会有付费方案（预计 ¥29/月左右），Beta 用户届时会有优惠。我们会提前至少两周通知所有用户——你不会在不知情的情况下被收费。</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">和「每日英语听力」「流利说」这类产品有什么不同？<span class="faq-arrow">⌄</span></button>
+        <div class="faq-a">这些产品解决的是「听力/口语流利度」——让你听懂、开口。ArgueLab 解决的是另一个问题：当你已经能听懂、能开口，但想在考试或学术场合用英文表达有深度、有结构的观点时——怎么训练。两者并不冲突。如果你正在用那些产品练流利度，ArgueLab 可以补上「argument 表达」这一块。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 9. Signup / CTA ═══ -->
+<section class="cta" id="cta">
+  <div class="section-inner">
+    <div class="section-label fade-in" style="color:#93c5fd;">Try It</div>
+    <h2 class="section-title fade-in">试试看，不收钱</h2>
+    <p class="section-desc fade-in">Beta 阶段不收费。留下邮箱，收到邀请后第一期训练内容会直接发到你收件箱。下面的偏好调查是选填的——但填了能帮我把内容做得更对路。</p>
+    <div class="cta-form">
+      <div class="cta-row">
+        <input type="email" class="cta-input" placeholder="your@email.com" id="email-input" style="flex:1;">
+        <button class="btn-primary" onclick="subscribe(this)">免费加入</button>
+      </div>
+
+      <!-- Learning Preference Survey -->
+      <div class="survey-group">
+        <label>你的当前水平（选填）</label>
+        <select class="survey-select" id="survey-level">
+          <option value="">请选择…</option>
+          <option value="tem4">英语专四备考</option>
+          <option value="tem8">英语专八备考</option>
+          <option value="ielts6">IELTS 6.0–6.5 冲刺</option>
+          <option value="ielts7">IELTS 7.0+ 冲刺</option>
+          <option value="toefl">TOEFL 备考</option>
+          <option value="self">自学者 / 非考试需求</option>
+        </select>
+      </div>
+
+      <div class="survey-group">
+        <label>你最想提升的能力（可多选）</label>
+        <div class="survey-chips" id="survey-goals">
+          <span class="survey-chip" onclick="toggleChip(this)" data-value="essay">议论文写作</span>
+          <span class="survey-chip" onclick="toggleChip(this)" data-value="speaking">口语 express 观点</span>
+          <span class="survey-chip" onclick="toggleChip(this)" data-value="structure">Argument 结构思维</span>
+          <span class="survey-chip" onclick="toggleChip(this)" data-value="expression">高级表达积累</span>
+          <span class="survey-chip" onclick="toggleChip(this)" data-value="presentation">课堂 presentation</span>
+        </div>
+      </div>
+
+      <div class="survey-group">
+        <label>你感兴趣的话题领域（可多选）</label>
+        <div class="survey-chips" id="survey-topics">
+          <span class="survey-chip" onclick="toggleChip(this)" data-value="tech">科技与 AI</span>
+          <span class="survey-chip" onclick="toggleChip(this)" data-value="society">社会与文化</span>
+          <span class="survey-chip" onclick="toggleChip(this)" data-value="education">教育</span>
+          <span class="survey-chip" onclick="toggleChip(this)" data-value="environment">环境</span>
+          <span class="survey-chip" onclick="toggleChip(this)" data-value="politics">国际政治</span>
+          <span class="survey-chip" onclick="toggleChip(this)" data-value="economics">经济</span>
+        </div>
+      </div>
+    </div>
+    <p class="cta-note">不收钱 · 可随时退订 · 只发训练内容，不发广告</p>
+  </div>
+</section>
+
+<!-- ═══ Footer ═══ -->
+<!-- Mini CTA (floating bottom bar) -->
+<div class="mini-cta" id="mini-cta">
+  <p>ArgueLab Beta · <strong>免费内测中</strong></p>
+  <a href="#cta" class="btn-primary">免费加入 →</a>
+</div>
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">ArgueLab<small>From Reading to Argument.</small></div>
+    <div class="footer-links">
+      <a href="#">关于我们</a>
+      <a href="#">隐私政策</a>
+      <a href="#">联系我们</a>
+    </div>
+  </div>
+  <div class="footer-manifesto">ArgueLab 是一个由学习者创建、为学习者迭代的表达训练产品。我们认为：真正的外语能力，不是能读懂多少，而是能表达多少。</div>
+  <div class="footer-copy">© 2026 ArgueLab</div>
+</footer>
+
+<script>
+  /* ── 1. Tab switching with fade/slide animation ── */
+  function switchTab(btn, name) {
+    var oldPane = document.querySelector('.sample-pane.active');
+    var nextPane = document.getElementById('pane-' + name);
+    if (oldPane === nextPane) return;
+
+    // Update tab buttons
+    document.querySelectorAll('.sample-tab').forEach(function(t) { t.classList.remove('active'); });
+    btn.classList.add('active');
+
+    // Fade out current pane
+    if (oldPane) {
+      oldPane.classList.remove('anim-in');
+      oldPane.addEventListener('transitionend', function handler() {
+        oldPane.removeEventListener('transitionend', handler);
+        oldPane.classList.remove('active');
+        showNext();
+      });
+      // Fallback if transitionend doesn't fire
+      setTimeout(function() {
+        if (oldPane.classList.contains('active')) {
+          oldPane.classList.remove('active');
+          showNext();
+        }
+      }, 400);
+    } else {
+      showNext();
+    }
+
+    function showNext() {
+      nextPane.classList.add('active');
+      // Force reflow then animate in
+      nextPane.offsetHeight;
+      nextPane.classList.add('anim-in');
+    }
+  }
+
+  /* ── 2. FAQ smooth height toggle ── */
+  function toggleFaq(btn) {
+    var item = btn.parentElement;
+    var answer = item.querySelector('.faq-a');
+    var isOpen = item.classList.contains('open');
+
+    if (isOpen) {
+      // Close: set explicit height, then animate to 0
+      answer.style.maxHeight = answer.scrollHeight + 'px';
+      answer.offsetHeight; // force reflow
+      answer.style.maxHeight = '0px';
+      item.classList.remove('open');
+      // Clean up after transition
+      answer.addEventListener('transitionend', function h() {
+        answer.removeEventListener('transitionend', h);
+        answer.style.maxHeight = '';
+      });
+    } else {
+      // Open: set max-height to actual content height
+      item.classList.add('open');
+      answer.style.maxHeight = answer.scrollHeight + 'px';
+      // Clean up after transition
+      answer.addEventListener('transitionend', function h() {
+        answer.removeEventListener('transitionend', h);
+        answer.style.maxHeight = '';
+      });
+    }
+  }
+
+  /* ── 3. Chip toggle ── */
+  function toggleChip(chip) { chip.classList.toggle('selected'); }
+  function getSelectedChips(containerId) {
+    var chips = document.querySelectorAll('#' + containerId + ' .survey-chip.selected');
+    return Array.from(chips).map(function(c) { return c.getAttribute('data-value'); });
+  }
+
+  /* ── 4. Subscribe ── */
+  async function subscribe(btn) {
+    var email = document.getElementById('email-input').value.trim();
+    if (!email || !email.includes('@')) { alert('请输入有效的邮箱地址'); return; }
+    btn.textContent = '提交中…'; btn.disabled = true;
+    var surveyData = { email: email, level: document.getElementById('survey-level').value, goals: getSelectedChips('survey-goals'), topics: getSelectedChips('survey-topics') };
+    try {
+      var resp = await fetch('http://localhost:8080/api/subscribe', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(surveyData) });
+      var data = await resp.json();
+      if (data.success) { btn.textContent = '已加入 ✓'; btn.style.background = '#16a34a'; btn.style.borderColor = '#16a34a'; document.querySelector('.cta .section-desc').textContent = '检查你的收件箱！你的第一期训练内容即将发送。'; }
+      else { btn.textContent = data.error || '提交失败'; btn.disabled = false; setTimeout(function(){ btn.textContent = '免费加入'; }, 2000); }
+    } catch(e) { btn.textContent = '已加入 ✓ (Demo)'; btn.style.background = '#16a34a'; btn.style.borderColor = '#16a34a'; document.querySelector('.cta .section-desc').textContent = 'Demo 模式：订阅成功！部署后端服务后可正常使用。'; }
+  }
+
+  /* ── 5. Header scroll effect ── */
+  var header = document.querySelector('header');
+  var scrollTicking = false;
+  window.addEventListener('scroll', function() {
+    if (!scrollTicking) {
+      requestAnimationFrame(function() {
+        if (window.scrollY > 30) header.classList.add('scrolled');
+        else header.classList.remove('scrolled');
+        scrollTicking = false;
+      });
+      scrollTicking = true;
+    }
+  }, {passive: true});
+
+  /* ── 6. Nav section highlight ── */
+  (function() {
+    var navLinks = document.querySelectorAll('.nav-links a[data-section]');
+    var sections = [];
+    navLinks.forEach(function(a) {
+      var el = document.getElementById(a.getAttribute('data-section'));
+      if (el) sections.push({ link: a, el: el });
+    });
+    if (!sections.length) return;
+
+    var navTicking = false;
+    window.addEventListener('scroll', function() {
+      if (!navTicking) {
+        requestAnimationFrame(function() {
+          var scrollPos = window.scrollY + window.innerHeight / 3;
+          var active = null;
+          for (var i = 0; i < sections.length; i++) {
+            if (sections[i].el.offsetTop <= scrollPos) active = sections[i];
+          }
+          sections.forEach(function(s) { s.link.classList.toggle('active', s === active); });
+          navTicking = false;
+        });
+        navTicking = true;
+      }
+    }, {passive: true});
+  })();
+
+  /* ── 7. Mini CTA show/hide ── */
+  (function() {
+    var miniCta = document.getElementById('mini-cta');
+    if (!miniCta) return;
+    var pricingEl = document.getElementById('pricing');
+    var ctaEl = document.getElementById('cta');
+    var ticking = false;
+
+    window.addEventListener('scroll', function() {
+      if (!ticking) {
+        requestAnimationFrame(function() {
+          if (!pricingEl || !ctaEl) { ticking = false; return; }
+          var showAfter = pricingEl.offsetTop + pricingEl.offsetHeight * 0.6;
+          var hideAt = ctaEl.offsetTop - 100;
+          if (window.scrollY + window.innerHeight > showAfter && window.scrollY < hideAt) {
+            miniCta.classList.add('visible');
+          } else {
+            miniCta.classList.remove('visible');
+          }
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, {passive: true});
+  })();
+
+  /* ── 8. Card Deck ── */
+  (function(){
+    var cards = document.querySelectorAll('.deck-card');
+    var stage = document.getElementById('deck-stage');
+    var dotsContainer = document.getElementById('deck-dots');
+    var prevBtn = document.getElementById('deck-prev');
+    var nextBtn = document.getElementById('deck-next');
+    var progressEl = document.getElementById('deck-progress');
+    if (!cards.length || !dotsContainer) return;
+    var total = cards.length, idx = 0, dotEls = [];
+    function pad(n) { return n < 10 ? '0' + n : '' + n; }
+    for (var i = 0; i < total; i++) {
+      var d = document.createElement('button');
+      d.className = 'deck-dot' + (i === 0 ? ' active' : '');
+      d.setAttribute('aria-label', 'Jump to Step ' + (i + 1));
+      (function(j){ d.onclick = function(){ goTo(j); }; })(i);
+      dotsContainer.appendChild(d);
+      dotEls.push(d);
+    }
+    if (idx < total - 1) cards[idx + 1].classList.add('peek-right');
+    prevBtn.addEventListener('click', function(){ goTo(idx - 1); });
+    nextBtn.addEventListener('click', function(){ goTo(idx + 1); });
+    function syncHeight() {
+      if (!stage || window.innerWidth <= 768) { if (stage) stage.style.minHeight = ''; return; }
+      var h = cards[idx].offsetHeight;
+      stage.style.minHeight = (h + 80) + 'px';
+    }
+    function goTo(target) {
+      if (target < 0 || target >= total || target === idx) return;
+      for (var i = 0; i < total; i++) cards[i].classList.remove('active','peek-left','peek-right');
+      idx = target;
+      cards[idx].classList.add('active');
+      if (idx > 0) cards[idx - 1].classList.add('peek-left');
+      if (idx < total - 1) cards[idx + 1].classList.add('peek-right');
+      prevBtn.disabled = idx === 0;
+      nextBtn.disabled = idx === total - 1;
+      if (progressEl) progressEl.textContent = pad(idx + 1) + ' / ' + pad(total);
+      for (var j = 0; j < total; j++) dotEls[j].classList.toggle('active', j === idx);
+      syncHeight();
+    }
+    window.deckPrev = function(){ goTo(idx - 1); };
+    window.deckNext = function(){ goTo(idx + 1); };
+    document.addEventListener('keydown', function(e) {
+      var section = document.getElementById('how');
+      if (!section) return;
+      var rect = section.getBoundingClientRect();
+      if (rect.top < window.innerHeight && rect.bottom > 0) {
+        if (e.key === 'ArrowLeft') { e.preventDefault(); goTo(idx - 1); }
+        if (e.key === 'ArrowRight') { e.preventDefault(); goTo(idx + 1); }
+      }
+    });
+    if (stage) {
+      var tx0 = 0, ty0 = 0;
+      stage.addEventListener('touchstart', function(e){ tx0 = e.touches[0].clientX; ty0 = e.touches[0].clientY; }, {passive: true});
+      stage.addEventListener('touchend', function(e) {
+        var dx = e.changedTouches[0].clientX - tx0, dy = e.changedTouches[0].clientY - ty0;
+        if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) { if (dx < 0) goTo(idx + 1); else goTo(idx - 1); }
+      });
+    }
+    syncHeight();
+    window.addEventListener('resize', syncHeight);
+  })();
+
+  /* ── 9. Scroll reveal (fade-in on enter) ── */
+  (function() {
+    var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReduced) {
+      // Show everything immediately if user prefers reduced motion
+      document.querySelectorAll('.fade-in').forEach(function(el) { el.classList.add('visible'); });
+      return;
+    }
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.12, rootMargin: '0px 0px -30px 0px' });
+    document.querySelectorAll('.fade-in').forEach(function(el) { observer.observe(el); });
+  })();
+
+  /* ── 10. Smooth scroll for anchor links ── */
+  document.querySelectorAll('a[href^="#"]').forEach(function(a) {
+    a.addEventListener('click', function(e) {
+      e.preventDefault();
+      var target = document.querySelector(a.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+</script>
+</body>
+</html>

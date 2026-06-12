@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+*.pyo
+.env
+.env.local
+*.log
+.git/
+.gitignore
+README.md
+templates/
+index-mvp.html
+.DS_Store

@@ -1,0 +1,5 @@
+# ArgueLab — Subscription Backend
+# All core dependencies are Python stdlib.
+# These extras are for production convenience.
+python-dotenv>=1.0.0    # auto-load .env file
+feedparser>=6.0.0       # for guardian_agent.py RSS fetching

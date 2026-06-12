@@ -1,0 +1,29 @@
+# ArgueLab — compose file for single-command deployment
+# Usage:
+#   docker compose up -d              # start in background
+#   docker compose logs -f            # tail logs
+#   docker compose down               # stop and remove
+
+services:
+  arguelab:
+    build: .
+    container_name: arguelab
+    restart: unless-stopped
+    ports:
+      - "${PORT:-8080}:8080"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8080
+      - SMTP_HOST=${SMTP_HOST:-}
+      - SMTP_PORT=${SMTP_PORT:-587}
+      - SMTP_USER=${SMTP_USER:-}
+      - SMTP_PASS=${SMTP_PASS:-}
+      - SMTP_FROM=${SMTP_FROM:-ArgueLab <dispatch@arguelab.com>}
+    volumes:
+      # Persist subscriber data outside container
+      - ./data:/app/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/api/health')"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
