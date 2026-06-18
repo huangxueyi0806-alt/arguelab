@@ -15,7 +15,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application code
 COPY server.py .
 COPY static/ static/
-COPY data/ data/
 
 # Create a non-root user for security
 RUN useradd --create-home --shell /bin/bash arguelab && \
