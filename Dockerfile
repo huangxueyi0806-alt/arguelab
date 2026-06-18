@@ -6,22 +6,20 @@ ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-# ── Node.js 22 (prebuilt binary, no apt repo / setup script) ──
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends curl xz-utils \
-    && curl -fsSL https://nodejs.org/dist/v22.12.0/node-v22.12.0-linux-x64.tar.xz \
-       -o /tmp/node.tar.xz \
-    && tar -xJf /tmp/node.tar.xz -C /usr/local --strip-components=1 \
-    && rm /tmp/node.tar.xz \
+# ── System deps ──
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl ca-certificates \
+    libnss3 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 \
+    libxcomposite1 libxdamage1 libxrandr2 libgbm1 libasound2 \
+    libpango-1.0-0 libcairo2 \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# ── Chromium runtime deps (for Puppeteer headless) ──
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-       libnss3 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 \
-       libxcomposite1 libxdamage1 libxrandr2 libgbm1 libasound2 \
-       libpango-1.0-0 libcairo2 \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+# ── Node.js 22 (prebuilt binary) ──
+RUN curl -fsSL https://nodejs.org/dist/v22.12.0/node-v22.12.0-linux-x64.tar.xz \
+    -o /tmp/node.tar.xz \
+    && tar -xJf /tmp/node.tar.xz -C /usr/local --strip-components=1 \
+    && rm /tmp/node.tar.xz \
+    && node --version && npm --version
 
 # ── Python deps ──
 COPY requirements.txt .
@@ -38,8 +36,7 @@ COPY briefings/ briefings/
 COPY scripts/render-pdf.js scripts/render-pdf.js
 RUN mkdir -p /app/data /app/pdf
 
-RUN useradd --create-home --shell /bin/bash arguelab \
-    && chown -R arguelab:arguelab /app
+RUN useradd --create-home --shell /bin/bash arguelab && chown -R arguelab:arguelab /app
 USER arguelab
 
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
