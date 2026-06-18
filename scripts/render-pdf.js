@@ -20,8 +20,9 @@ const fs = require('fs');
 // ── Load puppeteer ──
 let puppeteer = null;
 const tryPaths = [
-  path.join(__dirname, '..', '..', 'arguelab-backend', 'node_modules', 'puppeteer'),
+  path.join(__dirname, 'node_modules', 'puppeteer-core'),
   path.join(__dirname, 'node_modules', 'puppeteer'),
+  'puppeteer-core',
   'puppeteer',
 ];
 
@@ -32,7 +33,7 @@ for (const p of tryPaths) {
 
 if (!puppeteer) {
   console.error('[pdf] ERROR: Puppeteer not found.\n' +
-    'Install it: cd subscription-product/scripts && npm install puppeteer');
+    'Install it: cd subscription-product/scripts && npm install puppeteer-core');
   process.exit(1);
 }
 
@@ -1979,6 +1980,7 @@ async function main() {
   try {
     browser = await puppeteer.launch({
       headless: true,
+      executablePath: process.env.CHROMIUM_PATH || '/usr/bin/chromium',
       args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-gpu'],
     });
     const page = await browser.newPage();

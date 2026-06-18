@@ -6,15 +6,12 @@ ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-# ── System deps ──
+# ── System deps: chromium (for PDF) + curl (for Node.js install) ──
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl ca-certificates \
-    libnss3 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 \
-    libxcomposite1 libxdamage1 libxrandr2 libgbm1 libasound2 \
-    libpango-1.0-0 libcairo2 \
+    curl ca-certificates chromium \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# ── Node.js 22 (prebuilt binary) ──
+# ── Node.js 22 (prebuilt binary, needed for Puppeteer) ──
 RUN curl -fsSL https://nodejs.org/dist/v22.12.0/node-v22.12.0-linux-x64.tar.xz \
     -o /tmp/node.tar.xz \
     && tar -xJf /tmp/node.tar.xz -C /usr/local --strip-components=1 \
@@ -25,7 +22,7 @@ RUN curl -fsSL https://nodejs.org/dist/v22.12.0/node-v22.12.0-linux-x64.tar.xz \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# ── Puppeteer ──
+# ── Puppeteer-core (no bundled Chromium — uses system chromium) ──
 COPY scripts/package.json scripts/package.json
 RUN cd /app/scripts && npm install
 
