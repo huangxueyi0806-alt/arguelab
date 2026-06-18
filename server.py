@@ -926,11 +926,18 @@ ISSUE_PAGE_CSS = r"""
     /* Shadows */
     --shadow: 0 18px 50px rgba(31,41,51,0.06);
     --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
+    --shadow-soft: 0 1px 3px rgba(0,0,0,0.06);
     /* Code */
     --code-bg: rgba(0,0,0,0.04);
     --code-text: #5E6673;
     --pre-bg: #F3F0E9;
     --pre-text: #5E6673;
+    /* Typography */
+    --font-serif: Georgia, "Times New Roman", "Noto Serif SC", "Songti SC", serif;
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+    --font-mono: "SF Mono", Menlo, Consolas, monospace;
+    /* Icons */
+    --icon-bg: rgba(59,110,168,0.08);
     /* Spacing */
     --section-gap: 72px;
     --card-radius: 14px;
@@ -990,13 +997,14 @@ ISSUE_PAGE_CSS = r"""
     --code-text: #B0B8C4;
     --pre-bg: rgba(0,0,0,0.25);
     --pre-text: #B0B8C4;
+    --shadow-soft: 0 1px 3px rgba(0,0,0,0.25);
+    --icon-bg: rgba(136,157,196,0.10);
   }
 
   /* ── Smooth theme transition ── */
   html { transition: background 0.3s ease; }
-  body {
-    transition: background 0.3s ease, color 0.3s ease;
-  }
+  body { transition: background 0.3s ease, color 0.3s ease; }
+  code, pre, .mono { font-family: var(--font-mono); }
   @media (prefers-reduced-motion: reduce) {
     html, body, *, *::before, *::after { transition: none !important; }
   }
@@ -1018,7 +1026,7 @@ ISSUE_PAGE_CSS = r"""
     background: var(--card-bg);
     color: var(--ink-dim);
     font-size: 12px;
-    font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    font-family: var(--font-sans);
     cursor: pointer;
     transition: all 0.2s ease;
     box-shadow: var(--shadow-sm);
@@ -1034,8 +1042,12 @@ ISSUE_PAGE_CSS = r"""
     outline-offset: 2px;
   }
   .theme-toggle .toggle-icon {
-    font-size: 15px;
-    line-height: 1;
+    width: 16px; height: 16px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ink-dim);
+  }
+  .theme-toggle .toggle-icon svg {
+    width: 16px; height: 16px;
   }
   .theme-toggle .toggle-label {
     letter-spacing: 0.04em;
@@ -1051,13 +1063,33 @@ ISSUE_PAGE_CSS = r"""
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
   body {
-    font-family: Georgia, 'Times New Roman', 'Noto Serif SC', 'PingFang SC', 'Microsoft YaHei', serif;
+    font-family: var(--font-sans);
     background: var(--bg);
     color: var(--ink);
     line-height: 1.85;
     font-size: 16px;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* ── Icon Mark (SVG icon component) ── */
+  .icon-mark {
+    width: 38px; height: 38px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center; justify-content: center;
+    background: var(--icon-bg);
+    border: 1px solid var(--border);
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+  .icon-mark svg {
+    width: 20px; height: 20px;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
   }
 
   /* ── Layout ── */
@@ -1111,7 +1143,7 @@ ISSUE_PAGE_CSS = r"""
     text-transform: uppercase;
     color: var(--ink-muted);
     margin-bottom: 24px;
-    font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    font-family: var(--font-sans);
   }
   .toc-list { list-style: none; padding: 0; }
   .toc-link {
@@ -1122,13 +1154,13 @@ ISSUE_PAGE_CSS = r"""
     color: var(--ink-muted);
     text-decoration: none;
     transition: color .2s ease, transform .2s ease;
-    font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    font-family: var(--font-sans);
     font-size: 13px;
   }
   .toc-num {
     font-size: 11px;
     font-weight: 700;
-    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    font-family: var(--font-mono);
     color: inherit;
     opacity: 0.5;
   }
@@ -1178,7 +1210,7 @@ ISSUE_PAGE_CSS = r"""
     margin-right: 8px;
     border-radius: 20px;
     font-size: 12px;
-    font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    font-family: var(--font-sans);
     color: var(--ink-muted);
     text-decoration: none;
     border: 1px solid var(--border);
@@ -1209,11 +1241,11 @@ ISSUE_PAGE_CSS = r"""
     letter-spacing: 0.18em;
     color: var(--accent);
     margin-bottom: 18px;
-    font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    font-family: var(--font-sans);
     text-transform: uppercase;
   }
   .issue-hero h1 {
-    font-family: Georgia, "Times New Roman", "Noto Serif SC", serif;
+    font-family: var(--font-serif);
     font-size: clamp(34px, 5vw, 54px);
     line-height: 1.08;
     letter-spacing: -0.035em;
@@ -1221,7 +1253,7 @@ ISSUE_PAGE_CSS = r"""
     margin: 0 0 18px;
   }
   .issue-title {
-    font-family: Georgia, "Times New Roman", "Noto Serif SC", serif;
+    font-family: var(--font-serif);
     font-size: 18px;
     line-height: 1.6;
     color: var(--ink-dim);
@@ -1234,7 +1266,7 @@ ISSUE_PAGE_CSS = r"""
     line-height: 1.6;
     color: var(--ink-muted);
     margin: 0;
-    font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    font-family: var(--font-sans);
   }
 
   /* ── Issue Sections ── */
@@ -1262,13 +1294,13 @@ ISSUE_PAGE_CSS = r"""
     border-radius: 10px;
     font-size: 14px;
     font-weight: 700;
-    font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    font-family: var(--font-sans);
     flex-shrink: 0;
   }
   .section-heading h2 {
     font-size: 20px;
     font-weight: 700;
-    font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    font-family: var(--font-sans);
     letter-spacing: -0.2px;
     line-height: 1.3;
   }
@@ -1311,7 +1343,7 @@ ISSUE_PAGE_CSS = r"""
     letter-spacing: 0.08em;
     text-transform: uppercase;
     font-weight: 700;
-    font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    font-family: var(--font-sans);
     border: 1px solid var(--border-strong);
     background: var(--card-bg);
     color: var(--ink-muted);
@@ -1378,7 +1410,7 @@ ISSUE_PAGE_CSS = r"""
     text-transform: uppercase;
     color: var(--accent);
     margin-bottom: 8px;
-    font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    font-family: var(--font-sans);
   }
   .source-list ul {
     list-style: none;
@@ -1457,7 +1489,7 @@ ISSUE_PAGE_CSS = r"""
     color: var(--ink-muted);
     font-style: italic;
     margin-bottom: 16px;
-    font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    font-family: var(--font-sans);
   }
 
   /* ── Passage Block ── */
@@ -1489,7 +1521,7 @@ ISSUE_PAGE_CSS = r"""
     padding: 2px 8px;
     border-radius: 4px;
     margin-right: 5px;
-    font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    font-family: var(--font-sans);
     letter-spacing: 0.3px;
     text-transform: uppercase;
     vertical-align: middle;
@@ -1535,13 +1567,13 @@ ISSUE_PAGE_CSS = r"""
     text-transform: uppercase;
     letter-spacing: 0.8px;
     margin-bottom: 6px;
-    font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    font-family: var(--font-sans);
   }
   .expr-card .expr-phrase {
     font-size: 17px;
     font-weight: 700;
     color: var(--ink);
-    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace;
+    font-family: var(--font-mono);
     margin-bottom: 8px;
     letter-spacing: -0.2px;
   }
@@ -1549,7 +1581,7 @@ ISSUE_PAGE_CSS = r"""
     font-size: 11px;
     color: var(--color-expression);
     margin-bottom: 12px;
-    font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    font-family: var(--font-sans);
     font-weight: 500;
     letter-spacing: 0.3px;
   }
@@ -1599,7 +1631,7 @@ ISSUE_PAGE_CSS = r"""
     text-transform: uppercase;
     letter-spacing: 1px;
     margin-bottom: 10px;
-    font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    font-family: var(--font-sans);
   }
   .target-sentence-card .ts-text {
     font-size: 17px;
@@ -1623,7 +1655,7 @@ ISSUE_PAGE_CSS = r"""
     text-transform: uppercase;
     letter-spacing: 1px;
     margin-bottom: 8px;
-    font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    font-family: var(--font-sans);
   }
   .why-card .why-text {
     font-size: 14px;
@@ -1646,7 +1678,7 @@ ISSUE_PAGE_CSS = r"""
     text-transform: uppercase;
     letter-spacing: 1px;
     margin-bottom: 8px;
-    font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    font-family: var(--font-sans);
   }
   .structure-card .struct-text {
     font-size: 14px;
@@ -1667,7 +1699,7 @@ ISSUE_PAGE_CSS = r"""
     text-transform: uppercase;
     letter-spacing: 1px;
     margin-bottom: 12px;
-    font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    font-family: var(--font-sans);
   }
 
   /* Grammar mini-cards */
@@ -1686,7 +1718,7 @@ ISSUE_PAGE_CSS = r"""
     font-weight: 700;
     color: var(--ink);
     margin-bottom: 6px;
-    font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    font-family: var(--font-sans);
   }
   .grammar-mini-card .gm-body {
     font-size: 14px;
@@ -1695,7 +1727,7 @@ ISSUE_PAGE_CSS = r"""
   }
   .grammar-mini-card .gm-code {
     display: block;
-    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    font-family: var(--font-mono);
     font-size: 13px;
     background: var(--pre-bg);
     padding: 10px 14px;
@@ -1724,10 +1756,10 @@ ISSUE_PAGE_CSS = r"""
     text-transform: uppercase;
     letter-spacing: 1px;
     margin-bottom: 10px;
-    font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    font-family: var(--font-sans);
   }
   .template-card .tpl-code {
-    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    font-family: var(--font-mono);
     font-size: 13px;
     background: var(--pre-bg);
     padding: 14px 18px;
@@ -1754,7 +1786,7 @@ ISSUE_PAGE_CSS = r"""
     text-transform: uppercase;
     letter-spacing: 1px;
     margin-bottom: 8px;
-    font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    font-family: var(--font-sans);
   }
   .imitation-card .imit-text {
     font-size: 15px;
@@ -1771,7 +1803,7 @@ ISSUE_PAGE_CSS = r"""
     background: var(--color-sentence-soft);
     padding: 4px 12px;
     border-radius: 6px;
-    font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    font-family: var(--font-sans);
     margin-top: 8px;
   }
 
@@ -1796,7 +1828,7 @@ ISSUE_PAGE_CSS = r"""
     text-transform: uppercase;
     letter-spacing: 1px;
     margin-bottom: 8px;
-    font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    font-family: var(--font-sans);
   }
   .chain-step .step-en {
     font-size: 16px;
@@ -1812,7 +1844,7 @@ ISSUE_PAGE_CSS = r"""
   }
   .chain-step .step-code {
     display: block;
-    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    font-family: var(--font-mono);
     font-size: 12px;
     background: var(--pre-bg);
     padding: 12px 16px;
@@ -1841,7 +1873,7 @@ ISSUE_PAGE_CSS = r"""
     text-transform: uppercase;
     letter-spacing: 1px;
     margin-bottom: 12px;
-    font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    font-family: var(--font-sans);
   }
   .weighing-card .weigh-text {
     font-size: 15px;
@@ -1867,7 +1899,7 @@ ISSUE_PAGE_CSS = r"""
     text-transform: uppercase;
     letter-spacing: 1px;
     margin-bottom: 10px;
-    font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    font-family: var(--font-sans);
   }
   .sample-paragraph-card .sp-text {
     font-size: 15px;
@@ -1905,7 +1937,7 @@ ISSUE_PAGE_CSS = r"""
     text-transform: uppercase;
     letter-spacing: 1px;
     margin-bottom: 12px;
-    font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    font-family: var(--font-sans);
   }
   .task-card .task-prompt {
     font-size: 15px;
@@ -1935,7 +1967,7 @@ ISSUE_PAGE_CSS = r"""
     text-transform: uppercase;
     letter-spacing: 1px;
     margin-bottom: 16px;
-    font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    font-family: var(--font-sans);
   }
   .guide-card .step-list {
     list-style: none;
@@ -1964,7 +1996,7 @@ ISSUE_PAGE_CSS = r"""
     color: var(--color-output);
     font-size: 11px;
     font-weight: 700;
-    font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    font-family: var(--font-sans);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1987,7 +2019,7 @@ ISSUE_PAGE_CSS = r"""
     text-transform: uppercase;
     letter-spacing: 1px;
     margin-bottom: 16px;
-    font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    font-family: var(--font-sans);
   }
   .check-card .checklist {
     list-style: none;
@@ -2115,7 +2147,7 @@ ISSUE_PAGE_CSS = r"""
 
   /* ── Code / Template / Pre ── */
   code {
-    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    font-family: var(--font-mono);
     background: var(--code-bg);
     padding: 2px 6px;
     border-radius: 4px;
@@ -2123,7 +2155,7 @@ ISSUE_PAGE_CSS = r"""
     color: var(--code-text);
   }
   pre {
-    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    font-family: var(--font-mono);
     background: var(--pre-bg);
     padding: 16px 20px;
     border-radius: 8px;
@@ -2136,7 +2168,7 @@ ISSUE_PAGE_CSS = r"""
     color: var(--pre-text);
   }
   .template-box {
-    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    font-family: var(--font-mono);
     font-size: 13px;
     background: var(--pre-bg);
     padding: 14px 18px;
@@ -2165,7 +2197,7 @@ ISSUE_PAGE_CSS = r"""
     margin-top: 48px;
   }
   .page-footer .brand {
-    font-family: Georgia, 'Times New Roman', 'Noto Serif SC', serif;
+    font-family: var(--font-serif);
     font-size: 20px;
     font-weight: 700;
     color: var(--ink);
@@ -2185,7 +2217,7 @@ ISSUE_PAGE_CSS = r"""
     font-weight: 600;
     padding: 3px 10px;
     border-radius: 5px;
-    font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    font-family: var(--font-sans);
     letter-spacing: 0.3px;
   }
   .highlight-chip.chip-context { background: var(--color-context-soft); color: var(--color-context); }
@@ -2353,7 +2385,7 @@ ISSUE_PAGE_CSS = r"""
     padding: 10px 22px;
     border-radius: 999px;
     font-size: 13px;
-    font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    font-family: var(--font-sans);
     font-weight: 600;
     letter-spacing: 0.3px;
     opacity: 0;
@@ -2486,7 +2518,7 @@ ISSUE_PAGE_CSS = r"""
     white-space: nowrap;
     z-index: 100;
     text-transform: none;
-    font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    font-family: var(--font-sans);
     box-shadow: 0 4px 16px rgba(0,0,0,0.18);
   }
   .arg-label .arg-tooltip::after {
@@ -2884,7 +2916,8 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
 (function() {
   var STORAGE_KEY = 'arguelab-theme';
   var toggleBtn = document.getElementById('theme-toggle-btn');
-  var toggleIcon = document.getElementById('toggle-icon');
+  var iconSun = document.getElementById('icon-sun');
+  var iconMoon = document.getElementById('icon-moon');
   var toggleLabel = document.getElementById('toggle-label');
   if (!toggleBtn) return;
 
@@ -2892,10 +2925,12 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem(STORAGE_KEY, theme);
     if (theme === 'dark') {
-      toggleIcon.innerHTML = '&#x263E;';
+      if (iconSun) iconSun.style.display = 'none';
+      if (iconMoon) iconMoon.style.display = 'block';
       toggleLabel.textContent = 'Dark Mode';
     } else {
-      toggleIcon.innerHTML = '&#x2600;';
+      if (iconSun) iconSun.style.display = 'block';
+      if (iconMoon) iconMoon.style.display = 'none';
       toggleLabel.textContent = 'Reading Mode';
     }
   }
@@ -3257,7 +3292,10 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
 <!-- Theme Toggle -->
 <div class="theme-toggle-wrapper">
   <button class="theme-toggle" id="theme-toggle-btn" aria-label="Toggle reading mode" title="Switch between Reading Mode and Dark Mode">
-    <span class="toggle-icon" id="toggle-icon">&#x2600;</span>
+    <span class="toggle-icon" id="toggle-icon">
+      <svg id="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      <svg id="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </span>
     <span class="toggle-label" id="toggle-label">Reading Mode</span>
   </button>
 </div>
