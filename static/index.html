@@ -90,6 +90,7 @@
 
   html { transition: background-color 0.3s ease, color 0.3s ease; }
   body { font-family: var(--font-sans); color: var(--ink); background: var(--bg); line-height: 1.75; -webkit-font-smoothing: antialiased; font-size: 15px; }
+  code, pre, .mono { font-family: var(--font-mono); }
   a { color: var(--accent); text-decoration: none; transition: color 0.2s; }
   a:hover { color: var(--accent-hover); }
 
@@ -135,6 +136,9 @@
   /* ── Section Commons ── */
   .section { padding: 96px 0; }
   .section-inner { width: min(1080px, calc(100% - 48px)); margin: 0 auto; }
+  .section-inner.wide { width: min(1180px, calc(100% - 48px)); }
+  .section-inner.narrow { width: min(820px, calc(100% - 40px)); }
+  .section-inner.reading { width: min(820px, calc(100% - 40px)); }
   .section-heading { margin-bottom: 48px; }
   .section-heading.centered { text-align: center; max-width: 720px; margin: 0 auto 48px; }
   .eyebrow { font-size: 10.5px; font-weight: 600; letter-spacing: 1.8px; text-transform: uppercase; color: var(--accent); font-family: var(--font-sans); margin-bottom: 10px; display: block; }
@@ -321,6 +325,14 @@
     transition: transform 0.25s ease, border-color 0.25s ease;
     display: flex; flex-direction: column; align-items: flex-start;
   }
+  .blueprint-item::after {
+    content: ''; position: absolute; top: 0; left: 26px; right: 26px;
+    height: 1px;
+    background: linear-gradient(90deg, var(--accent-subtle) 0%, var(--accent-glow) 50%, transparent 100%);
+    opacity: 0.5;
+    transition: opacity 0.25s ease;
+  }
+  .blueprint-item:hover::after { opacity: 1; }
   .blueprint-item:hover {
     transform: translateY(-3px);
     border-color: var(--accent-subtle);
@@ -350,6 +362,7 @@
     width: 100%; font-family: var(--font-sans);
   }
   .blueprint-example strong { color: var(--accent); font-weight: 600; }
+  .blueprint-example code { background: var(--accent-subtle); color: var(--accent); padding: 1px 6px; border-radius: 3px; font-size: 12px; font-family: var(--font-mono); }
 
   @media (max-width: 900px) {
     .briefing-blueprint { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -506,7 +519,8 @@
   .faq-item { border-bottom: 1px solid var(--border); }
   .faq-q { width: 100%; background: none; border: none; text-align: left; font-size: 15.5px; font-weight: 600; padding: 20px 0; cursor: pointer; display: flex; justify-content: space-between; align-items: center; color: var(--ink); font-family: var(--font-sans); transition: color 0.2s; }
   .faq-q:hover { color: var(--accent); }
-  .faq-arrow { font-size: 18px; transition: transform 0.25s; color: var(--muted); }
+  .faq-arrow { width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; transition: transform 0.25s; color: var(--muted); flex-shrink: 0; }
+  .faq-arrow svg { width: 14px; height: 14px; stroke: currentColor; stroke-width: 1.8; fill: none; stroke-linecap: round; stroke-linejoin: round; }
   .faq-a { font-size: 14.5px; color: var(--slate); line-height: 1.8; overflow: hidden; max-height: 0; transition: max-height 0.45s cubic-bezier(.22,1,.36,1); font-family: var(--font-sans); }
   .faq-item.open .faq-a { max-height: 800px; }
   .faq-item.open .faq-arrow { transform: rotate(180deg); }
@@ -1296,31 +1310,31 @@
     <h2 class="section-title fade-in">常见问题</h2>
     <div class="faq-list">
       <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">ArgueLab 和外刊精读营有什么区别？<span class="faq-arrow">⌄</span></button>
+        <button class="faq-q" onclick="toggleFaq(this)">ArgueLab 和外刊精读营有什么区别？<span class="faq-arrow"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></button>
         <div class="faq-a">精读营的核心是「读懂」——逐字逐句翻译，帮你建立理解。ArgueLab 的核心是「输出」——用英文高质量材料的 argument 结构，训练你自己的表达能力。你可以把 ArgueLab 理解为一个「精读之后」的东西：当你不满足于读懂，但还不知道怎么把读到的变成自己能写能说的——这就是 ArgueLab 做的事。</div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">ArgueLab 不适合谁？<span class="faq-arrow">⌄</span></button>
+        <button class="faq-q" onclick="toggleFaq(this)">ArgueLab 不适合谁？<span class="faq-arrow"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></button>
         <div class="faq-a">实话实说——如果你想要的是：零基础学英语 / 单纯的外刊翻译或逐句精读 / 速成应试技巧 / 和老师实时互动——那这个产品不是你需要的。ArgueLab 适合的是已经能读懂大部分外刊、但想突破「有想法，说不清」瓶颈的人。如果还不确定自己属不属于这类，先试几期——不收钱，感受一下就知道了。</div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">我的英语水平适合吗？<span class="faq-arrow">⌄</span></button>
+        <button class="faq-q" onclick="toggleFaq(this)">我的英语水平适合吗？<span class="faq-arrow"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></button>
         <div class="faq-a">ArgueLab 面向进阶学习者——大致是 IELTS 6.0+ / 专四通过 / 能读懂外刊大意但「自己写/说」时感到受限的学习者。如果你还处于「每篇外刊有很多单词不认识」的阶段，建议先巩固基础再回来。Beta 阶段可以免费试用，判断是否适合。</div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">每周几期？每期需要多少时间？<span class="faq-arrow">⌄</span></button>
+        <button class="faq-q" onclick="toggleFaq(this)">每周几期？每期需要多少时间？<span class="faq-arrow"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></button>
         <div class="faq-a">Beta 阶段每周 3 期（周一、周三、周五发送）。每期约 20 分钟：议题背景（3 分钟）+ 英文段落（5 分钟）+ 表达+句型（7 分钟）+ 输出任务（5 分钟）。你可以灵活调整——但即使只做「表达+句型」部分，也是在积累 usable expressions。</div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">需要访问外部网站吗？需要打开原文链接吗？<span class="faq-arrow">⌄</span></button>
+        <button class="faq-q" onclick="toggleFaq(this)">需要访问外部网站吗？需要打开原文链接吗？<span class="faq-arrow"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></button>
         <div class="faq-a">不需要。每份训练卡都包含完整的中文背景、英文核心材料、表达迁移、句型拆解、Argument Chain 和输出任务——你不需要访问任何外部网站就能完成一期完整的训练。原文链接如有提供，仅作为延伸阅读。</div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">Beta 阶段持续多久？什么时候收费？<span class="faq-arrow">⌄</span></button>
+        <button class="faq-q" onclick="toggleFaq(this)">Beta 阶段持续多久？什么时候收费？<span class="faq-arrow"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></button>
         <div class="faq-a">Beta 预计持续 2–3 个月，期间完全免费。正式版推出时会有付费方案（预计 ¥29/月左右），Beta 用户届时会有优惠。我们会提前至少两周通知所有用户——你不会在不知情的情况下被收费。</div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">和「每日英语听力」「流利说」这类产品有什么不同？<span class="faq-arrow">⌄</span></button>
+        <button class="faq-q" onclick="toggleFaq(this)">和「每日英语听力」「流利说」这类产品有什么不同？<span class="faq-arrow"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></button>
         <div class="faq-a">这些产品解决的是「听力/口语流利度」——让你听懂、开口。ArgueLab 解决的是另一个问题：当你已经能听懂、能开口，但想在考试或学术场合用英文表达有深度、有结构的观点时——怎么训练。两者并不冲突。如果你正在用那些产品练流利度，ArgueLab 可以补上「argument 表达」这一块。</div>
       </div>
     </div>
@@ -1531,13 +1545,16 @@
   function applyTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem(STORAGE_KEY, theme);
-    var icon = document.getElementById('theme-icon');
+    var iconSun = document.getElementById('icon-sun');
+    var iconMoon = document.getElementById('icon-moon');
     var label = document.getElementById('theme-label');
     if (theme === 'dark') {
-      if (icon) icon.textContent = '\u263e';
+      if (iconSun) iconSun.style.display = 'none';
+      if (iconMoon) iconMoon.style.display = '';
       if (label) label.textContent = 'Dark Mode';
     } else {
-      if (icon) icon.textContent = '\u2600\ufe0e';
+      if (iconSun) iconSun.style.display = '';
+      if (iconMoon) iconMoon.style.display = 'none';
       if (label) label.textContent = 'Reading Mode';
     }
   }

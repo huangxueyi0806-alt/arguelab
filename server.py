@@ -2295,8 +2295,238 @@ ISSUE_PAGE_CSS = r"""
     code { background: #f0f0f0; }
     pre, .template-box, .gm-code, .step-code, .tpl-code { background: #f0f0f0; }
   }
-"""
 
+  /* ═══════════════════════════════════════════
+     Interactive Features — Copy, Expand, Check
+     ═══════════════════════════════════════════ */
+
+  /* ── Copy Button ── */
+  .copy-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    color: var(--ink-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s ease, background 0.2s ease, color 0.2s ease;
+    z-index: 5;
+    font-size: 14px;
+    line-height: 1;
+  }
+  .copy-btn:hover {
+    background: var(--surface);
+    color: var(--ink);
+    border-color: var(--border-strong);
+  }
+  .copy-btn.copied {
+    color: #2e8b57;
+    border-color: rgba(46,139,87,0.30);
+    background: rgba(46,139,87,0.06);
+    opacity: 1 !important;
+  }
+  /* Show copy button on card hover */
+  .card-has-copy:hover .copy-btn,
+  .card-has-copy:focus-within .copy-btn,
+  .card-has-copy .copy-btn.copied {
+    opacity: 1;
+  }
+  @media (hover: none) {
+    .copy-btn { opacity: 0.6; }
+  }
+
+  /* ── Toast ── */
+  .interaction-toast {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--ink);
+    color: var(--bg);
+    padding: 10px 22px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    opacity: 0;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+    z-index: 9999;
+    pointer-events: none;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  }
+  .interaction-toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+
+  /* ── Card Hover Lift ── */
+  .expr-card, .passage-block, .target-sentence-card, .why-card,
+  .structure-card, .grammar-mini-card, .template-card, .imitation-card,
+  .chain-step, .weighing-card, .sample-paragraph-card, .task-card,
+  .guide-card, .check-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+  .expr-card:hover, .passage-block:hover, .target-sentence-card:hover,
+  .why-card:hover, .structure-card:hover, .grammar-mini-card:hover,
+  .template-card:hover, .imitation-card:hover, .chain-step:hover,
+  .weighing-card:hover, .sample-paragraph-card:hover, .task-card:hover,
+  .guide-card:hover, .check-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+  }
+  html[data-theme="dark"] .expr-card:hover,
+  html[data-theme="dark"] .passage-block:hover,
+  html[data-theme="dark"] .target-sentence-card:hover,
+  html[data-theme="dark"] .why-card:hover,
+  html[data-theme="dark"] .grammar-mini-card:hover,
+  html[data-theme="dark"] .template-card:hover,
+  html[data-theme="dark"] .imitation-card:hover,
+  html[data-theme="dark"] .chain-step:hover,
+  html[data-theme="dark"] .weighing-card:hover,
+  html[data-theme="dark"] .sample-paragraph-card:hover,
+  html[data-theme="dark"] .task-card:hover,
+  html[data-theme="dark"] .guide-card:hover,
+  html[data-theme="dark"] .check-card:hover {
+    box-shadow: 0 6px 28px rgba(0,0,0,0.32);
+  }
+
+  /* ── Self-Check Checklist ── */
+  .check-card .checklist li {
+    cursor: pointer;
+    transition: color 0.2s ease, background 0.2s ease;
+    border-radius: 6px;
+    margin: 0 -6px;
+    padding-left: 38px;
+    padding-right: 6px;
+  }
+  .check-card .checklist li:hover {
+    background: var(--color-check-soft);
+  }
+  .check-card .checklist li.checked {
+    color: var(--ink-muted);
+  }
+  .check-card .checklist li.checked::before {
+    background: var(--color-check);
+    border-color: var(--color-check);
+    content: '\2713';
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+  html[data-theme="dark"] .check-card .checklist li.checked::before {
+    color: var(--bg);
+  }
+  .check-card .checklist li.checked::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 1px;
+    background: var(--border);
+    opacity: 0.4;
+  }
+
+  /* ── Grammar Card Expand/Collapse ── */
+  .grammar-mini-card {
+    cursor: pointer;
+    position: relative;
+  }
+  .grammar-mini-card .gm-toggle {
+    position: absolute;
+    right: 16px;
+    top: 16px;
+    font-size: 18px;
+    color: var(--ink-muted);
+    transition: transform 0.25s ease;
+    line-height: 1;
+    pointer-events: none;
+  }
+  .grammar-mini-card.collapsed .gm-body,
+  .grammar-mini-card.collapsed .gm-code {
+    display: none;
+  }
+  .grammar-mini-card.collapsed .gm-toggle {
+    transform: rotate(-90deg);
+  }
+  .grammar-mini-card .gm-title {
+    padding-right: 28px;
+  }
+
+  /* ── Arg-Label Tooltip ── */
+  .arg-label {
+    cursor: help;
+    position: relative;
+  }
+  .arg-label .arg-tooltip {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--ink);
+    color: var(--bg);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+    z-index: 100;
+    text-transform: none;
+    font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+  }
+  .arg-label .arg-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: var(--ink);
+  }
+  .arg-label:hover .arg-tooltip,
+  .arg-label:focus .arg-tooltip,
+  .arg-label:active .arg-tooltip {
+    display: block;
+  }
+
+  /* ── Section Viewed Indicator ── */
+  .toc-link.viewed::before {
+    width: 18px;
+    opacity: 0.7;
+  }
+  .toc-link .toc-check {
+    display: inline-block;
+    width: 0;
+    overflow: hidden;
+    transition: width 0.3s ease, margin 0.3s ease;
+    font-size: 10px;
+    color: var(--color-chain);
+    margin-left: 0;
+  }
+  .toc-link.viewed .toc-check {
+    width: 14px;
+    margin-left: 4px;
+  }
+
+  /* ── Task Block Copy Button ── */
+  .task-block { position: relative; }
+  .task-block .copy-btn { top: 20px; right: 20px; }
+"""
 
 
 def _render_issue_page(md_text: str, issue_date: str = "") -> str:
@@ -2583,13 +2813,20 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
 
     # Source list (if sources were parsed)
     if sources:
-        src_items = "".join(f"<li>{_escape_html(s)}</li>" for s in sources if s)
+        src_items = ""
+        for s in sources:
+            s = s.strip()
+            if not s or s.startswith("*") and s.endswith("*"):
+                continue  # skip italic metadata lines
+            if s.startswith("```") or s == "---":
+                continue
+            src_items += "<li>{}</li>".format(_markdown_inline_to_html(s))
         if src_items:
             html_parts.append(
                 '<div class="source-list">'
                 '<div class="source-list-title">Sources Used in This Issue</div>'
-                f'<ul>{src_items}</ul>'
-                '</div>'
+                '<ul>{}</ul>'
+                '</div>'.format(src_items)
             )
 
     # Footer
@@ -2677,6 +2914,336 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
 })();
 </script>
 """
+    # ── Interaction JS ──
+    interaction_js = """
+<script>
+(function() {
+  var ISSUE_DATE = '""" + issue_date + """';
+
+  // ══════════════════════════════════════════
+  // 1. TOAST SYSTEM
+  // ══════════════════════════════════════════
+  var toastTimer = null;
+  function showToast(msg) {
+    var toast = document.getElementById('interaction-toast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'interaction-toast';
+      toast.className = 'interaction-toast';
+      document.body.appendChild(toast);
+    }
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function() {
+      toast.classList.remove('show');
+    }, 2000);
+  }
+
+  // ══════════════════════════════════════════
+  // 2. COPY TO CLIPBOARD
+  // ══════════════════════════════════════════
+  function makeCopyBtn(targetSelector, extractFn) {
+    return function() {
+      var btn = document.createElement('button');
+      btn.className = 'copy-btn';
+      btn.innerHTML = '&#x2398;';
+      btn.setAttribute('aria-label', 'Copy to clipboard');
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var text = extractFn(this.parentElement);
+        copyText(text, this);
+      });
+      return btn;
+    };
+  }
+
+  function copyText(text, btn) {
+    if (!text) return;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function() {
+        onCopySuccess(btn);
+      }).catch(function() {
+        fallbackCopy(text, btn);
+      });
+    } else {
+      fallbackCopy(text, btn);
+    }
+  }
+
+  function fallbackCopy(text, btn) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); onCopySuccess(btn); } catch(e) {}
+    document.body.removeChild(ta);
+  }
+
+  function onCopySuccess(btn) {
+    btn.classList.add('copied');
+    showToast('Copied \\u2713');
+    setTimeout(function() {
+      btn.classList.remove('copied');
+    }, 1500);
+  }
+
+  // Inject copy buttons into cards
+  function injectCopyButtons() {
+    // Expression phrase + example
+    document.querySelectorAll('.expr-card').forEach(function(card) {
+      card.classList.add('card-has-copy');
+      // Copy phrase
+      var phraseEl = card.querySelector('.expr-phrase');
+      if (phraseEl) {
+        var btn = document.createElement('button');
+        btn.className = 'copy-btn';
+        btn.innerHTML = '&#x2398;';
+        btn.setAttribute('aria-label', 'Copy expression');
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          copyText(phraseEl.textContent.trim(), btn);
+        });
+        card.appendChild(btn);
+      }
+    });
+
+    // Target sentence
+    document.querySelectorAll('.target-sentence-card').forEach(function(card) {
+      card.classList.add('card-has-copy');
+      var textEl = card.querySelector('.ts-text');
+      if (textEl) {
+        var btn = document.createElement('button');
+        btn.className = 'copy-btn';
+        btn.innerHTML = '&#x2398;';
+        btn.setAttribute('aria-label', 'Copy sentence');
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          copyText(textEl.textContent.trim(), btn);
+        });
+        card.appendChild(btn);
+      }
+    });
+
+    // Template card
+    document.querySelectorAll('.template-card').forEach(function(card) {
+      card.classList.add('card-has-copy');
+      var codeEl = card.querySelector('.tpl-code');
+      if (codeEl) {
+        var btn = document.createElement('button');
+        btn.className = 'copy-btn';
+        btn.innerHTML = '&#x2398;';
+        btn.setAttribute('aria-label', 'Copy template');
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          copyText(codeEl.textContent.trim(), btn);
+        });
+        card.appendChild(btn);
+      }
+    });
+
+    // Task prompts
+    document.querySelectorAll('.task-prompt').forEach(function(el) {
+      el.parentElement.classList.add('card-has-copy');
+      if (!el.parentElement.classList.contains('task-block')) {
+        el.parentElement.style.position = 'relative';
+      }
+      var btn = document.createElement('button');
+      btn.className = 'copy-btn';
+      btn.innerHTML = '&#x2398;';
+      btn.setAttribute('aria-label', 'Copy task prompt');
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        copyText(el.textContent.trim(), btn);
+      });
+      el.parentElement.appendChild(btn);
+    });
+
+    // Sample paragraph card
+    document.querySelectorAll('.sample-paragraph-card').forEach(function(card) {
+      card.classList.add('card-has-copy');
+      var textEl = card.querySelector('.sp-text');
+      if (textEl) {
+        var btn = document.createElement('button');
+        btn.className = 'copy-btn';
+        btn.innerHTML = '&#x2398;';
+        btn.setAttribute('aria-label', 'Copy paragraph');
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          copyText(textEl.textContent.trim(), btn);
+        });
+        card.appendChild(btn);
+      }
+    });
+  }
+
+  // ══════════════════════════════════════════
+  // 3. SELF-CHECK CHECKLIST TOGGLE
+  // ══════════════════════════════════════════
+  function initChecklist() {
+    var storageKey = 'arguelab-checks-' + ISSUE_DATE;
+    var checked = {};
+    try {
+      checked = JSON.parse(localStorage.getItem(storageKey)) || {};
+    } catch(e) {}
+
+    document.querySelectorAll('.check-card .checklist li').forEach(function(li, idx) {
+      var card = li.closest('.check-card');
+      var cardIdx = Array.from(card.parentElement.querySelectorAll('.check-card')).indexOf(card);
+      var key = cardIdx + '-' + idx;
+
+      // Restore state
+      if (checked[key]) {
+        li.classList.add('checked');
+      }
+
+      li.addEventListener('click', function() {
+        li.classList.toggle('checked');
+        checked[key] = li.classList.contains('checked');
+        try {
+          localStorage.setItem(storageKey, JSON.stringify(checked));
+        } catch(e) {}
+      });
+    });
+  }
+
+  // ══════════════════════════════════════════
+  // 4. GRAMMAR CARD EXPAND/COLLAPSE
+  // ══════════════════════════════════════════
+  function initGrammarToggle() {
+    var storageKey = 'arguelab-grammar-' + ISSUE_DATE;
+    var collapsed = {};
+    try {
+      collapsed = JSON.parse(localStorage.getItem(storageKey)) || {};
+    } catch(e) {}
+
+    document.querySelectorAll('.grammar-mini-card').forEach(function(card, idx) {
+      var toggle = document.createElement('span');
+      toggle.className = 'gm-toggle';
+      toggle.innerHTML = '&#x25BC;';
+      card.appendChild(toggle);
+
+      // Restore state
+      if (collapsed[idx] === false) {
+        // default: expanded
+      } else {
+        // default: collapsed
+        card.classList.add('collapsed');
+      }
+
+      card.addEventListener('click', function() {
+        card.classList.toggle('collapsed');
+        collapsed[idx] = !card.classList.contains('collapsed');
+        try {
+          localStorage.setItem(storageKey, JSON.stringify(collapsed));
+        } catch(e) {}
+      });
+    });
+  }
+
+  // ══════════════════════════════════════════
+  // 5. SECTION VIEWED TRACKING
+  // ══════════════════════════════════════════
+  function initSectionTracking() {
+    var storageKey = 'arguelab-viewed-' + ISSUE_DATE;
+    var viewed = {};
+    try {
+      viewed = JSON.parse(localStorage.getItem(storageKey)) || {};
+    } catch(e) {}
+
+    var sections = document.querySelectorAll('.issue-section');
+
+    // Apply initial viewed state
+    sections.forEach(function(sec, i) {
+      if (viewed[i]) {
+        markViewed(sec, i);
+      }
+    });
+
+    // Track on scroll
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          var idx = Array.from(sections).indexOf(entry.target);
+          if (idx >= 0) {
+            viewed[idx] = true;
+            markViewed(entry.target, idx);
+            try {
+              localStorage.setItem(storageKey, JSON.stringify(viewed));
+            } catch(e) {}
+          }
+        }
+      });
+    }, { threshold: 0.3 });
+
+    sections.forEach(function(sec) {
+      observer.observe(sec);
+    });
+  }
+
+  function markViewed(section, idx) {
+    section.classList.add('section-viewed');
+    var tocLink = document.querySelector('.toc-link[data-section="' + idx + '"]');
+    if (tocLink && !tocLink.classList.contains('viewed')) {
+      tocLink.classList.add('viewed');
+      var check = tocLink.querySelector('.toc-check');
+      if (!check) {
+        check = document.createElement('span');
+        check.className = 'toc-check';
+        check.innerHTML = '\\2713';
+        tocLink.appendChild(check);
+      }
+    }
+  }
+
+  // ══════════════════════════════════════════
+  // 6. ARG LABEL TOOLTIPS
+  // ══════════════════════════════════════════
+  function initArgTooltips() {
+    var labels = {
+      'Thesis': 'Main argument / central claim',
+      'Premise': 'Underlying reason / assumption',
+      'Evidence': 'Supporting data / examples',
+      'Counter-arg': 'Opposing viewpoint addressed',
+      'Conclusion': 'Summary / final position'
+    };
+
+    document.querySelectorAll('.arg-label').forEach(function(label) {
+      var text = label.textContent.trim();
+      // Extract label key
+      for (var key in labels) {
+        if (text.indexOf(key) >= 0 || key.indexOf(text) >= 0) {
+          var tt = document.createElement('span');
+          tt.className = 'arg-tooltip';
+          tt.textContent = labels[key];
+          label.appendChild(tt);
+          break;
+        }
+      }
+    });
+  }
+
+  // ══════════════════════════════════════════
+  // 7. INITIALIZE ALL
+  // ══════════════════════════════════════════
+  function init() {
+    injectCopyButtons();
+    initChecklist();
+    initGrammarToggle();
+    initSectionTracking();
+    initArgTooltips();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
+"""
 
     return f'''<!DOCTYPE html>
 <html lang="zh-CN" data-theme="light">
@@ -2702,6 +3269,7 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
 </div>
 {toc_js}
 {theme_js}
+{interaction_js}
 </body>
 </html>'''
 
@@ -2955,8 +3523,9 @@ def _render_passage_block(text: str) -> str:
 
         result_parts.append(line)
 
-    source_html = f'<p class="source-line">{_escape_html(source_line)}</p>' if source_line else ""
-    body_html = "<p>" + " ".join(result_parts) + "</p>"
+    source_html = f'<p class="source-line">{_markdown_inline_to_html(source_line)}</p>' if source_line else ""
+    body = " ".join(result_parts)
+    body_html = f'<p>{_markdown_inline_to_html(body)}</p>'
 
     return f'<div class="passage-block">{source_html}{body_html}</div>'
 
@@ -3022,15 +3591,25 @@ def _render_expression_section(text: str) -> str:
 def _render_expression_card(text: str) -> str:
     """Render a single expression card (### 表达 N).
 
-    Expected format:
+    Supports two actual briefing formats:
+
+    Format A (standard):
+    ### 表达 N
+    **`phrase`** `register label`
+    **`tag1 · tag2 · tag3`**
+
+    Plain CN explanation paragraph(s)...
+
+    **常见搭配：** collocation examples
+    **例句：** example sentence
+
+    Format B (compact-tags):
     ### 表达 N
     **紧凑标签：**`tag1 · tag2 · tag3`
-
     **`phrase`** `register label`
-
-    - CN explanation text
-    - **常见搭配：** collocation examples
-    - **例句：** example sentence
+    - CN explanation
+    - **常见搭配：**...
+    - **例句：**...
     """
     phrase = ""
     tags = ""
@@ -3041,7 +3620,9 @@ def _render_expression_card(text: str) -> str:
 
     lines = text.split("\n")
     i = 0
-    current_field = None  # Track which field we're currently appending to
+    current_field = None
+    phrase_found = False  # first **`...`** line is phrase, second is tags
+
     while i < len(lines):
         s = lines[i].strip()
 
@@ -3058,46 +3639,61 @@ def _render_expression_card(text: str) -> str:
             i += 1
             continue
 
-        # Compact tags line: **紧凑标签：**`...`
+        # ── Field-header lines: **常见搭配：** / **例句：** ──
+        if re.match(r'\*\*常见搭配[：:]', s):
+            collocations = re.sub(r'\*\*常见搭配[：:]\*\*\s*', '', s)
+            current_field = "colloc"
+            i += 1
+            continue
+        if re.match(r'\*\*例句[：:]', s):
+            example = re.sub(r'\*\*例句[：:]\*\*\s*', '', s)
+            current_field = "example"
+            i += 1
+            continue
+
+        # ── Format B: **紧凑标签：**`...` (tags line, implicit) ──
         if s.startswith("**紧凑标签：**"):
-            tags = re.sub(r'\*\*紧凑标签：\*\*\s*', '', s)
-            # Strip backticks
-            tags = tags.strip("`")
+            tags = re.sub(r'\*\*紧凑标签：\*\*\s*', '', s).strip("`")
             current_field = "tags"
+            phrase_found = True  # prevent subsequent phrase match from overwriting
             i += 1
             continue
 
-        # Phrase line: **`phrase`** `register` (or similar)
-        # Can be: **`conflate [A] with [B]`** `verb phrase`
-        if s.startswith("**`") or (s.startswith("**") and "`" in s[:40]):
-            # Extract the phrase from between the backticks inside bold
-            m = re.match(r'\*\*`(.+?)`\*\*', s)
-            if m:
-                phrase = m.group(1)
-            else:
-                # Fallback: strip all ** markers
-                phrase = re.sub(r'\*\*', '', s)
-                # Remove trailing register label
-                phrase = re.sub(r'`[^`]*`\s*$', '', phrase).strip()
-            current_field = "phrase"
+        # ── Phrase or tags line: **`...`** ──
+        if (s.startswith("**`") or (s.startswith("**") and "`" in s[:40])):
+            if not phrase_found:
+                # First **`...`** line → phrase
+                m = re.match(r'\*\*`(.+?)`\*\*', s)
+                if m:
+                    phrase = m.group(1)
+                else:
+                    phrase = re.sub(r'\*\*', '', s)
+                    phrase = re.sub(r'`[^`]*`\s*$', '', phrase).strip()
+                phrase_found = True
+                current_field = None  # next **`...`** will be tags
+            elif not tags:
+                # Second **...** line → tags (Format A: **`tag1 · tag2 · tag3`**)
+                tags = re.sub(r'\*\*', '', s).strip("`")
+                current_field = "tags"
             i += 1
             continue
 
-        # Bullet lines: content for explanation, collocations, or example
+        # ── Bullet lines ──
         if s.startswith("- "):
             content = s[2:]
-            # Check if it's a collocation line
-            if re.match(r'\*\*常见搭配[：:]', content) or re.match(r'\*\*Collocations?[：:]', content, re.IGNORECASE):
+            if re.match(r'\*\*常见搭配[：:]', content):
                 collocations = re.sub(r'\*\*常见搭配[：:]\*\*\s*', '', content)
-                collocations = re.sub(r'\*\*Collocations?[：:]\*\*\s*', '', collocations, flags=re.IGNORECASE)
                 current_field = "colloc"
-            elif re.match(r'\*\*例句[：:]', content) or re.match(r'\*\*Example[：:]', content, re.IGNORECASE):
+            elif re.match(r'\*\*例句[：:]', content):
                 example = re.sub(r'\*\*例句[：:]\*\*\s*', '', content)
-                example = re.sub(r'\*\*Example[：:]\*\*\s*', '', example, flags=re.IGNORECASE)
                 current_field = "example"
             elif not cn_explanation:
+                # First bullet → start CN explanation
                 cn_explanation = content
                 current_field = "cn"
+            elif current_field == "cn":
+                # Still in CN explanation (multiple bullets before 常见搭配)
+                cn_explanation += "\n" + content
             elif not collocations:
                 collocations = content
                 current_field = "colloc"
@@ -3107,17 +3703,26 @@ def _render_expression_card(text: str) -> str:
             i += 1
             continue
 
-        # Continuation lines (non-bullet, non-header) — append to current field
-        if current_field == "cn" and s:
-            cn_explanation += " " + s
-        elif current_field == "colloc" and s:
-            collocations += " " + s
-        elif current_field == "example" and s:
-            example += " " + s
-        # else: skip unrecognized lines
+        # ── Plain paragraph → CN explanation (Format A) ──
+        # Only capture first paragraph(s) before **常见搭配** / **例句**
+        if not cn_explanation and current_field not in ("colloc", "example"):
+            cn_explanation = s
+            current_field = "cn"
+            i += 1
+            continue
+
+        # ── Continuation lines ──
+        if s:
+            if current_field == "cn":
+                cn_explanation += " " + s
+            elif current_field == "colloc":
+                collocations += " " + s
+            elif current_field == "example":
+                example += " " + s
 
         i += 1
 
+    # ── Build HTML ──
     num_html = f'<div class="expr-num">Expression {card_num}</div>' if card_num else ""
     phrase_html = f'<div class="expr-phrase">{_escape_html(phrase)}</div>' if phrase else ""
     tags_html = f'<div class="expr-tags">{_escape_html(tags)}</div>' if tags else ""
@@ -3701,8 +4306,11 @@ def _render_output_tasks(text: str) -> str:
 
         # Legacy format: **口语任务...**
         if s.startswith("**口语任务") and not any(t["type"] == "Speaking Task" for t in tasks):
-            if not current_task:
-                current_task = {"type": "Speaking Task", "prompt": "", "guide": [], "check": [], "meta": ""}
+            # Flush the current (writing) task before creating the speaking task
+            if current_task:
+                tasks.append(current_task)
+                current_task = None
+            current_task = {"type": "Speaking Task", "prompt": "", "guide": [], "check": [], "meta": ""}
             prompt = re.sub(r'\*\*口语任务[（(][^)）]*[)）]\*\*\s*', '', s)
             prompt = re.sub(r'\*\*口语任务[：:]\*\*\s*', '', prompt)
             prompt = re.sub(r'\*\*口语任务[^*]*\*\*\s*', '', prompt)
@@ -3780,6 +4388,16 @@ def _render_output_tasks(text: str) -> str:
     # Flush last task
     if current_task:
         tasks.append(current_task)
+
+    # Post-processing: if tasks share guide/check (e.g. only the last task
+    # captured them), propagate to earlier tasks that are missing them.
+    if len(tasks) > 1:
+        last = tasks[-1]
+        for t in tasks[:-1]:
+            if not t["guide"] and last["guide"]:
+                t["guide"] = list(last["guide"])
+            if not t["check"] and last["check"]:
+                t["check"] = list(last["check"])
 
     # Build HTML
     html = []
