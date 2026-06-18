@@ -18,3 +18,11 @@ Thumbs.db
 
 # Docker
 *.log
+
+# Generated output
+output/
+pdf/
+
+# Script dependencies
+scripts/node_modules/
+scripts/package-lock.json
