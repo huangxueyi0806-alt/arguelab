@@ -730,6 +730,20 @@ def _extract_date_from_path(md_path: str) -> str:
     return m.group(1) if m else ""
 
 
+def _get_briefing_dir() -> Path:
+    """Return briefing directory, with fallback for Railway deployment.
+    
+    Local dev: BASE_DIR.parent / "guardian-agent" / "briefings"
+    Railway:   BASE_DIR / "briefings" (briefings are copied into the repo)
+    """
+    primary = BASE_DIR.parent / "guardian-agent" / "briefings"
+    if primary.exists():
+        return primary
+    fallback = BASE_DIR / "briefings"
+    if fallback.exists():
+        return fallback
+    return primary  # return primary anyway; caller handles non-existence
+
 def send_briefing_to_all(md_path: str, issue_number: int = 1, read_url: str = "", pdf_url: str = "") -> dict:
     """Read briefing markdown and send concise notification email to all subscribers.
     
@@ -912,68 +926,102 @@ ISSUE_PAGE_CSS = """
   }
 
   /* ── Layout ── */
-  .page-wrapper {
-    display: flex;
-    max-width: 1200px;
+  .issue-shell {
+    max-width: 1180px;
     margin: 0 auto;
-    padding: 0 24px;
-    gap: 48px;
-    position: relative;
+    padding: 96px 32px 80px;
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 72px;
+    align-items: start;
   }
-  .page {
-    flex: 1;
+  .issue-toc {
+    position: sticky;
+    top: 96px;
+    align-self: start;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+  }
+  .issue-main {
+    width: 100%;
     max-width: 760px;
-    min-width: 0;
+    margin: 0 auto;
+  }
+
+  /* Mobile: stack layout */
+  @media (max-width: 860px) {
+    .issue-shell {
+      display: block;
+      padding: 72px 20px 56px;
+    }
+    .issue-toc {
+      position: static;
+      max-height: none;
+      overflow: visible;
+      margin-bottom: 40px;
+    }
+    .issue-main {
+      max-width: 100%;
+    }
   }
 
   /* ── Sticky TOC (Desktop) ── */
-  .toc {
-    position: sticky;
-    top: 40px;
-    width: 180px;
-    flex-shrink: 0;
-    align-self: flex-start;
-    padding-top: 56px;
-    display: block;
+  .issue-toc {
+    color: #7E8A9D;
+    font-size: 13px;
   }
-  .toc-title {
+  .toc-label {
     font-size: 11px;
-    font-weight: 600;
-    color: var(--ink-muted);
+    letter-spacing: 0.18em;
     text-transform: uppercase;
-    letter-spacing: 1.5px;
-    margin-bottom: 16px;
+    color: #8A93A5;
+    margin-bottom: 24px;
     font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
   }
   .toc-list { list-style: none; padding: 0; }
-  .toc-item {
-    display: block;
-    padding: 7px 12px;
-    margin-bottom: 2px;
-    border-radius: 6px;
-    font-size: 13px;
-    font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
-    color: var(--ink-muted);
+  .toc-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    color: #748095;
     text-decoration: none;
-    transition: all 0.2s ease;
-    border-left: 2px solid transparent;
-    white-space: nowrap;
+    transition: color .2s ease, transform .2s ease;
+    font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    font-size: 13px;
   }
-  .toc-item:hover {
-    color: var(--ink-dim);
-    background: rgba(255,255,255,0.03);
+  .toc-num {
+    font-size: 11px;
+    font-weight: 700;
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    color: inherit;
+    opacity: 0.5;
   }
-  .toc-item.active {
-    color: var(--ink);
-    background: rgba(255,255,255,0.04);
-    font-weight: 600;
+  .toc-link::before {
+    content: "";
+    width: 12px;
+    height: 1px;
+    background: rgba(148, 163, 184, 0.4);
+    flex-shrink: 0;
   }
-  .toc-item.active.toc-context { border-left-color: var(--color-context); color: var(--color-context); }
-  .toc-item.active.toc-passage { border-left-color: var(--color-passage); color: var(--color-passage); }
-  .toc-item.active.toc-expression { border-left-color: var(--color-expression); color: var(--color-expression); }
-  .toc-item.active.toc-sentence { border-left-color: var(--color-sentence); color: var(--color-sentence); }
-  .toc-item.active.toc-chain { border-left-color: var(--color-chain); color: var(--color-chain); }
-  .toc-item.active.toc-output { border-left-color: var(--color-output); color: var(--color-output); }
+  .toc-link:hover { color: #D8E2F0; }
+  .toc-link.active { color: #D8E2F0; }
+  .toc-link.active::before {
+    background: #8FA7C8;
+    width: 22px;
+  }
+  .toc-link.toc-context.active { color: var(--color-context); }
+  .toc-link.toc-context.active::before { background: var(--color-context); width: 22px; }
+  .toc-link.toc-passage.active { color: var(--color-passage); }
+  .toc-link.toc-passage.active::before { background: var(--color-passage); width: 22px; }
+  .toc-link.toc-expression.active { color: var(--color-expression); }
+  .toc-link.toc-expression.active::before { background: var(--color-expression); width: 22px; }
+  .toc-link.toc-sentence.active { color: var(--color-sentence); }
+  .toc-link.toc-sentence.active::before { background: var(--color-sentence); width: 22px; }
+  .toc-link.toc-chain.active { color: var(--color-chain); }
+  .toc-link.toc-chain.active::before { background: var(--color-chain); width: 22px; }
+  .toc-link.toc-output.active { color: var(--color-output); }
+  .toc-link.toc-output.active::before { background: var(--color-output); width: 22px; }
 
   /* Mobile TOC (horizontal scroll) */
   .toc-mobile {
@@ -1009,44 +1057,48 @@ ISSUE_PAGE_CSS = """
   .toc-mobile .toc-chip.active.toc-chain { background: var(--color-chain-soft); border-color: var(--color-chain-border); color: var(--color-chain); }
   .toc-mobile .toc-chip.active.toc-output { background: var(--color-output-soft); border-color: var(--color-output-border); color: var(--color-output); }
 
+  @media (max-width: 860px) {
+    .issue-toc { display: none; }
+    .toc-mobile { display: block; }
+  }
+
   /* ── Hero ── */
-  .hero {
-    padding: 56px 0 40px;
+  .issue-hero {
     text-align: center;
-    border-bottom: 1px solid var(--divider);
-    margin-bottom: var(--section-gap);
+    padding: 40px 0 56px;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+    margin-bottom: 64px;
   }
-  .hero .slug {
-    font-size: 11px;
-    letter-spacing: 2px;
-    color: var(--color-passage);
-    text-transform: uppercase;
-    margin-bottom: 14px;
+  .issue-kicker {
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    color: #8FA7C8;
+    margin-bottom: 18px;
     font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    text-transform: uppercase;
   }
-  .hero h1 {
-    font-size: 28px;
-    font-weight: 700;
-    line-height: 1.35;
-    color: var(--ink);
-    margin-bottom: 10px;
-    letter-spacing: -0.3px;
-    max-width: 700px;
-    margin-left: auto;
-    margin-right: auto;
+  .issue-hero h1 {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(34px, 5vw, 54px);
+    line-height: 1.08;
+    letter-spacing: -0.035em;
+    color: #E8EDF5;
+    margin: 0 0 18px;
   }
-  .hero .topic-line {
-    font-size: 16px;
-    color: var(--ink-dim);
+  .issue-title {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 18px;
+    line-height: 1.6;
+    color: #B8C3D4;
     font-style: italic;
-    margin-bottom: 8px;
-    max-width: 640px;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 0 auto 16px;
+    max-width: 720px;
   }
-  .hero .meta {
-    font-size: 13px;
-    color: var(--ink-muted);
+  .issue-meta {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #7E8A9D;
+    margin: 0;
     font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
   }
 
@@ -1106,6 +1158,83 @@ ISSUE_PAGE_CSS = """
   .section-chain .section-heading h2 { color: var(--color-chain); }
   .section-output .section-badge { background: var(--color-output-soft); color: var(--color-output); }
   .section-output .section-heading h2 { color: var(--color-output); }
+
+  /* ── Source Badges ── */
+  .source-badge-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 10px 0 18px;
+  }
+  .source-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 9px;
+    border-radius: 999px;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 700;
+    font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    background: rgba(15, 23, 42, 0.42);
+  }
+  .source-badge.source {
+    color: #93C5FD;
+    border-color: rgba(147, 197, 253, 0.26);
+    background: rgba(59, 130, 246, 0.08);
+  }
+  .source-badge.training {
+    color: #F0C987;
+    border-color: rgba(240, 201, 135, 0.26);
+    background: rgba(245, 158, 11, 0.08);
+  }
+  .source-badge.ai {
+    color: #C4B5FD;
+    border-color: rgba(196, 181, 253, 0.26);
+    background: rgba(139, 92, 246, 0.08);
+  }
+  .source-badge.practice {
+    color: #86EFAC;
+    border-color: rgba(134, 239, 172, 0.24);
+    background: rgba(34, 197, 94, 0.08);
+  }
+  .source-note {
+    font-size: 13px;
+    line-height: 1.7;
+    color: #8390A3;
+    margin-top: -6px;
+    margin-bottom: 18px;
+  }
+
+  /* ── Source List (end of page) ── */
+  .source-list {
+    margin-top: 18px;
+    padding: 14px 16px;
+    border: 1px solid rgba(148, 163, 184, 0.14);
+    background: rgba(15, 23, 42, 0.30);
+    border-radius: 12px;
+  }
+  .source-list-title {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #8FA7C8;
+    margin-bottom: 8px;
+    font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  }
+  .source-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .source-list li {
+    font-size: 13px;
+    line-height: 1.65;
+    color: #95A1B4;
+    padding: 3px 0;
+  }
 
   /* ── Content Cards ── */
   .content-card {
@@ -1239,6 +1368,15 @@ ISSUE_PAGE_CSS = """
     transition: border-color 0.2s ease;
   }
   .expr-card:last-child { margin-bottom: 0; }
+  .expr-card .expr-num {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--color-expression);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 6px;
+    font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  }
   .expr-card .expr-phrase {
     font-size: 17px;
     font-weight: 700;
@@ -1896,18 +2034,18 @@ ISSUE_PAGE_CSS = """
 
   /* ── Responsive ── */
   @media (max-width: 960px) {
-    .toc { display: none; }
+    .issue-toc { display: none; }
     .toc-mobile { display: block; }
-    .page-wrapper { padding: 0; }
-    .page { max-width: 100%; padding: 0 16px; }
+    .issue-shell { padding: 72px 20px 56px; }
+    .issue-main { max-width: 100%; padding: 0; }
   }
 
   @media (max-width: 640px) {
-    .page-wrapper { padding: 0; }
-    .page { padding: 0 16px; }
-    .hero { padding: 40px 0 28px; }
-    .hero h1 { font-size: 22px; }
-    .hero .topic-line { font-size: 14px; }
+    .issue-shell { padding: 72px 16px 56px; }
+    .issue-main { padding: 0; }
+    .issue-hero { padding: 40px 0 28px; }
+    .issue-hero h1 { font-size: 22px; }
+    .issue-title { font-size: 14px; }
     .issue-section { margin-bottom: 52px; }
     .section-heading { gap: 10px; }
     .section-heading h2 { font-size: 17px; }
@@ -1956,12 +2094,12 @@ ISSUE_PAGE_CSS = """
       --section-gap: 32px;
     }
     body { font-size: 11pt; }
-    .page-wrapper { display: block; max-width: 100%; padding: 0; }
-    .toc, .toc-mobile { display: none !important; }
-    .page { max-width: 100%; padding: 0; }
-    .hero { padding: 20px 0 16px; }
-    .hero h1 { font-size: 18pt; }
-    .hero .topic-line { font-size: 12pt; }
+    .issue-shell { display: block; max-width: 100%; padding: 0; }
+    .issue-toc, .toc-mobile { display: none !important; }
+    .issue-main { max-width: 100%; padding: 0; }
+    .issue-hero { padding: 20px 0 16px; }
+    .issue-hero h1 { font-size: 18pt; }
+    .issue-title { font-size: 12pt; }
     .issue-section { margin-bottom: 28px; scroll-margin-top: 0; page-break-inside: avoid; }
     .section-heading { margin-bottom: 16px; padding-bottom: 10px; }
     .section-heading h2 { font-size: 14pt; }
@@ -2100,48 +2238,91 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
     # ── Render HTML ──
     html_parts = []
 
-    # TOC (desktop)
+    # TOC (desktop) — rendered as <aside> before main content
     toc_items = []
     for idx, (section_title, _) in enumerate(sections):
-        mod = MODULE_MAP[idx] if idx < len(MODULE_MAP) else "context"
+        if idx >= len(MODULE_MAP):
+            break  # Only show the 6 main modules in TOC
+        mod = MODULE_MAP[idx]
         toc_items.append(
-            '<li><a href="#section-{idx}" class="toc-item {toc_cls}" data-section="{idx}">'
+            '<li><a href="#section-{idx}" class="toc-link {toc_cls}" data-section="{idx}">'
             '<span class="toc-num">{num:02d}</span> {name}</a></li>'.format(
                 idx=idx, toc_cls=TOC_CLASSES.get(mod, ""),
                 num=idx + 1, name=MODULE_NAMES.get(mod, section_title)
             )
         )
 
-    html_parts.append(
-        '<nav class="toc"><div class="toc-title">In This Issue</div>'
-        '<ul class="toc-list">{}</ul></nav>'.format("".join(toc_items))
+    toc_desktop = (
+        '<aside class="issue-toc"><div class="toc-label">In This Issue</div>'
+        '<ul class="toc-list">{}</ul></aside>'.format("".join(toc_items))
     )
 
-    # Mobile TOC
+    # Mobile TOC (inside main content, sticky at top)
     mobile_chips = []
     for idx, (section_title, _) in enumerate(sections):
-        mod = MODULE_MAP[idx] if idx < len(MODULE_MAP) else "context"
+        if idx >= len(MODULE_MAP):
+            break
+        mod = MODULE_MAP[idx]
         mobile_chips.append(
             '<a href="#section-{idx}" class="toc-chip {toc_cls}" data-section="{idx}">{name}</a>'.format(
                 idx=idx, toc_cls=TOC_CLASSES.get(mod, ""),
                 name=MODULE_NAMES.get(mod, section_title)
             )
         )
-    html_parts.append(
-        '<nav class="toc-mobile">{}</nav>'.format("".join(mobile_chips))
-    )
+    mobile_toc = '<nav class="toc-mobile">{}</nav>'.format("".join(mobile_chips))
 
-    # Hero
-    html_parts.append(f'''<div class="hero">
-  <div class="slug">{_escape_html(issue_number)}</div>
+    # Mobile TOC (inside main content, sticky at top)
+    html_parts.insert(0, mobile_toc)
+    html_parts.append(f'''<div class="issue-hero">
+  <div class="issue-kicker">{_escape_html(issue_number)}</div>
   <h1>{_escape_html(title)}</h1>
-  <p class="topic-line">{_escape_html(topic_line)}</p>
-  <p class="meta">{_escape_html(date_str)} &middot; {_escape_html(training_focus)}</p>
+  <p class="issue-title">{_escape_html(topic_line)}</p>
+  <p class="issue-meta">{_escape_html(date_str)} &middot; {_escape_html(training_focus)}</p>
 </div>''')
+
+    # Default source badges per module type
+    DEFAULT_BADGES = {
+        "context": [
+            ("source", "SOURCE-BASED", "Based on cited public sources. Adapted for training."),
+            ("ai", "AI-ASSISTED SUMMARY", "Background based on public reporting and structured by ArgueLab."),
+        ],
+        "passage": [
+            ("training", "TRAINING PASSAGE", "Written in an editorial style for argument analysis. Not a verbatim excerpt."),
+            ("source", "SOURCE-BASED", "Based on cited public sources, adapted for training."),
+        ],
+        "expression": [
+            ("ai", "AI-ASSISTED ANALYSIS", "Expression functions and examples generated for transfer practice."),
+        ],
+        "sentence": [
+            ("ai", "AI-ASSISTED ANALYSIS", "Sentence structure and reusable templates generated for learning."),
+        ],
+        "chain": [
+            ("ai", "AI-ASSISTED ARGUMENT TRAINING", "Chinese-to-English argument chain generated for practice."),
+        ],
+        "output": [
+            ("practice", "USER PRACTICE", "Use this section to write, speak, and revise your own argument."),
+        ],
+    }
+
+    # Attempt to parse sources from markdown (look for Section 7 or "## 7" or "Sources")
+    sources = []
+    in_sources = False
+    for line in lines:
+        s = line.strip()
+        if re.match(r'^##\s+7\.', s) or re.match(r'^##\s+Sources', s, re.IGNORECASE):
+            in_sources = True
+            continue
+        if in_sources:
+            if s.startswith("## "):
+                in_sources = False
+            elif s and not s.startswith("#"):
+                sources.append(s)
 
     # Render each section
     for idx, (section_title, section_items) in enumerate(sections):
-        mod = MODULE_MAP[idx] if idx < len(MODULE_MAP) else "context"
+        if idx >= len(MODULE_MAP):
+            break  # Only render the 6 main modules
+        mod = MODULE_MAP[idx]
         section_num = idx + 1
 
         html_parts.append(
@@ -2157,6 +2338,27 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
             '<div><h2>{title}</h2></div>'
             '</div>'.format(num=section_num, title=_escape_html(section_title))
         )
+
+        # Source badges (default per module type)
+        badges = DEFAULT_BADGES.get(mod, [])
+        if badges:
+            badge_html = []
+            first_note = ""
+            for badge_type, badge_text, badge_note in badges:
+                badge_html.append(
+                    '<span class="source-badge {cls}">{text}</span>'.format(
+                        cls=badge_type, text=_escape_html(badge_text)
+                    )
+                )
+                if not first_note and badge_note:
+                    first_note = badge_note
+            html_parts.append(
+                '<div class="source-badge-row">{}</div>'.format("".join(badge_html))
+            )
+            if first_note:
+                html_parts.append(
+                    '<p class="source-note">{}</p>'.format(_escape_html(first_note))
+                )
 
         # For structured sections (passage, expression, sentence, chain, output),
         # combine all text into one block so specialized renderers can detect the full structure.
@@ -2195,6 +2397,17 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
 
         html_parts.append('</section>')
 
+    # Source list (if sources were parsed)
+    if sources:
+        src_items = "".join(f"<li>{_escape_html(s)}</li>" for s in sources if s)
+        if src_items:
+            html_parts.append(
+                '<div class="source-list">'
+                '<div class="source-list-title">Sources Used in This Issue</div>'
+                f'<ul>{src_items}</ul>'
+                '</div>'
+            )
+
     # Footer
     html_parts.append(f'''<div class="page-footer">
   <p class="brand">Argue<span>Lab</span></p>
@@ -2203,11 +2416,11 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
 
     body = "\n".join(html_parts)
 
-    # JS for TOC scroll spy
+  # JS for TOC scroll spy
     toc_js = """
 <script>
 (function() {
-  var tocItems = document.querySelectorAll('.toc-item, .toc-chip');
+  var tocItems = document.querySelectorAll('.toc-link, .toc-chip');
   var sections = document.querySelectorAll('.issue-section');
   if (!tocItems.length || !sections.length) return;
 
@@ -2253,10 +2466,11 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
 <style>{ISSUE_PAGE_CSS}</style>
 </head>
 <body>
-<div class="page-wrapper">
-<div class="page">
+<div class="issue-shell">
+{toc_desktop}
+<main class="issue-main">
 {body}
-</div>
+</main>
 </div>
 {toc_js}
 </body>
@@ -2300,13 +2514,13 @@ def _render_paragraph(text: str, module_type: str = "context") -> str:
         return f'<div class="guide-block">{guide_text}</div>'
 
     # --- Expression cards: ### 表达 N ---
-    # When the entire section is passed as combined text, there may be multiple
-    # expression cards separated by blank lines. Split and render each one.
-    if re.match(r'^###\s*表达\s*\d+', first_line):
-        return _render_expression_card(text)
-    # Also handle combined text with multiple expression cards + intro text
+    # When module_type is "expression", always use the section renderer
+    # which handles multiple cards. Only use single-card renderer for
+    # non-expression modules that happen to contain an expression card.
     if module_type == "expression" and re.search(r'^###\s*表达\s*\d+', text, re.MULTILINE):
         return _render_expression_section(text)
+    if re.match(r'^###\s*表达\s*\d+', first_line):
+        return _render_expression_card(text)
 
     # --- Sentence deconstruction: contains 目标句 / 结构拆解 / 语法点 ---
     if "**目标句**" in text or "**目标句：**" in text or "**结构拆解**" in text or "**结构拆解：**" in text or "**语法点" in text or "**语法要点" in text:
@@ -2594,15 +2808,22 @@ def _render_expression_card(text: str) -> str:
     cn_explanation = ""
     collocations = ""
     example = ""
+    card_num = ""
 
     lines = text.split("\n")
     i = 0
+    current_field = None  # Track which field we're currently appending to
     while i < len(lines):
         s = lines[i].strip()
-        # Skip the ### header
+
+        # Extract card number from ### header
         if s.startswith("###"):
+            m = re.match(r'^###\s*表达\s*(\d+)', s)
+            if m:
+                card_num = m.group(1)
             i += 1
             continue
+
         # Skip empty lines
         if not s:
             i += 1
@@ -2613,6 +2834,7 @@ def _render_expression_card(text: str) -> str:
             tags = re.sub(r'\*\*紧凑标签：\*\*\s*', '', s)
             # Strip backticks
             tags = tags.strip("`")
+            current_field = "tags"
             i += 1
             continue
 
@@ -2628,6 +2850,7 @@ def _render_expression_card(text: str) -> str:
                 phrase = re.sub(r'\*\*', '', s)
                 # Remove trailing register label
                 phrase = re.sub(r'`[^`]*`\s*$', '', phrase).strip()
+            current_field = "phrase"
             i += 1
             continue
 
@@ -2638,27 +2861,42 @@ def _render_expression_card(text: str) -> str:
             if re.match(r'\*\*常见搭配[：:]', content) or re.match(r'\*\*Collocations?[：:]', content, re.IGNORECASE):
                 collocations = re.sub(r'\*\*常见搭配[：:]\*\*\s*', '', content)
                 collocations = re.sub(r'\*\*Collocations?[：:]\*\*\s*', '', collocations, flags=re.IGNORECASE)
+                current_field = "colloc"
             elif re.match(r'\*\*例句[：:]', content) or re.match(r'\*\*Example[：:]', content, re.IGNORECASE):
                 example = re.sub(r'\*\*例句[：:]\*\*\s*', '', content)
                 example = re.sub(r'\*\*Example[：:]\*\*\s*', '', example, flags=re.IGNORECASE)
+                current_field = "example"
             elif not cn_explanation:
                 cn_explanation = content
+                current_field = "cn"
             elif not collocations:
                 collocations = content
+                current_field = "colloc"
             else:
                 example = content
+                current_field = "example"
             i += 1
             continue
 
+        # Continuation lines (non-bullet, non-header) — append to current field
+        if current_field == "cn" and s:
+            cn_explanation += " " + s
+        elif current_field == "colloc" and s:
+            collocations += " " + s
+        elif current_field == "example" and s:
+            example += " " + s
+        # else: skip unrecognized lines
+
         i += 1
 
+    num_html = f'<div class="expr-num">Expression {card_num}</div>' if card_num else ""
     phrase_html = f'<div class="expr-phrase">{_escape_html(phrase)}</div>' if phrase else ""
     tags_html = f'<div class="expr-tags">{_escape_html(tags)}</div>' if tags else ""
     cn_html = f'<div class="expr-cn">{_markdown_inline_to_html(cn_explanation)}</div>' if cn_explanation else ""
     colloc_html = f'<div class="expr-colloc">{_markdown_inline_to_html(collocations)}</div>' if collocations else ""
     ex_html = f'<div class="expr-example">{_markdown_inline_to_html(example)}</div>' if example else ""
 
-    return f'<div class="expr-card">{phrase_html}{tags_html}{cn_html}{colloc_html}{ex_html}</div>'
+    return f'<div class="expr-card">{num_html}{phrase_html}{tags_html}{cn_html}{colloc_html}{ex_html}</div>'
 
 
 def _render_sentence_decon(text: str) -> str:
@@ -3427,7 +3665,7 @@ class APIHandler(BaseHTTPRequestHandler):
             self._send_json({"status": "ok", "subscribers": len(load_subscribers()), "email_configured": bool(RESEND_API_KEY or SMTP_HOST)})
         elif self.path == "/api/preview":
             # Show latest briefing preview
-            briefing_dir = BASE_DIR.parent / "guardian-agent" / "briefings"
+            briefing_dir = _get_briefing_dir()
             if briefing_dir.exists():
                 files = sorted(briefing_dir.glob("*.md"), reverse=True)
                 if files:
@@ -3470,7 +3708,7 @@ class APIHandler(BaseHTTPRequestHandler):
         issue_date = date_match.group(1)
         
         # Find briefing file
-        briefing_dir = BASE_DIR.parent / "guardian-agent" / "briefings"
+        briefing_dir = _get_briefing_dir()
         briefing_file = briefing_dir / f"{issue_date}-briefing.md"
         
         if not briefing_file.exists():
