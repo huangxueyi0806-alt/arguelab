@@ -1,5 +1,4 @@
 # ArgueLab — Production Docker Image
-# Base: Python 3.12 slim + Node.js for Puppeteer PDF generation
 FROM python:3.12-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -7,17 +6,21 @@ ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-# ── Install Node.js 22 via NodeSource official script ──
-RUN apt-get update && apt-get install -y curl gnupg \
-    && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
-    && apt-get install -y nodejs \
-    && apt-get clean
+# ── Node.js 22 (prebuilt binary, no apt repo / setup script) ──
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends curl xz-utils \
+    && curl -fsSL https://nodejs.org/dist/v22.12.0/node-v22.12.0-linux-x64.tar.xz \
+       -o /tmp/node.tar.xz \
+    && tar -xJf /tmp/node.tar.xz -C /usr/local --strip-components=1 \
+    && rm /tmp/node.tar.xz \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # ── Chromium runtime deps (for Puppeteer headless) ──
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libnss3 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 \
-    libxcomposite1 libxdamage1 libxrandr2 libgbm1 libasound2 \
-    libpango-1.0-0 libcairo2 \
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+       libnss3 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 \
+       libxcomposite1 libxdamage1 libxrandr2 libgbm1 libasound2 \
+       libpango-1.0-0 libcairo2 \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # ── Python deps ──
@@ -26,7 +29,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # ── Puppeteer ──
 COPY scripts/package.json scripts/package.json
-RUN cd /app/scripts && npm install --omit=dev
+RUN cd /app/scripts && npm install
 
 # ── App code ──
 COPY server.py .
@@ -35,7 +38,8 @@ COPY briefings/ briefings/
 COPY scripts/render-pdf.js scripts/render-pdf.js
 RUN mkdir -p /app/data /app/pdf
 
-RUN useradd --create-home --shell /bin/bash arguelab && chown -R arguelab:arguelab /app
+RUN useradd --create-home --shell /bin/bash arguelab \
+    && chown -R arguelab:arguelab /app
 USER arguelab
 
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
