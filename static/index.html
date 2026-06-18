@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +7,50 @@
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   :root {
+    /* Typography */
+    --font-serif: Georgia, "Times New Roman", "Noto Serif SC", "Songti SC", serif;
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+    --font-mono: "SF Mono", Menlo, Consolas, monospace;
+
+    /* Core palette — Light / Reading Mode */
+    --ink: #1F2933;
+    --slate: #5E6673;
+    --muted: #8A8F98;
+    --accent: #3B6EA8;
+    --accent-hover: #2C5A8A;
+    --accent-subtle: rgba(59,110,168,0.08);
+    --accent-glow: rgba(59,110,168,0.10);
+    --warm: #A67C2E;
+    --warm-subtle: rgba(166,124,46,0.08);
+    --bg: #F7F4ED;
+    --bg-elevated: #EFECE5;
+    --card: #FFFFFF;
+    --card-hover: #FBF8F1;
+    --surface-elevated: #FFFFFF;
+    --border: #E5E0D5;
+    --border-hover: #C5C0B5;
+    --accent-bg: rgba(59,110,168,0.04);
+    --warm-bg: rgba(166,124,46,0.06);
+    --green-tint: rgba(110,168,120,0.06);
+    --on-accent: #FFFFFF;
+    --footer-bg: #EFECE5;
+    --footer-divider: rgba(0,0,0,0.08);
+    --error: #C44545;
+    --success: #2E8B57;
+    --header-bg: rgba(247,244,237,0.92);
+    --header-bg-scrolled: rgba(247,244,237,0.98);
+    --header-shadow: 0 1px 12px rgba(0,0,0,0.08);
+    --mini-cta-bg: rgba(239,236,229,0.96);
+    --mini-cta-shadow: 0 -4px 24px rgba(0,0,0,0.08);
+    --deck-card-bg: rgba(255,252,247,0.88);
+    --deck-card-active-bg: rgba(255,255,255,0.96);
+    --deck-card-shadow: 0 8px 48px rgba(0,0,0,0.08), 0 0 0 1px rgba(59,110,168,0.04) inset;
+    --deck-btn-bg: rgba(255,255,255,0.7);
+    --shadow-soft: 0 1px 3px rgba(0,0,0,0.06);
+    --icon-bg: rgba(59,110,168,0.08);
+  }
+
+  html[data-theme="dark"] {
     --ink: #e2e5ec;
     --slate: #959fb2;
     --muted: #6a7285;
@@ -20,46 +64,125 @@
     --bg-elevated: #11141c;
     --card: #141821;
     --card-hover: #1a1f2a;
+    --surface-elevated: #111722;
     --border: #1e2332;
     --border-hover: #2d3548;
     --accent-bg: rgba(136,157,196,0.06);
     --warm-bg: rgba(196,149,74,0.08);
     --green-tint: rgba(110,168,120,0.08);
-    --serif: 'Georgia', 'Noto Serif SC', serif;
-    --sans: -apple-system, 'Segoe UI', 'Noto Sans SC', sans-serif;
+    --on-accent: #0a0d12;
+    --footer-bg: #070a0f;
+    --footer-divider: rgba(30,35,50,0.4);
+    --error: #c47272;
+    --success: #6ea878;
+    --header-bg: rgba(10,13,18,0.88);
+    --header-bg-scrolled: rgba(10,13,18,0.96);
+    --header-shadow: 0 1px 12px rgba(0,0,0,0.35);
+    --mini-cta-bg: rgba(17,20,28,0.96);
+    --mini-cta-shadow: 0 -4px 24px rgba(0,0,0,0.4);
+    --deck-card-bg: rgba(20,24,33,0.68);
+    --deck-card-active-bg: rgba(20,24,33,0.88);
+    --deck-card-shadow: 0 8px 48px rgba(0,0,0,0.4), 0 0 0 1px rgba(136,157,196,0.06) inset;
+    --deck-btn-bg: rgba(20,24,33,0.6);
+    --shadow-soft: 0 1px 3px rgba(0,0,0,0.25);
+    --icon-bg: rgba(136,157,196,0.08);
   }
-  body { font-family: var(--sans); color: var(--ink); background: var(--bg); line-height: 1.75; -webkit-font-smoothing: antialiased; font-size: 15px; }
+
+  html { transition: background-color 0.3s ease, color 0.3s ease; }
+  body { font-family: var(--font-sans); color: var(--ink); background: var(--bg); line-height: 1.75; -webkit-font-smoothing: antialiased; font-size: 15px; }
   a { color: var(--accent); text-decoration: none; transition: color 0.2s; }
   a:hover { color: var(--accent-hover); }
 
+  /* ── Theme Toggle ── */
+  .theme-toggle-wrap {
+    position: fixed; top: 20px; right: 28px; z-index: 110;
+  }
+  .theme-toggle-btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 8px 16px; border-radius: 22px;
+    font-size: 12px; font-weight: 600; cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--slate);
+    font-family: var(--font-sans);
+    transition: all 0.25s;
+    letter-spacing: 0.04em;
+  }
+  .theme-toggle-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .theme-toggle-btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .theme-toggle-icon {
+    width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .theme-toggle-icon svg {
+    width: 16px; height: 16px;
+    stroke: currentColor; stroke-width: 1.7; fill: none;
+    stroke-linecap: round; stroke-linejoin: round;
+  }
+
+  @media (max-width: 768px) {
+    .theme-toggle-wrap { top: 18px; right: 20px; }
+    .theme-toggle-label { display: none; }
+    .theme-toggle-btn { padding: 8px 10px; border-radius: 50%; }
+  }
+
+  /* ── Section Commons ── */
+  .section { padding: 96px 0; }
+  .section-inner { width: min(1080px, calc(100% - 48px)); margin: 0 auto; }
+  .section-heading { margin-bottom: 48px; }
+  .section-heading.centered { text-align: center; max-width: 720px; margin: 0 auto 48px; }
+  .eyebrow { font-size: 10.5px; font-weight: 600; letter-spacing: 1.8px; text-transform: uppercase; color: var(--accent); font-family: var(--font-sans); margin-bottom: 10px; display: block; }
+  .section-label { font-size: 10.5px; font-weight: 600; letter-spacing: 1.8px; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; font-family: var(--font-sans); }
+  .section-title { font-family: var(--font-serif); font-size: clamp(24px, 3.2vw, 36px); font-weight: 700; margin-bottom: 14px; line-height: 1.25; letter-spacing: -0.3px; }
+  .section-desc { color: var(--slate); font-size: 15.5px; max-width: 560px; line-height: 1.7; font-family: var(--font-sans); }
+  .section-heading.centered .section-desc { margin-left: auto; margin-right: auto; }
+
+  /* ── Unified Icon Mark ── */
+  .icon-mark {
+    width: 38px; height: 38px; border-radius: 11px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--icon-bg); border: 1px solid var(--border);
+    color: var(--accent); flex-shrink: 0;
+  }
+  .icon-mark svg {
+    width: 19px; height: 19px;
+    stroke: currentColor; stroke-width: 1.7;
+    fill: none; stroke-linecap: round; stroke-linejoin: round;
+  }
+
   /* ── Header ── */
-  header { position: sticky; top: 0; z-index: 100; background: rgba(10,13,18,0.88); backdrop-filter: blur(18px); border-bottom: 1px solid var(--border); }
+  header { position: sticky; top: 0; z-index: 100; background: var(--header-bg); backdrop-filter: blur(18px); border-bottom: 1px solid var(--border); }
   .nav { max-width: 1080px; margin: 0 auto; padding: 0 28px; height: 62px; display: flex; align-items: center; justify-content: space-between; }
-  .logo { font-family: var(--serif); font-size: 20px; font-weight: 700; color: var(--ink); letter-spacing: -0.3px; }
+  .logo { font-family: var(--font-serif); font-size: 20px; font-weight: 700; color: var(--ink); letter-spacing: -0.3px; }
   .logo span { color: var(--accent); }
-  .logo-tagline { font-size: 10.5px; color: var(--muted); margin-left: 8px; font-family: var(--sans); font-weight: 400; letter-spacing: 0; display: inline-block; transform: translateY(-1px); }
-  .nav-links { display: flex; gap: 28px; font-size: 13.5px; color: var(--slate); }
+  .logo-tagline { font-size: 10.5px; color: var(--muted); margin-left: 8px; font-family: var(--font-sans); font-weight: 400; letter-spacing: 0; display: inline-block; transform: translateY(-1px); }
+  .nav-links { display: flex; gap: 28px; font-size: 13.5px; color: var(--slate); font-family: var(--font-sans); }
   .nav-links a { color: var(--slate); transition: color 0.2s; }
   .nav-links a:hover { color: var(--ink); text-decoration: none; }
-  .nav-cta { font-size: 13px; font-weight: 600; background: rgba(136,157,196,0.14); color: var(--accent); padding: 7px 16px; border-radius: 6px; transition: all 0.2s; border: 1px solid rgba(136,157,196,0.2); }
-  .nav-cta:hover { background: rgba(136,157,196,0.22); border-color: var(--accent); text-decoration: none; color: var(--accent-hover); }
-  header.scrolled { background: rgba(10,13,18,0.96); box-shadow: 0 1px 12px rgba(0,0,0,0.35); border-bottom-color: rgba(136,157,196,0.1); }
+  .nav-cta { font-size: 13px; font-weight: 600; background: var(--accent-subtle); color: var(--accent); padding: 7px 16px; border-radius: 6px; transition: all 0.2s; border: 1px solid var(--border-hover); font-family: var(--font-sans); letter-spacing: 0.04em; }
+  .nav-cta:hover { background: var(--accent-glow); border-color: var(--accent); text-decoration: none; color: var(--accent-hover); }
+  header.scrolled { background: var(--header-bg-scrolled); box-shadow: var(--header-shadow); border-bottom-color: var(--accent-subtle); }
   .nav-links a.active { color: var(--accent); }
 
   /* ── Hero ── */
-  .hero { position: relative; overflow: hidden; }
+  .hero { position: relative; overflow: hidden; padding: 0; }
   .hero::before {
     content: ''; position: absolute; inset: 0; pointer-events: none;
     background:
-      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(136,157,196,0.04) 0%, transparent 70%),
-      radial-gradient(ellipse 40% 50% at 85% 50%, rgba(136,157,196,0.025) 0%, transparent 70%);
+      radial-gradient(ellipse 80% 60% at 50% 0%, var(--accent-subtle) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 50% at 85% 50%, var(--accent-subtle) 0%, transparent 70%);
   }
-  /* subtle grid */
   .hero::after {
     content: ''; position: absolute; inset: 0; pointer-events: none;
     background-image:
-      linear-gradient(rgba(136,157,196,0.018) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(136,157,196,0.018) 1px, transparent 1px);
+      linear-gradient(var(--accent-subtle) 1px, transparent 1px),
+      linear-gradient(90deg, var(--accent-subtle) 1px, transparent 1px);
     background-size: 64px 64px;
     mask-image: radial-gradient(ellipse 65% 55% at 50% 25%, black 0%, transparent 70%);
     -webkit-mask-image: radial-gradient(ellipse 65% 55% at 50% 25%, black 0%, transparent 70%);
@@ -73,89 +196,84 @@
   .hero-badge {
     display: inline-flex; align-items: center; gap: 8px;
     font-size: 10.5px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
-    color: var(--accent); background: rgba(136,157,196,0.06);
+    color: var(--accent); background: var(--accent-subtle);
     padding: 5px 15px; border-radius: 20px; margin-bottom: 40px;
-    border: 1px solid rgba(136,157,196,0.08);
+    border: 1px solid var(--accent-subtle); font-family: var(--font-sans);
   }
   .hero-badge .bdot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
   .hero h1 {
-    font-family: var(--serif); font-weight: 700; line-height: 1.06; color: var(--ink);
+    font-family: var(--font-serif); font-weight: 700; line-height: 1.06; color: var(--ink);
     margin: 0 0 22px; letter-spacing: -1px;
   }
   .hero h1 .en { display: block; font-size: clamp(38px, 5.8vw, 68px); letter-spacing: -1.6px; }
   .hero h1 .cn {
     display: block; font-size: clamp(19px, 2.5vw, 26px); font-weight: 600;
     color: var(--slate); letter-spacing: 0; margin-top: 10px;
-    font-family: var(--sans); line-height: 1.5;
+    font-family: var(--font-sans); line-height: 1.5;
   }
   .hero-sub {
     font-size: 15px; color: var(--muted); max-width: 440px; line-height: 1.8; margin-bottom: 42px;
+    font-family: var(--font-sans);
   }
   .hero-cta { display: flex; gap: 12px; flex-wrap: wrap; }
-  .btn-primary { display: inline-flex; align-items: center; gap: 6px; background: var(--accent); color: #0a0d12; padding: 13px 28px; border-radius: 6px; font-size: 14.5px; font-weight: 600; border: none; cursor: pointer; transition: all 0.25s; font-family: var(--sans); }
-  .btn-primary:hover { background: var(--accent-hover); color: #0a0d12; text-decoration: none; }
-  .btn-outline { display: inline-flex; align-items: center; gap: 6px; background: transparent; color: var(--slate); padding: 13px 28px; border-radius: 6px; font-size: 14.5px; font-weight: 600; border: 1px solid var(--border); cursor: pointer; transition: all 0.25s; font-family: var(--sans); }
+  .btn-primary { display: inline-flex; align-items: center; gap: 6px; background: var(--accent); color: var(--on-accent); padding: 13px 28px; border-radius: 6px; font-size: 14.5px; font-weight: 600; border: none; cursor: pointer; transition: all 0.25s; font-family: var(--font-sans); letter-spacing: 0.04em; }
+  .btn-primary:hover { background: var(--accent-hover); color: var(--on-accent); text-decoration: none; }
+  .btn-outline { display: inline-flex; align-items: center; gap: 6px; background: transparent; color: var(--slate); padding: 13px 28px; border-radius: 6px; font-size: 14.5px; font-weight: 600; border: 1px solid var(--border); cursor: pointer; transition: all 0.25s; font-family: var(--font-sans); letter-spacing: 0.04em; }
   .btn-outline:hover { border-color: var(--accent); color: var(--accent-hover); text-decoration: none; }
 
   /* Right panel — argument lab card */
   .hero-right { display: flex; align-items: center; justify-content: center; }
   .arg-card {
     width: 100%; max-width: 420px;
-    background: rgba(20,24,33,0.64);
+    background: var(--deck-card-bg);
     backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px);
-    border: 1px solid rgba(136,157,196,0.07);
+    border: 1px solid var(--accent-subtle);
     border-radius: 14px; padding: 44px 38px 38px;
     position: relative; overflow: hidden;
   }
   .arg-card::before {
     content: ''; position: absolute; top: -1px; left: 44px; right: 44px;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(136,157,196,0.18), transparent);
+    background: linear-gradient(90deg, transparent, var(--accent-glow), transparent);
   }
   .arg-card .arg-label {
     font-size: 9px; font-weight: 600; letter-spacing: 2px;
     text-transform: uppercase; color: var(--muted); margin-bottom: 30px;
-    font-family: var(--sans);
+    font-family: var(--font-sans);
   }
   .arg-card .arg-step {
     display: flex; align-items: flex-start; gap: 14px; margin-bottom: 14px;
     padding: 12px 16px; border-radius: 8px;
-    background: rgba(136,157,196,0.025);
-    border-left: 2px solid rgba(136,157,196,0.12);
+    background: var(--accent-subtle);
+    border-left: 2px solid var(--accent-subtle);
     transition: border-color 0.35s, background 0.35s;
     position: relative; z-index: 1;
   }
   .arg-card .arg-step:last-child { margin-bottom: 0; }
   .arg-card .arg-step:hover {
     border-left-color: var(--accent);
-    background: rgba(136,157,196,0.06);
+    background: var(--accent-bg);
   }
   .arg-step .step-icon {
     width: 26px; height: 26px; border-radius: 7px;
-    background: rgba(136,157,196,0.08);
+    background: var(--accent-subtle);
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0; font-size: 11px; color: var(--accent);
-    font-family: var(--serif); font-weight: 700;
+    font-family: var(--font-serif); font-weight: 700;
   }
   .arg-step .step-body { flex: 1; min-width: 0; }
   .arg-step .step-head {
     font-size: 10.5px; font-weight: 600; color: var(--accent);
-    letter-spacing: 0.6px; margin-bottom: 3px; font-family: var(--sans);
+    letter-spacing: 0.04em; margin-bottom: 3px; font-family: var(--font-sans);
   }
-  .arg-step .step-text {
-    font-size: 12.5px; color: var(--slate); line-height: 1.6;
-  }
-  .arg-step .step-text em {
-    font-style: italic; color: #c8cfde;
-  }
+  .arg-step .step-text { font-size: 12.5px; color: var(--slate); line-height: 1.6; font-family: var(--font-sans); }
   .arg-card .arg-glow {
     position: absolute; top: 50%; right: -60px; transform: translateY(-50%);
     width: 160px; height: 160px; border-radius: 50%;
-    background: radial-gradient(circle, rgba(136,157,196,0.05) 0%, transparent 70%);
+    background: radial-gradient(circle, var(--accent-subtle) 0%, transparent 70%);
     pointer-events: none;
   }
 
-  /* ── Responsive: Hero ── */
   @media (max-width: 768px) {
     .hero-inner { grid-template-columns: 1fr; gap: 44px; padding: 100px 24px 64px; text-align: center; }
     .hero h1 .en { font-size: clamp(30px, 9vw, 42px); }
@@ -167,97 +285,139 @@
     .arg-card::before { left: 28px; right: 28px; }
   }
 
-  /* ── Metrics Strip ── */
+  /* ── Metrics ── */
   .metrics { background: var(--bg-elevated); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 40px 0; }
-  .metrics-inner { max-width: 1080px; margin: 0 auto; padding: 0 28px; display: flex; justify-content: center; gap: 72px; flex-wrap: wrap; text-align: center; }
-  .metric-num { font-family: var(--serif); font-size: 34px; font-weight: 700; color: var(--accent); line-height: 1.1; }
-  .metric-num small { font-size: 16px; font-weight: 400; color: var(--muted); }
-  .metric-label { font-size: 12.5px; color: var(--slate); margin-top: 5px; letter-spacing: 0.3px; }
-
-  /* ── Section commons ── */
-  .section-inner { max-width: 1080px; margin: 0 auto; padding: 0 28px; }
-  .section-label { font-size: 10.5px; font-weight: 600; letter-spacing: 1.8px; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
-  .section-title { font-family: var(--serif); font-size: clamp(24px, 3.2vw, 36px); font-weight: 700; margin-bottom: 14px; line-height: 1.25; letter-spacing: -0.3px; }
-  .section-desc { color: var(--slate); font-size: 15.5px; max-width: 560px; line-height: 1.7; }
+  .metrics-inner { max-width: 1080px; margin: 0 auto; padding: 0 28px; display: flex; justify-content: center; align-items: center; gap: 72px; flex-wrap: wrap; text-align: center; }
+  .metric-num { font-family: var(--font-serif); font-size: 34px; font-weight: 700; color: var(--accent); line-height: 1.1; }
+  .metric-num small { font-size: 16px; font-weight: 400; color: var(--muted); font-family: var(--font-sans); }
+  .metric-label { font-size: 12.5px; color: var(--slate); margin-top: 5px; letter-spacing: 0.3px; font-family: var(--font-sans); }
 
   /* ── Why This Exists ── */
   .why { padding: 96px 0; background: var(--bg-elevated); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-  .why-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 24px; margin-top: 48px; }
-  .why-card { padding: 32px 28px; border: 1px solid var(--border); border-radius: 8px; background: var(--card); transition: all 0.3s ease; }
-  .why-card:hover { border-color: rgba(136,157,196,0.25); background: var(--card-hover); transform: translateY(-3px); box-shadow: 0 8px 32px rgba(0,0,0,0.25), 0 0 0 1px rgba(136,157,196,0.1); }
-  .why-num { font-size: 10.5px; font-weight: 600; letter-spacing: 1.2px; color: var(--muted); text-transform: uppercase; margin-bottom: 16px; }
-  .why-card h3 { font-size: 16.5px; font-weight: 700; margin-bottom: 10px; line-height: 1.35; }
-  .why-card p { font-size: 14px; color: var(--slate); line-height: 1.7; }
-  .why-card .cn { font-size: 12.5px; color: var(--muted); margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
+  .why-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; margin-top: 48px; justify-items: center; }
+  .why-card { padding: 32px 28px; border: 1px solid var(--border); border-radius: 18px; background: var(--surface-elevated); box-shadow: var(--shadow-soft); transition: all 0.3s ease; width: 100%; box-sizing: border-box; }
+  .why-card:hover { border-color: var(--accent-subtle); background: var(--card-hover); transform: translateY(-3px); }
+  .why-num { font-size: 10.5px; font-weight: 600; letter-spacing: 1.2px; color: var(--muted); text-transform: uppercase; margin-bottom: 16px; font-family: var(--font-sans); }
+  .why-card h3 { font-size: 16.5px; font-weight: 700; margin-bottom: 10px; line-height: 1.35; font-family: var(--font-sans); }
+  .why-card p { font-size: 14px; color: var(--slate); line-height: 1.7; font-family: var(--font-sans); }
+  .why-card .cn { font-size: 12.5px; color: var(--muted); margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); font-family: var(--font-sans); }
 
-  /* ── What You Receive ── */
+  /* ── Training Blueprint (was "What You Receive") ── */
   .receive { padding: 96px 0; background: var(--bg); }
-  .receive-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 22px; margin-top: 44px; }
-  .receive-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 32px 28px; position: relative; transition: all 0.3s ease; }
-  .receive-card:hover { border-color: rgba(136,157,196,0.25); background: var(--card-hover); transform: translateY(-3px); box-shadow: 0 8px 32px rgba(0,0,0,0.25), 0 0 0 1px rgba(136,157,196,0.1); }
-  .receive-card .icon { font-size: 28px; margin-bottom: 16px; }
-  .receive-card h3 { font-size: 16.5px; font-weight: 700; margin-bottom: 8px; }
-  .receive-card .en-sub { font-size: 12px; color: var(--muted); font-style: italic; margin-bottom: 12px; }
-  .receive-card p { font-size: 14px; color: var(--slate); line-height: 1.7; }
-  .receive-card .example { background: rgba(136,157,196,0.06); border-radius: 6px; padding: 14px 16px; margin-top: 16px; font-size: 13px; color: var(--slate); line-height: 1.6; border: 1px solid rgba(136,157,196,0.08); }
-  .receive-card .example strong { color: var(--accent); font-weight: 600; }
+  .briefing-blueprint {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+    align-items: stretch;
+    margin-top: 0;
+  }
+  .blueprint-item {
+    position: relative;
+    padding: 28px 26px 24px;
+    border-radius: 18px;
+    background: var(--surface-elevated);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-soft);
+    transition: transform 0.25s ease, border-color 0.25s ease;
+    display: flex; flex-direction: column; align-items: flex-start;
+  }
+  .blueprint-item:hover {
+    transform: translateY(-3px);
+    border-color: var(--accent-subtle);
+  }
+  .blueprint-index {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.14em;
+    color: var(--muted); font-family: var(--font-mono);
+    margin-bottom: 16px;
+  }
+  .blueprint-item .icon-mark { margin-bottom: 16px; }
+  .blueprint-item h3 {
+    font-size: 16px; font-weight: 700; margin-bottom: 6px;
+    font-family: var(--font-sans);
+  }
+  .blueprint-en-sub {
+    font-size: 12px; color: var(--muted); font-style: italic;
+    margin-bottom: 12px; font-family: var(--font-serif); letter-spacing: 0.02em;
+  }
+  .blueprint-item p {
+    font-size: 13.5px; color: var(--slate); line-height: 1.7;
+    flex: 1; font-family: var(--font-sans);
+  }
+  .blueprint-example {
+    margin-top: 18px; padding: 12px 16px; background: var(--accent-bg);
+    border-radius: 8px; border: 1px solid var(--accent-subtle);
+    font-size: 12.5px; color: var(--slate); line-height: 1.6;
+    width: 100%; font-family: var(--font-sans);
+  }
+  .blueprint-example strong { color: var(--accent); font-weight: 600; }
+
+  @media (max-width: 900px) {
+    .briefing-blueprint { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 600px) {
+    .briefing-blueprint { grid-template-columns: 1fr; }
+  }
 
   /* ── Sample Issue ── */
   .sample { padding: 96px 0; background: var(--bg-elevated); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-  .sample-tabs { display: flex; gap: 0; margin-top: 40px; border-bottom: 1px solid var(--border); overflow-x: auto; }
-  .sample-tab { padding: 12px 24px; font-size: 13.5px; font-weight: 600; color: var(--slate); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.2s; white-space: nowrap; }
+  .sample-tabs { display: flex; gap: 0; margin-top: 40px; border-bottom: 1px solid var(--border); overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .sample-tab { padding: 12px 24px; font-size: 13.5px; font-weight: 600; color: var(--slate); cursor: pointer; border: none; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.2s; white-space: nowrap; background: none; font-family: var(--font-sans); outline: none; letter-spacing: 0.04em; }
+  .sample-tab:focus-visible { color: var(--accent); outline: 2px solid var(--accent); outline-offset: -2px; border-radius: 4px; }
   .sample-tab:hover { color: var(--ink); }
   .sample-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
   .sample-body { background: var(--card); border: 1px solid var(--border); border-top: none; border-radius: 0 0 8px 8px; padding: 36px; position: relative; overflow: hidden; }
-  .sample-pane { display: none; opacity: 0; transform: translateY(8px); transition: opacity 0.35s ease, transform 0.35s ease; }
-  .sample-pane.active { display: block; }
-  .sample-pane.anim-in { opacity: 1; transform: none; }
-  .sample-pane h3 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
-  .sample-pane .pane-sub { font-size: 13.5px; color: var(--muted); margin-bottom: 22px; }
+  .sample-pane { display: none; }
+  .sample-pane.active { display: block; animation: sampleFadeIn 0.32s ease both; }
+  .sample-pane h3 { font-size: 18px; font-weight: 700; margin-bottom: 6px; font-family: var(--font-sans); }
+  .sample-pane .pane-sub { font-size: 13.5px; color: var(--muted); margin-bottom: 22px; font-family: var(--font-sans); }
+
+  @keyframes sampleFadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0);   }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sample-pane.active { animation: none; }
+  }
   .pane-block { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 20px 22px; margin-bottom: 16px; }
   .pane-block:last-child { margin-bottom: 0; }
-  .pane-block .block-title { font-size: 13px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; }
-  .pane-block p { font-size: 14.5px; line-height: 1.75; color: var(--ink); }
-  .pane-block .en { font-family: var(--serif); font-size: 14.5px; line-height: 1.8; color: var(--slate); }
-  .pane-block .zh { font-size: 13.5px; color: var(--slate); line-height: 1.7; }
-  .pane-block code { background: rgba(136,157,196,0.12); color: var(--accent); padding: 1px 7px; border-radius: 4px; font-size: 13px; }
-  .pane-block .tag { display: inline-block; font-size: 11px; background: var(--warm-subtle); color: var(--warm); padding: 2px 10px; border-radius: 4px; font-weight: 600; margin-bottom: 8px; letter-spacing: 0.3px; }
-  .checklist { list-style: none; font-size: 14px; color: var(--slate); }
+  .pane-block .block-title { font-size: 13px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; font-family: var(--font-sans); }
+  .pane-block p { font-size: 14.5px; line-height: 1.75; color: var(--ink); font-family: var(--font-sans); }
+  .pane-block .en { font-family: var(--font-serif); font-size: 14.5px; line-height: 1.8; color: var(--slate); }
+  .pane-block .zh { font-size: 13.5px; color: var(--slate); line-height: 1.7; font-family: var(--font-sans); }
+  .pane-block code { background: var(--accent-subtle); color: var(--accent); padding: 1px 7px; border-radius: 4px; font-size: 13px; font-family: var(--font-mono); }
+  .pane-block .tag { display: inline-block; font-size: 11px; background: var(--warm-subtle); color: var(--warm); padding: 2px 10px; border-radius: 4px; font-weight: 600; margin-bottom: 8px; letter-spacing: 0.04em; font-family: var(--font-sans); }
+  .checklist { list-style: none; font-size: 14px; color: var(--slate); font-family: var(--font-sans); }
   .checklist li { padding: 5px 0 5px 24px; position: relative; line-height: 1.6; }
-  .checklist li::before { content: "✓"; position: absolute; left: 0; color: #6ea878; font-weight: 700; }
+  .checklist li::before { content: "✓"; position: absolute; left: 0; color: var(--success); font-weight: 700; font-family: var(--font-sans); }
 
   /* ── Card Deck (Learning Loop) ── */
   .how { padding: 112px 0; background: var(--bg); }
   .deck-wrapper { margin-top: 52px; }
-  /* Stage — the viewport where cards are positioned */
   .deck-stage { position: relative; width: 100%; max-width: 880px; margin: 0 auto; overflow: hidden; }
-  /* Cards */
-  .deck-card { position: absolute; top: 50%; left: 50%; width: 100%; max-width: 600px; transform: translate(-50%,-50%) scale(.74); opacity: 0; filter: blur(8px); transition: transform .65s cubic-bezier(.22,1,.36,1), opacity .5s cubic-bezier(.22,1,.36,1), filter .5s cubic-bezier(.22,1,.36,1); pointer-events: none; z-index: 1; background: rgba(20,24,33,.68); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid rgba(136,157,196,.08); border-radius: 14px; padding: 56px 52px; text-align: center; }
-  .deck-card.active { transform: translate(-50%,-50%) scale(1); opacity: 1; filter: blur(0); z-index: 5; pointer-events: auto; background: rgba(20,24,33,.88); border-color: rgba(136,157,196,.2); box-shadow: 0 8px 48px rgba(0,0,0,.4), 0 0 0 1px rgba(136,157,196,.06) inset; }
-  .deck-card.peek-left { transform: translate(calc(-50% - 272px),-50%) scale(.86); opacity: .22; filter: blur(4px); z-index: 2; }
-  .deck-card.peek-right { transform: translate(calc(-50% + 272px),-50%) scale(.86); opacity: .22; filter: blur(4px); z-index: 3; }
-  /* Card content */
-  .deck-card .step-num { font-size: 10.5px; font-weight: 600; letter-spacing: 2.5px; color: var(--accent); text-transform: uppercase; margin-bottom: 14px; }
-  .deck-card .step-en { font-family: var(--serif); font-size: 52px; font-weight: 700; color: var(--ink); line-height: 1; letter-spacing: -1px; margin-bottom: 10px; }
-  .deck-card .step-cn { font-size: 17px; font-weight: 600; color: var(--slate); margin-bottom: 28px; letter-spacing: .3px; }
+  .deck-card { position: absolute; top: 50%; left: 50%; width: 100%; max-width: 600px; transform: translate(-50%,-50%) scale(.74); opacity: 0; filter: blur(8px); transition: transform .65s cubic-bezier(.22,1,.36,1), opacity .5s cubic-bezier(.22,1,.36,1), filter .5s cubic-bezier(.22,1,.36,1); pointer-events: none; z-index: 1; background: var(--deck-card-bg); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid var(--accent-subtle); border-radius: 18px; padding: 56px 52px; text-align: center; }
+  .deck-card.active { transform: translate(-50%,-50%) scale(1); opacity: 1; filter: blur(0); z-index: 5; pointer-events: auto; background: var(--deck-card-active-bg); border-color: var(--accent-subtle); box-shadow: var(--deck-card-shadow); }
+  .deck-card.peek-left { transform: translate(calc(-50% - 220px),-50%) scale(.86); opacity: .22; filter: blur(4px); z-index: 2; }
+  .deck-card.peek-right { transform: translate(calc(-50% + 220px),-50%) scale(.86); opacity: .22; filter: blur(4px); z-index: 3; }
+  .deck-card .step-num { font-size: 10.5px; font-weight: 600; letter-spacing: 2.5px; color: var(--accent); text-transform: uppercase; margin-bottom: 14px; font-family: var(--font-sans); }
+  .deck-card .step-en { font-family: var(--font-serif); font-size: 52px; font-weight: 700; color: var(--ink); line-height: 1; letter-spacing: -1px; margin-bottom: 10px; }
+  .deck-card .step-cn { font-size: 17px; font-weight: 600; color: var(--slate); margin-bottom: 28px; letter-spacing: .3px; font-family: var(--font-sans); }
   .deck-card .divider { width: 40px; height: 2px; background: var(--accent); margin: 0 auto 28px; opacity: .5; border-radius: 1px; }
-  .deck-card p { font-size: 14.5px; color: var(--slate); line-height: 1.9; max-width: 480px; margin: 0 auto; }
-  .deck-card .en-quote { font-size: 13.5px; color: var(--muted); margin-top: 24px; font-style: italic; font-family: var(--serif); letter-spacing: .2px; }
-  /* Controls */
+  .deck-card p { font-size: 14.5px; color: var(--slate); line-height: 1.9; max-width: 480px; margin: 0 auto; font-family: var(--font-sans); }
+  .deck-card .en-quote { font-size: 13.5px; color: var(--muted); margin-top: 24px; font-style: italic; font-family: var(--font-serif); letter-spacing: .2px; }
   .deck-controls { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 32px; }
-  .deck-progress { font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: 1.5px; min-width: 40px; text-align: center; font-variant-numeric: tabular-nums; }
-  .deck-btn { display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; background: rgba(20,24,33,.6); border: 1px solid rgba(136,157,196,.12); color: var(--slate); cursor: pointer; transition: all .25s; font-size: 18px; line-height: 1; font-family: var(--sans); }
-  .deck-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); background: rgba(136,157,196,.1); }
+  .deck-progress { font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: 1.5px; min-width: 40px; text-align: center; font-variant-numeric: tabular-nums; font-family: var(--font-sans); }
+  .deck-btn { display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; background: var(--deck-btn-bg); border: 1px solid var(--accent-subtle); color: var(--slate); cursor: pointer; transition: all .25s; font-size: 18px; line-height: 1; font-family: var(--font-sans); }
+  .deck-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); background: var(--accent-bg); }
   .deck-btn:disabled { opacity: .18; cursor: default; }
   .deck-dots { display: flex; gap: 7px; align-items: center; }
   .deck-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--border); cursor: pointer; transition: all .35s; border: none; padding: 0; }
   .deck-dot:hover { background: var(--muted); }
   .deck-dot.active { background: var(--accent); width: 21px; border-radius: 3px; }
-  /* Mobile — single card, no peek */
   @media (max-width: 768px) {
     .deck-stage { overflow: visible; }
-    .deck-card { position: relative; top: auto; left: auto; transform: none; max-width: 100%; display: none; filter: none; padding: 32px 24px; border-radius: 10px; backdrop-filter: none; -webkit-backdrop-filter: none; background: var(--card); }
-    .deck-card.active { display: block; animation: deckFadeInMobile .45s ease; transform: none; box-shadow: 0 4px 24px rgba(0,0,0,.2); border-color: var(--border); }
+    .deck-card { position: relative; top: auto; left: auto; transform: none; max-width: 100%; display: none; filter: none; padding: 32px 24px; border-radius: 12px; backdrop-filter: none; -webkit-backdrop-filter: none; background: var(--card); }
+    .deck-card.active { display: block; animation: deckFadeInMobile .45s ease; transform: none; box-shadow: var(--shadow-soft); border-color: var(--border); }
     .deck-card.peek-left, .deck-card.peek-right { display: none; }
     .deck-card .step-en { font-size: 38px; }
     .deck-card .step-cn { font-size: 15px; margin-bottom: 20px; }
@@ -265,48 +425,78 @@
     @keyframes deckFadeInMobile { from { opacity: 0; } to { opacity: 1; } }
   }
 
-  /* ── Who It Is For ── */
+  /* ── Audience (was "Who It Is For") ── */
   .who { padding: 96px 0; background: var(--bg-elevated); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-  .who-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 22px; margin-top: 44px; }
-  .who-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 32px 28px; transition: all 0.3s ease; }
-  .who-card:hover { border-color: rgba(136,157,196,0.25); background: var(--card-hover); transform: translateY(-3px); box-shadow: 0 8px 32px rgba(0,0,0,0.25), 0 0 0 1px rgba(136,157,196,0.1); }
-  .who-card .who-icon { font-size: 28px; margin-bottom: 16px; }
-  .who-card h3 { font-size: 16.5px; font-weight: 700; margin-bottom: 10px; }
-  .who-card p { font-size: 14px; color: var(--slate); line-height: 1.7; }
-  .who-card .pain { font-size: 13px; color: var(--warm); margin-top: 14px; font-weight: 600; }
+  .audience-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 22px;
+    justify-content: center;
+  }
+  .audience-card {
+    background: var(--surface-elevated); border: 1px solid var(--border);
+    border-radius: 18px; padding: 28px 26px;
+    box-shadow: var(--shadow-soft);
+    transition: transform 0.25s ease, border-color 0.25s ease;
+    min-height: 280px;
+    display: flex; flex-direction: column; align-items: flex-start;
+  }
+  .audience-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--accent-subtle);
+  }
+  .audience-card .icon-mark { margin-bottom: 18px; }
+  .audience-card h3 {
+    font-size: 16px; font-weight: 700; margin-bottom: 10px;
+    font-family: var(--font-sans);
+  }
+  .audience-card p {
+    font-size: 13.5px; color: var(--slate); line-height: 1.7;
+    flex: 1; font-family: var(--font-sans);
+  }
+  .audience-quote {
+    font-size: 13px; color: var(--warm); margin-top: 16px;
+    font-weight: 500; line-height: 1.6; font-family: var(--font-sans);
+    padding-top: 14px; border-top: 1px solid var(--border);
+    width: 100%;
+  }
 
-  /* ── Comparison table ── */
+  @media (max-width: 600px) {
+    .audience-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ── Comparison ── */
   .compare { padding: 96px 0; background: var(--bg); }
   .compare-table { margin-top: 40px; background: var(--card); border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
-  .compare-table table { width: 100%; border-collapse: collapse; font-size: 14px; }
-  .compare-table th { background: var(--bg-elevated); color: var(--ink); padding: 14px 20px; text-align: left; font-weight: 600; font-size: 13px; letter-spacing: 0.3px; border-bottom: 1px solid var(--border); }
+  .compare-table table { width: 100%; border-collapse: collapse; font-size: 14px; font-family: var(--font-sans); }
+  .compare-table th { background: var(--bg-elevated); color: var(--ink); padding: 14px 20px; text-align: left; font-weight: 600; font-size: 13px; letter-spacing: 0.04em; border-bottom: 1px solid var(--border); font-family: var(--font-sans); }
   .compare-table th:first-child { width: 20%; }
-  .compare-table td { padding: 13px 20px; border-bottom: 1px solid rgba(30,35,50,0.5); vertical-align: top; font-size: 13.5px; color: var(--slate); }
+  .compare-table td { padding: 13px 20px; border-bottom: 1px solid var(--border); vertical-align: top; font-size: 13.5px; color: var(--slate); font-family: var(--font-sans); }
   .compare-table tr:last-child td { border-bottom: none; }
-  .compare-table .highlight-col { background: rgba(136,157,196,0.05); }
-  .compare-table .check { color: #6ea878; font-weight: 700; }
+  .compare-table .highlight-col { background: var(--accent-bg); }
+  .compare-table .check { color: var(--success); font-weight: 700; }
   .compare-table .dash { color: var(--muted); }
   .compare-table .product-name { font-weight: 700; color: var(--accent); }
 
-  /* ── Pricing / Beta Plan ── */
+  /* ── Pricing ── */
   .pricing { padding: 96px 0; background: var(--bg-elevated); border-top: 1px solid var(--border); }
-  .pricing-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 22px; margin-top: 44px; }
-  .price-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 34px 30px; position: relative; transition: all 0.3s ease; }
-  .price-card:hover { border-color: rgba(136,157,196,0.25); transform: translateY(-3px); box-shadow: 0 8px 32px rgba(0,0,0,0.25), 0 0 0 1px rgba(136,157,196,0.1); }
+  .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 22px; margin-top: 44px; justify-items: center; }
+  .price-card { background: var(--surface-elevated); border: 1px solid var(--border); border-radius: 18px; padding: 34px 30px; position: relative; transition: all 0.3s ease; width: 100%; box-sizing: border-box; box-shadow: var(--shadow-soft); }
+  .price-card:hover { border-color: var(--accent-subtle); transform: translateY(-3px); }
   .price-card.featured { border-color: var(--accent); background: var(--bg-elevated); }
   .price-card.featured:hover { border-color: var(--accent-hover); }
-  .price-card.featured::before { content: "Beta 特权"; position: absolute; top: -1px; right: 28px; background: var(--accent); color: #0a0d12; font-size: 10.5px; font-weight: 700; padding: 4px 14px; border-radius: 0 0 6px 6px; letter-spacing: 0.5px; }
-  .price-name { font-size: 15.5px; font-weight: 700; margin-bottom: 6px; }
-  .price-tag { font-size: 36px; font-weight: 800; font-family: var(--serif); margin: 10px 0; }
-  .price-tag small { font-size: 14px; font-weight: 400; color: var(--muted); }
-  .price-desc { font-size: 14px; color: var(--slate); margin-bottom: 22px; line-height: 1.6; }
-  .price-features { list-style: none; font-size: 13.5px; margin-bottom: 26px; color: var(--slate); }
+  .price-card.featured::before { content: "Beta 特权"; position: absolute; top: -1px; right: 28px; background: var(--accent); color: var(--on-accent); font-size: 10.5px; font-weight: 700; padding: 4px 14px; border-radius: 0 0 6px 6px; letter-spacing: 0.04em; font-family: var(--font-sans); }
+  .price-name { font-size: 15.5px; font-weight: 700; margin-bottom: 6px; font-family: var(--font-sans); }
+  .price-tag { font-size: 36px; font-weight: 800; font-family: var(--font-serif); margin: 10px 0; }
+  .price-tag small { font-size: 14px; font-weight: 400; color: var(--muted); font-family: var(--font-sans); }
+  .price-desc { font-size: 14px; color: var(--slate); margin-bottom: 22px; line-height: 1.6; font-family: var(--font-sans); }
+  .price-features { list-style: none; font-size: 13.5px; margin-bottom: 26px; color: var(--slate); font-family: var(--font-sans); }
   .price-features li { padding: 5px 0 5px 22px; position: relative; }
-  .price-features li::before { content: "✓"; position: absolute; left: 0; color: #6ea878; font-weight: 700; }
+  .price-features li::before { content: "✓"; position: absolute; left: 0; color: var(--success); font-weight: 700; font-family: var(--font-sans); }
   .price-features .no::before { content: "—"; color: var(--muted); }
-  .price-btn { display: block; text-align: center; padding: 13px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.25s; font-family: var(--sans); letter-spacing: 0.3px; }
-  .price-btn-dark { background: var(--ink); color: #0a0d12; border: none; }
-  .price-btn-dark:hover { background: var(--accent-hover); color: #0a0d12; text-decoration: none; }
+  .price-btn { display: block; text-align: center; padding: 13px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.25s; font-family: var(--font-sans); letter-spacing: 0.04em; }
+  .price-btn-dark { background: var(--accent); color: var(--on-accent); border: none; }
+  .price-btn-dark:hover { background: var(--accent-hover); color: var(--on-accent); text-decoration: none; }
   .price-btn-outline { background: transparent; color: var(--slate); border: 1px solid var(--border); }
   .price-btn-outline:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; }
 
@@ -314,46 +504,131 @@
   .faq { padding: 96px 0; background: var(--bg); }
   .faq-list { margin-top: 40px; max-width: 740px; }
   .faq-item { border-bottom: 1px solid var(--border); }
-  .faq-q { width: 100%; background: none; border: none; text-align: left; font-size: 15.5px; font-weight: 600; padding: 20px 0; cursor: pointer; display: flex; justify-content: space-between; align-items: center; color: var(--ink); font-family: var(--sans); transition: color 0.2s; }
+  .faq-q { width: 100%; background: none; border: none; text-align: left; font-size: 15.5px; font-weight: 600; padding: 20px 0; cursor: pointer; display: flex; justify-content: space-between; align-items: center; color: var(--ink); font-family: var(--font-sans); transition: color 0.2s; }
   .faq-q:hover { color: var(--accent); }
   .faq-arrow { font-size: 18px; transition: transform 0.25s; color: var(--muted); }
-  .faq-a { font-size: 14.5px; color: var(--slate); line-height: 1.8; overflow: hidden; max-height: 0; transition: max-height 0.45s cubic-bezier(.22,1,.36,1); }
-  .faq-item.open .faq-a { max-height: 500px; }
+  .faq-a { font-size: 14.5px; color: var(--slate); line-height: 1.8; overflow: hidden; max-height: 0; transition: max-height 0.45s cubic-bezier(.22,1,.36,1); font-family: var(--font-sans); }
+  .faq-item.open .faq-a { max-height: 800px; }
   .faq-item.open .faq-arrow { transform: rotate(180deg); }
 
-  /* ── CTA / Signup ── */
-  .cta { padding: 96px 0; background: var(--bg-elevated); color: var(--ink); text-align: center; border-top: 1px solid var(--border); }
-  .cta .section-title { color: var(--ink); }
-  .cta .section-desc { color: var(--slate); margin-left: auto; margin-right: auto; max-width: 540px; }
-  .cta-form { max-width: 540px; margin: 36px auto 0; text-align: left; }
-  .cta-row { display: flex; gap: 12px; flex-wrap: wrap; }
-  .cta-input { flex: 1; min-width: 200px; padding: 14px 18px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); color: var(--ink); font-size: 15px; outline: none; font-family: var(--sans); transition: border-color 0.25s; }
-  .cta-input::placeholder { color: var(--muted); }
-  .cta-input:focus { border-color: var(--accent); }
-  .cta .btn-primary { border: none; font-size: 15px; }
-  .cta-note { font-size: 12.5px; color: var(--muted); margin-top: 16px; text-align: center; }
+  /* ── Beta Intake Form ── */
+  .beta-section { padding: 96px 0; background: var(--bg-elevated); border-top: 1px solid var(--border); }
+  .beta-grid { max-width: 1080px; margin: 0 auto; padding: 0 28px; display: grid; grid-template-columns: 1fr 1.25fr; gap: 64px; align-items: start; }
+  .beta-section .section-label { color: var(--accent); font-size: 11.5px; letter-spacing: 0.14em; font-weight: 700; margin-bottom: 16px; font-family: var(--font-sans); }
+  .beta-section .section-title { font-size: 30px; font-weight: 700; color: var(--ink); line-height: 1.32; margin-bottom: 20px; font-family: var(--font-serif); }
+  .beta-section .section-desc { color: var(--slate); font-size: 14.5px; line-height: 1.78; margin-bottom: 28px; font-family: var(--font-sans); }
+  .beta-section .section-desc p + p { margin-top: 10px; }
+  .beta-perks { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 32px; }
+  .beta-perk { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--slate); white-space: nowrap; font-family: var(--font-sans); }
+  .beta-perk::before { content: ''; display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); opacity: 0.6; flex-shrink: 0; }
+  .beta-section .section-desc:last-of-type { font-size: 12.5px; color: var(--muted); font-style: italic; font-family: var(--font-serif); }
 
-  /* Survey fields */
-  .survey-group { margin-top: 16px; }
-  .survey-group label { display: block; font-size: 13px; font-weight: 600; color: var(--slate); margin-bottom: 8px; }
-  .survey-select { width: 100%; padding: 12px 16px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); color: var(--slate); font-size: 14px; outline: none; font-family: var(--sans); cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%236a7285' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; padding-right: 40px; transition: border-color 0.25s; }
-  .survey-select:focus { border-color: var(--accent); outline: none; }
-  .survey-select option { background: var(--bg); color: var(--slate); }
-  .survey-chips { display: flex; flex-wrap: wrap; gap: 8px; }
-  .survey-chip { padding: 8px 16px; border-radius: 20px; border: 1px solid var(--border); background: var(--bg); color: var(--slate); font-size: 13px; cursor: pointer; transition: all 0.2s; font-family: var(--sans); }
-  .survey-chip:hover { border-color: var(--accent); color: var(--ink); }
-  .survey-chip.selected { background: var(--accent); border-color: var(--accent); color: #0a0d12; font-weight: 600; }
+  /* Form card */
+  .beta-form-card { background: var(--surface-elevated); border: 1px solid var(--border); border-radius: 18px; padding: 40px; position: relative; min-height: 520px; box-shadow: var(--shadow-soft); }
+  .beta-form-card.loading { opacity: 0.52; pointer-events: none; transition: opacity 0.3s ease; }
+  .beta-form-card .beta-form-fields { transition: opacity 0.4s ease, transform 0.4s ease; }
+  .beta-form-card.success-state .beta-form-fields { opacity: 0; transform: translateY(-10px); pointer-events: none; position: absolute; width: calc(100% - 80px); visibility: hidden; }
+  .beta-form-card .beta-success { position: absolute; top: 40px; left: 40px; right: 40px; opacity: 0; transform: translateY(10px); pointer-events: none; transition: opacity 0.45s ease, transform 0.45s ease; }
+  .beta-form-card.success-state .beta-success { opacity: 1; transform: translateY(0); pointer-events: auto; position: relative; top: auto; left: auto; right: auto; }
+
+  .beta-error-banner { background: rgba(196,68,68,0.06); border: 1px solid rgba(196,68,68,0.15); border-radius: 8px; padding: 12px 18px; margin-bottom: 24px; font-size: 13px; color: var(--error); line-height: 1.55; display: none; font-family: var(--font-sans); }
+  .beta-error-banner.visible { display: block; }
+
+  .beta-field { margin-bottom: 24px; }
+  .beta-field:last-of-type { margin-bottom: 28px; }
+  .beta-label { display: block; font-size: 12.5px; font-weight: 600; color: var(--slate); margin-bottom: 8px; letter-spacing: 0.03em; text-transform: uppercase; font-family: var(--font-sans); }
+  .beta-label .required { color: var(--accent); margin-left: 2px; }
+  .beta-label .optional { color: var(--muted); font-weight: 400; text-transform: none; letter-spacing: 0; margin-left: 4px; font-size: 11.5px; }
+
+  .beta-input, .beta-select, .beta-textarea { width: 100%; padding: 13px 16px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--ink); font-size: 14.5px; outline: none; font-family: var(--font-sans); transition: border-color 0.25s, box-shadow 0.25s; }
+  .beta-input::placeholder, .beta-textarea::placeholder { color: var(--muted); font-size: 14px; }
+  .beta-input:focus, .beta-select:focus, .beta-textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-subtle); }
+  .beta-input.error, .beta-select.error, .beta-textarea.error { border-color: var(--error); }
+  .beta-radios.error, .beta-chips.error { border: 1px solid var(--error); border-radius: 8px; padding: 8px; }
+  .beta-radios.error { padding: 12px; }
+  .beta-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%236a7285' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; padding-right: 40px; cursor: pointer; }
+  .beta-select option { background: var(--bg); color: var(--slate); }
+
+  html[data-theme="dark"] .beta-select {
+    background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%236a7285' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+  }
+
+  .beta-textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
+
+  .beta-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .beta-chip { padding: 9px 18px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--slate); font-size: 13.5px; cursor: pointer; transition: all 0.22s; font-family: var(--font-sans); user-select: none; }
+  .beta-chip:hover { border-color: var(--border-hover); color: var(--ink); }
+  .beta-chip.selected { background: var(--accent-subtle); border-color: var(--accent); color: var(--accent); }
+
+  .beta-radios { display: flex; flex-direction: column; gap: 8px; }
+  .beta-radio { padding: 14px 18px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); cursor: pointer; transition: all 0.22s; display: flex; align-items: center; gap: 12px; font-size: 14px; color: var(--slate); font-family: var(--font-sans); }
+  .beta-radio:hover { border-color: var(--border-hover); color: var(--ink); }
+  .beta-radio.selected { border-color: var(--accent); background: var(--accent-subtle); color: var(--accent); }
+  .beta-radio-dot { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid var(--border); flex-shrink: 0; transition: all 0.22s; position: relative; }
+  .beta-radio.selected .beta-radio-dot { border-color: var(--accent); }
+  .beta-radio.selected .beta-radio-dot::after { content: ''; position: absolute; inset: 3px; border-radius: 50%; background: var(--accent); }
+
+  .beta-consent { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; font-size: 13px; color: var(--slate); line-height: 1.6; font-family: var(--font-sans); }
+  .beta-consent input[type="checkbox"] { position: absolute; opacity: 0; width: 0; height: 0; pointer-events: none; }
+  .beta-checkbox { width: 18px; height: 18px; border-radius: 4px; border: 1.5px solid var(--border); flex-shrink: 0; margin-top: 2px; transition: all 0.22s; display: flex; align-items: center; justify-content: center; }
+  .beta-consent.checked .beta-checkbox { border-color: var(--accent); background: var(--accent); }
+  .beta-consent.checked .beta-checkbox::after { content: ''; width: 5px; height: 9px; border: solid var(--on-accent); border-width: 0 2px 2px 0; transform: rotate(45deg) translateY(-1px); }
+
+  .beta-error { font-size: 12px; color: var(--error); margin-top: 6px; display: none; font-family: var(--font-sans); }
+  .beta-error.visible { display: block; }
+
+  .beta-submit { width: 100%; padding: 15px 24px; border-radius: 8px; border: none; background: var(--accent); color: var(--on-accent); font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.22s; font-family: var(--font-sans); letter-spacing: 0.04em; }
+  .beta-submit:hover { background: var(--accent-hover); }
+  .beta-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+  .beta-submit-note { font-size: 11.5px; color: var(--muted); text-align: center; margin-top: 12px; line-height: 1.6; font-family: var(--font-sans); }
+
+  .beta-success { text-align: left; padding: 8px 0 0; }
+  .beta-success-icon { text-align: center; margin-bottom: 20px; }
+  .beta-success-icon svg { display: inline-block; }
+  .beta-success-title { font-size: 22px; font-weight: 700; color: var(--ink); margin-bottom: 8px; font-family: var(--font-serif); text-align: center; }
+  .beta-success-subtitle { font-size: 14px; color: var(--accent); text-align: center; margin-bottom: 16px; font-weight: 500; font-family: var(--font-sans); }
+  .beta-success-text { font-size: 13.5px; color: var(--slate); line-height: 1.8; margin-bottom: 24px; font-family: var(--font-sans); }
+
+  .beta-summary { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 22px 24px; margin-bottom: 24px; }
+  .beta-summary-title { font-size: 10.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 14px; font-family: var(--font-sans); }
+  .beta-summary-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 9px; font-family: var(--font-sans); }
+  .beta-summary-row:last-child { margin-bottom: 0; }
+  .beta-summary-label { font-size: 12px; color: var(--muted); min-width: 52px; flex-shrink: 0; font-weight: 500; font-family: var(--font-sans); }
+  .beta-summary-value { font-size: 12.5px; color: var(--ink); line-height: 1.5; word-break: break-all; font-family: var(--font-sans); }
+
+  .beta-success-actions { display: flex; gap: 10px; margin-bottom: 18px; }
+  .beta-success-btn { flex: 1; padding: 12px 20px; border-radius: 8px; font-size: 13.5px; font-weight: 600; cursor: pointer; transition: all 0.22s; font-family: var(--font-sans); border: none; text-align: center; text-decoration: none; letter-spacing: 0.04em; }
+  .beta-success-btn.primary { background: var(--accent); color: var(--on-accent); }
+  .beta-success-btn.primary:hover { background: var(--accent-hover); }
+  .beta-success-btn.secondary { background: transparent; border: 1px solid var(--border); color: var(--slate); }
+  .beta-success-btn.secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+  .beta-success-footer { font-size: 11px; color: var(--muted); text-align: center; line-height: 1.6; font-family: var(--font-sans); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .beta-form-card .beta-form-fields,
+    .beta-form-card .beta-success { transition: none; }
+  }
+
+  @media (max-width: 860px) {
+    .beta-grid { grid-template-columns: 1fr; gap: 40px; }
+    .beta-section .section-title { font-size: 26px; }
+    .beta-form-card { padding: 28px 24px; min-height: auto; }
+    .beta-form-card.success-state .beta-form-fields { width: calc(100% - 48px); }
+    .beta-form-card .beta-success { top: 28px; left: 24px; right: 24px; }
+    .beta-success-actions { flex-direction: column; }
+  }
 
   /* ── Footer ── */
-  footer { background: #070a0f; color: var(--muted); padding: 44px 28px; font-size: 13.5px; border-top: 1px solid var(--border); }
+  footer { background: var(--footer-bg); color: var(--muted); padding: 44px 28px; font-size: 13.5px; border-top: 1px solid var(--border); font-family: var(--font-sans); }
   .footer-inner { max-width: 1080px; margin: 0 auto; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 24px; }
-  .footer-brand { font-family: var(--serif); font-size: 16px; font-weight: 700; color: var(--ink); }
-  .footer-brand small { display: block; font-size: 12px; color: var(--muted); font-weight: 400; margin-top: 4px; }
+  .footer-brand { font-family: var(--font-serif); font-size: 16px; font-weight: 700; color: var(--ink); }
+  .footer-brand small { display: block; font-size: 12px; color: var(--muted); font-weight: 400; margin-top: 4px; font-family: var(--font-sans); }
   .footer-links { display: flex; gap: 28px; }
-  .footer-links a { color: var(--muted); font-size: 13.5px; transition: color 0.2s; }
+  .footer-links a { color: var(--muted); font-size: 13.5px; transition: color 0.2s; font-family: var(--font-sans); }
   .footer-links a:hover { color: var(--slate); text-decoration: none; }
-  .footer-copy { max-width: 1080px; margin: 18px auto 0; padding-top: 18px; border-top: 1px solid rgba(30,35,50,0.4); font-size: 12px; color: var(--muted); }
-  .footer-manifesto { max-width: 1080px; margin: 20px auto 0; font-size: 13px; color: var(--muted); font-style: italic; line-height: 1.7; }
+  .footer-copy { max-width: 1080px; margin: 18px auto 0; padding-top: 18px; border-top: 1px solid var(--footer-divider); font-size: 12px; color: var(--muted); font-family: var(--font-sans); }
+  .footer-manifesto { max-width: 1080px; margin: 20px auto 0; font-size: 13px; color: var(--muted); font-style: italic; line-height: 1.7; font-family: var(--font-serif); }
 
   /* ── Responsive ── */
   @media (max-width: 768px) {
@@ -365,17 +640,20 @@
     .compare-table { overflow-x: auto; }
     .compare-table table { min-width: 640px; }
     .pricing-grid { grid-template-columns: 1fr; }
-    .cta-row { flex-direction: column; }
+    .why-grid { grid-template-columns: 1fr; }
+    .section-inner { padding: 0 24px; }
+    .footer-inner { flex-direction: column; align-items: center; text-align: center; }
+    .footer-links { justify-content: center; }
   }
 
   /* ── Fade-in ── */
   .fade-in { opacity: 0; transform: translateY(18px); transition: opacity 0.6s ease, transform 0.6s ease; }
   .fade-in.visible { opacity: 1; transform: none; }
 
-  /* ── Mini CTA (sticky bottom bar) ── */
-  .mini-cta { position: fixed; bottom: 0; left: 0; right: 0; z-index: 90; background: rgba(17,20,28,0.96); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-top: 1px solid rgba(136,157,196,0.1); padding: 13px 28px; display: flex; align-items: center; justify-content: center; gap: 18px; transform: translateY(100%); transition: transform 0.45s cubic-bezier(.22,1,.36,1); }
+  /* ── Mini CTA ── */
+  .mini-cta { position: fixed; bottom: 0; left: 0; right: 0; z-index: 90; background: var(--mini-cta-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-top: 1px solid var(--accent-subtle); box-shadow: var(--mini-cta-shadow); padding: 13px 28px; display: flex; align-items: center; justify-content: center; gap: 18px; transform: translateY(100%); transition: transform 0.45s cubic-bezier(.22,1,.36,1); }
   .mini-cta.visible { transform: translateY(0); }
-  .mini-cta p { font-size: 14px; color: var(--slate); margin: 0; white-space: nowrap; }
+  .mini-cta p { font-size: 14px; color: var(--slate); margin: 0; white-space: nowrap; font-family: var(--font-sans); }
   .mini-cta p strong { color: var(--ink); font-weight: 700; }
   .mini-cta .btn-primary { padding: 9px 22px; font-size: 13.5px; border-radius: 6px; white-space: nowrap; }
   @media (max-width: 768px) {
@@ -386,11 +664,24 @@
 
   /* ── prefers-reduced-motion ── */
   @media (prefers-reduced-motion: reduce) {
+    html { transition: none; }
     *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
   }
 </style>
 </head>
 <body>
+
+<!-- Theme Toggle -->
+<div class="theme-toggle-wrap">
+  <button class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle reading mode / dark mode">
+    <span class="theme-toggle-icon" id="theme-icon">
+      <svg id="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      <svg id="icon-moon" viewBox="0 0 24 24" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </span>
+    <span class="theme-toggle-label" id="theme-label">Reading Mode</span>
+  </button>
+</div>
+
 
 <!-- ═══ Header ═══ -->
 <header>
@@ -516,55 +807,70 @@
   </div>
 </section>
 
-<!-- ═══ 3. What You Receive ═══ -->
+<!-- ═══ 3. Training Blueprint ═══ -->
 <section class="receive" id="receive">
   <div class="section-inner">
-    <div class="section-label fade-in">What's Inside</div>
-    <h2 class="section-title fade-in">每期邮件里有什么</h2>
-    <p class="section-desc fade-in">每封邮件包含 6 个模块，围绕一个真实外刊议题展开。内容通过邮件发送，不需要 VPN——议题背景用中文撰写，你可以直接开始训练。</p>
-    <div class="receive-grid">
-      <div class="receive-card fade-in">
-        <div class="icon">📰</div>
-        <h3>今日议题背景（中文）</h3>
-        <div class="en-sub">Topic Background · 建立 context</div>
-        <p>用中文解释今日议题的背景、核心争议和关键概念，帮你快速进入状态。不需要先打开外刊原文，不需要 VPN。</p>
-        <div class="example"><strong>例：</strong>「AI 是否应该被允许在学术写作中使用？」——先理解正反双方的核心关切，再读英文原文。</div>
-      </div>
-      <div class="receive-card fade-in">
-        <div class="icon">✂️</div>
-        <h3>外刊核心段落（英文）</h3>
-        <div class="en-sub">Selected Passage · 论证密度</div>
-        <p>从 Economist / Guardian / NYT 精选 1–2 段有分量、有论证密度的英文段落。不是全文——是「值得拆解的那一段」。</p>
-        <div class="example"><strong>标注：</strong>段落上直接标出 <em>thesis / premise / evidence / counter-argument / conclusion</em> 的位置。</div>
-      </div>
-      <div class="receive-card fade-in">
-        <div class="icon">🔗</div>
+    <div class="section-heading centered">
+      <span class="eyebrow fade-in">Training Blueprint</span>
+      <h2 class="section-title fade-in">一份训练卡如何展开</h2>
+      <p class="section-desc fade-in">每封邮件包含 6 个模块，围绕一个真实议题，从输入到输出走完一次完整训练。核心内容直接呈现在训练卡中，无需外部链接。</p>
+    </div>
+    <div class="briefing-blueprint">
+
+      <article class="blueprint-item fade-in">
+        <div class="blueprint-index">01</div>
+        <div class="icon-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg></div>
+        <h3>今日议题背景</h3>
+        <div class="blueprint-en-sub">Context Building · 中文</div>
+        <p>用中文解释议题背景、核心争议和关键概念。不依赖 VPN，不依赖外部链接，快速进入状态。</p>
+        <div class="blueprint-example"><strong>例：</strong>「AI 是否应该被允许在学术写作中使用？」——先理解正反双方的核心关切。</div>
+      </article>
+
+      <article class="blueprint-item fade-in">
+        <div class="blueprint-index">02</div>
+        <div class="icon-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 3h12l2 4H4l2-4z"/><path d="M4 7h16v11a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V7z"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="14" y2="16"/></svg></div>
+        <h3>核心英文段落</h3>
+        <div class="blueprint-en-sub">Selected Passage · 论证密度</div>
+        <p>精选有分量的英文评论段落，标注 thesis / premise / evidence / counter-argument / conclusion 位置。</p>
+        <div class="blueprint-example"><strong>标注：</strong>段落上直接标出论证结构，不是全文——是「值得拆解的那一段」。</div>
+      </article>
+
+      <article class="blueprint-item fade-in">
+        <div class="blueprint-index">03</div>
+        <div class="icon-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><circle cx="5" cy="12" r="2"/><circle cx="19" cy="12" r="2"/><circle cx="12" cy="19" r="2"/><line x1="10.5" y1="6.5" x2="6.5" y2="10.5"/><line x1="13.5" y1="6.5" x2="17.5" y2="10.5"/><line x1="10.5" y1="17.5" x2="6.5" y2="13.5"/><line x1="13.5" y1="17.5" x2="17.5" y2="13.5"/></svg></div>
         <h3>5 个可迁移表达</h3>
-        <div class="en-sub">Transferable Expressions · 按功能学</div>
-        <p>不是单词表。每个表达带 argument 功能标注（因果论证 / 让步反驳 / 证据引入 / 结论收束）+ register + collocation 说明。</p>
-        <div class="example"><strong>例：</strong> <code>be engineered to</code> → 标记：<em>因果论证 · formal</em> → 适用：雅思 Task 2 分析问题根源</div>
-      </div>
-      <div class="receive-card fade-in">
-        <div class="icon">🔬</div>
-        <h3>1 个高级句型拆解</h3>
-        <div class="en-sub">Sentence Deconstruction · 从看懂到会用</div>
-        <p>深度拆解一个外刊复杂句式：语法结构、修辞功能、适用场景、仿写模板。不只告诉你「这句话很高级」，而是告诉你「你能在什么场合用它」。</p>
-        <div class="example"><strong>例：</strong>分号并列对照 + 破折号延迟出拳结构 → 仿写模板 → 你的仿写任务</div>
-      </div>
-      <div class="receive-card fade-in">
-        <div class="icon">🔀</div>
-        <h3>中文观点 → 英文 Argument Chain</h3>
-        <div class="en-sub">Guided Argument Construction</div>
-        <p>给你一个中文观点，引导你把模糊的想法展开成有结构的英文 argument chain：thesis → premise → evidence → counter-argument → conclusion。</p>
-        <div class="example"><strong>训练流程：</strong>先自己写 → 再看参考 chain → 对比差距 → 标注可复用的 expression</div>
-      </div>
-      <div class="receive-card fade-in">
-        <div class="icon">✍️</div>
+        <div class="blueprint-en-sub">Transferable Expressions · 按功能学</div>
+        <p>不是单词表。每个表达带 argument 功能标注 + register + collocation + 仿写范例。</p>
+        <div class="blueprint-example"><strong>例：</strong><code>be engineered to</code> → 因果论证 · formal → 雅思 Task 2</div>
+      </article>
+
+      <article class="blueprint-item fade-in">
+        <div class="blueprint-index">04</div>
+        <div class="icon-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="4 7 12 3 20 7"/><polyline points="4 12 12 8 20 12"/><line x1="4" y1="17" x2="12" y2="13"/><line x1="20" y1="17" x2="12" y2="13"/><line x1="4" y1="17" x2="4" y2="21"/><line x1="20" y1="17" x2="20" y2="21"/><line x1="12" y1="13" x2="12" y2="21"/></svg></div>
+        <h3>高级句型拆解</h3>
+        <div class="blueprint-en-sub">Syntax Deconstruction · 从句到用</div>
+        <p>深度拆解高级句式：语法结构 + 修辞功能 + 适用场景 + 仿写模板。不只告诉你「高级」，而是告诉你「在哪用」。</p>
+        <div class="blueprint-example"><strong>例：</strong>分号并列 + 破折号延迟 → 仿写模板 → 你的任务</div>
+      </article>
+
+      <article class="blueprint-item fade-in">
+        <div class="blueprint-index">05</div>
+        <div class="icon-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/><line x1="12" y1="6.5" x2="12" y2="10.5"/><line x1="12" y1="13.5" x2="12" y2="17.5"/><path d="M7 8l3.5 4L7 16"/></svg></div>
+        <h3>中文观点 → Argument Chain</h3>
+        <div class="blueprint-en-sub">Guided Argument Construction</div>
+        <p>给你一个中文观点，引导你把模糊想法展开成 structured chain：thesis → premise → evidence → counter-argument → conclusion。</p>
+        <div class="blueprint-example"><strong>训练流程：</strong>先自己写 → 看参考 chain → 对比差距 → 标注可复用表达</div>
+      </article>
+
+      <article class="blueprint-item fade-in">
+        <div class="blueprint-index">06</div>
+        <div class="icon-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>
         <h3>输出任务 + Self-check</h3>
-        <div class="en-sub">Output Task · 写作/口语双通道</div>
-        <p>专四/专八/雅思 Task 2 风格写作命题，或口语 Part 3 / 课堂 presentation 话题。附带结构指引、self-check 清单和 sample answer。</p>
-        <div class="example"><strong>任务样例：</strong>「Some people argue that… To what extent do you agree?」→ 写作 280–320 词 或 口语 1.5–2 分钟</div>
-      </div>
+        <div class="blueprint-en-sub">Output Task · 写作/口语双通道</div>
+        <p>专四/专八/雅思 Task 2 写作命题 + 口语 Part 3 / 演讲话题。带结构指引、self-check 清单和 sample answer。</p>
+        <div class="blueprint-example"><strong>任务样例：</strong>「To what extent do you agree?」→ 写作 280–320 词</div>
+      </article>
+
     </div>
   </div>
 </section>
@@ -574,27 +880,27 @@
   <div class="section-inner">
     <div class="section-label fade-in">Sample Issue</div>
     <h2 class="section-title fade-in">看看每期收到的是什么</h2>
-    <p class="section-desc fade-in">以下为完整样例。每期围绕一个外刊议题，按输入→输出训练闭环设计。内容通过邮件发送，不需要打开任何外部网站。</p>
-    <div class="sample-tabs">
-        <div class="sample-tab active" onclick="switchTab(this,'bg')">今日议题</div>
-        <div class="sample-tab" onclick="switchTab(this,'passage')">核心段落</div>
-        <div class="sample-tab" onclick="switchTab(this,'expressions')">表达迁移</div>
-        <div class="sample-tab" onclick="switchTab(this,'sentence')">句型拆解</div>
-        <div class="sample-tab" onclick="switchTab(this,'chain')">Argument Chain</div>
-        <div class="sample-tab" onclick="switchTab(this,'output')">输出任务</div>
+    <p class="section-desc fade-in">以下为完整样例。每期围绕一个真实议题，按输入→输出训练闭环设计。核心内容直接呈现在训练卡中，你不需要依赖外部链接完成训练。</p>
+    <div class="sample-tabs" role="tablist" aria-label="内容样例导航">
+        <button class="sample-tab active" role="tab" aria-selected="true" tabindex="0" onclick="switchTab(this,'bg')">今日议题</button>
+        <button class="sample-tab" role="tab" aria-selected="false" tabindex="-1" onclick="switchTab(this,'passage')">核心段落</button>
+        <button class="sample-tab" role="tab" aria-selected="false" tabindex="-1" onclick="switchTab(this,'expressions')">表达迁移</button>
+        <button class="sample-tab" role="tab" aria-selected="false" tabindex="-1" onclick="switchTab(this,'sentence')">句型拆解</button>
+        <button class="sample-tab" role="tab" aria-selected="false" tabindex="-1" onclick="switchTab(this,'chain')">Argument Chain</button>
+        <button class="sample-tab" role="tab" aria-selected="false" tabindex="-1" onclick="switchTab(this,'output')">输出任务</button>
     </div>
     <div class="sample-body">
       <!-- Pane: 今日议题 -->
       <div class="sample-pane active" id="pane-bg">
-        <h3>📰 今日议题（中文）</h3>
-        <div class="pane-sub">不依赖 VPN。先建立 context，再进入外刊。</div>
+        <h3>今日议题（中文）</h3>
+        <div class="pane-sub">无需依赖外部链接。先建立 context，再进入英文材料。</div>
         <div class="pane-block">
           <div class="block-title">议题：优绩主义（Meritocracy）是否正在制造一种系统性的精神疲惫？</div>
           <p class="zh">「只要够努力，就能成功」——这条承诺曾是美国梦和中国高考叙事的共同内核。但越来越多的社会学研究和外刊评论指出，优绩主义已经从一种「激励性信念」演变为一种「道德负担」：如果你没有成功，那一定是你不够努力。这种叙事正在系统性地制造焦虑、倦怠和自我否定——尤其在年轻一代中。</p>
           <p class="zh" style="margin-top:12px;"><strong>争议焦点：</strong>一方认为，优绩主义是社会流动的根本驱动力，放弃它意味着放弃对个人奋斗的信仰。另一方则指出，当结构性的不平等被包装成「个人不够努力」的故事时，优绩主义就不再是激励，而是一种隐性的暴力——它让失败者不仅承受失败的后果，还要背负「失败是你自己的错」的道德审判。</p>
           <p class="zh" style="margin-top:12px;"><strong>为什么选这个议题？</strong></p>
           <p class="zh">这是 TEM-8 和雅思 Task 2 中「社会价值观」类话题的高频考察方向。它让你练习 <em>problem-solution（问题-对策论证）</em> 和 <em>evaluating a contested concept（对争议性概念的审视）</em> 两种核心 argument 技能。同时，这个话题和你自己的学习生活高度相关——你很可能已经在经历它。</p>
-          <p class="zh" style="margin-top:12px;"><strong>外刊常用 framing：</strong></p>
+          <p class="zh" style="margin-top:12px;"><strong>常见 framing 方式：</strong></p>
           <ul class="checklist" style="margin-top:8px;">
             <li><em>the tyranny of merit</em>（优绩的暴政）</li>
             <li><em>burnout as a status symbol</em>（倦怠成为身份象征）</li>
@@ -606,25 +912,25 @@
       </div>
       <!-- Pane: 核心段落 -->
       <div class="sample-pane" id="pane-passage">
-        <h3>✂️ 外刊核心段落（英文）</h3>
-        <div class="pane-sub">From: The Atlantic · Ideas · March 2025 — adapted for training</div>
+        <h3>核心英文段落</h3>
+        <div class="pane-sub">Training passage · Editorial-style sample for expression practice</div>
         <div class="pane-block">
           <div class="block-title">Argument Structure 标注</div>
           <p class="en" style="background:var(--bg);padding:16px;border-radius:6px;border-left:3px solid var(--accent);line-height:1.85;">
           <span style="color:var(--accent);font-weight:700;">[Thesis · 主论点]</span> The promise of meritocracy — that hard work and talent will be rewarded — has become, for many, a source of exhaustion rather than inspiration.<br><br>
           <span style="color:#16a34a;font-weight:700;">[Premise 1 · 因果链]</span> When failure is framed as a personal deficiency rather than a structural outcome, individuals are left not only with the consequences of failure but with the moral weight of having "deserved" it. This is <em>the tyranny of merit</em> — a system in which success legitimizes itself, and failure blames itself.<br><br>
-          <span style="color:#d97706;font-weight:700;">[Evidence · 数据支撑]</span> A 2024 study in the <em>Journal of Applied Psychology</em> found that employees who internalized meritocratic beliefs were 37% more likely to report chronic burnout — not because they worked harder, but because they attributed every setback to their own inadequacy.<br><br>
+          <span style="color:#d97706;font-weight:700;">[Evidence · 支撑研究]</span> Recent workplace studies have linked internalized meritocratic beliefs with higher levels of burnout and self-blame — not because people work harder, but because they attribute every setback to their own inadequacy.<br><br>
           <span style="color:#7c3aed;font-weight:700;">[Counter-argument · 让步 + 反驳]</span> Proponents maintain that meritocracy, for all its imperfections, remains the least bad system for allocating opportunity — and that abandoning it risks creating a society of complacency. Critics counter that this is a false choice: the alternative is not the abandonment of standards, but the recognition that talent is distributed far more evenly than opportunity ever has been.<br><br>
           <span style="color:#db2777;font-weight:700;">[Conclusion · 结论]</span> The question is not whether effort should be rewarded — it should. The question is whether we have built a culture that confuses reward with worth, and effort with virtue — a confusion that, in the end, exhausts those it promised to liberate.</p>
         </div>
         <div class="pane-block" style="background:var(--accent-bg);">
-          <div class="block-title">📖 阅读指引</div>
+          <div class="block-title">阅读指引</div>
           <p class="zh">这段文字最值得学习的是两个修辞策略：<strong>① 将 meritocracy 重新定义为 tyranny——</strong>不是否认努力的價值，而是揭示当「奖励」被等同于「价值」时，这套话语对失败者的道德伤害。② <strong>最后一句话的平行结构：</strong><em>confuses reward with worth, and effort with virtue</em>——两组对仗在一个从句中完成，节奏感极强，适合在雅思 conclusion 段或 TEM-8 结尾中模仿。</p>
         </div>
       </div>
       <!-- Pane: 表达迁移 -->
       <div class="sample-pane" id="pane-expressions">
-        <h3>🔗 5 个可迁移表达</h3>
+        <h3>5 个可迁移表达</h3>
         <div class="pane-sub">不是背单词。每个表达带 argument 功能标注 + register/collocation 说明。</div>
         <div class="pane-block">
           <div class="tag">揭示本质 · high register · 题目概念界定</div>
@@ -664,7 +970,7 @@
       </div>
       <!-- Pane: 句型拆解 -->
       <div class="sample-pane" id="pane-sentence">
-        <h3>🔬 高级句型拆解</h3>
+        <h3>高级句型拆解</h3>
         <div class="pane-sub">不只是「这句话很高级」，而是「我能在什么场景用它」。</div>
         <div class="pane-block">
           <div class="block-title">目标句</div>
@@ -697,42 +1003,42 @@
       </div>
       <!-- Pane: Argument Chain -->
       <div class="sample-pane" id="pane-chain">
-        <h3>🔀 中文观点 → 英文 Argument Chain</h3>
+        <h3>中文观点 → 英文 Argument Chain</h3>
         <div class="pane-sub">最有价值的训练环节。把模糊的中文想法，转成有结构的英文 argument。</div>
         <div class="pane-block">
-          <div class="block-title">🇨🇳 中文观点</div>
+          <div class="block-title">中文观点</div>
           <p class="zh" style="font-size:15px;font-weight:600;background:var(--accent-bg);padding:14px;border-radius:6px;">「优绩主义的初衷是好的——奖励努力、鼓励奋斗。但当社会把『成功』完全归因于个人努力时，它忽视了一个基本事实：努力和天赋的分布是均匀的，但机会从来不是。真正的公平不是让所有人都相信『只要努力就能成功』，而是让努力的人——无论出身——都有接近成功的通道。」</p>
         </div>
         <div class="pane-block" style="background:var(--bg);">
-          <div class="block-title" style="color:var(--accent);">🏗️ English Core Concept</div>
+          <div class="block-title" style="color:var(--accent);">English Core Concept</div>
           <p class="en" style="font-size:14px;color:var(--slate);"><em>Meritocracy was well-intentioned — it rewards effort. But when societies attribute success entirely to individual effort, they ignore a basic truth: effort and talent are evenly distributed, but opportunity has never been. Real fairness is not convincing everyone they can succeed through hard work, but ensuring that those who work hard — regardless of background — have a pathway to success.</em></p>
         </div>
         <div class="pane-block" style="background:var(--bg);">
-          <div class="block-title" style="color:#16a34a;">⛓️ Causal Chain</div>
+          <div class="block-title" style="color:#16a34a;">Causal Chain</div>
           <p class="en" style="font-size:13.5px;background:var(--green-tint);padding:14px;border-radius:6px;line-height:1.9;">
           <strong>Meritocratic belief</strong> (<em>"success = effort + talent"</em>)<br>
           <span style="color:var(--accent);">→</span> <strong>Failure internalized</strong> (<em>setbacks attributed to personal inadequacy, not structural barriers</em>)<br>
-          <span style="color:var(--accent);">→</span> <strong>Chronic burnout</strong> (<em>37% higher burnout rate among meritocracy-internalizers, JAP 2024</em>)<br>
+          <span style="color:var(--accent);">→</span> <strong>Chronic burnout</strong> (<em>linked to internalized meritocratic beliefs in workplace studies</em>)<br>
           <span style="color:var(--accent);">→</span> <strong>Self-blame spiral</strong> (<em>burnout → feel inadequate → work harder → more burnout</em>)<br>
           <span style="color:var(--accent);">→</span> <strong>Systemic illusion reinforced</strong> (<em>the cycle itself becomes evidence that the individual "wasn't good enough"</em>)
           </p>
         </div>
         <div class="pane-block" style="background:var(--bg);">
-          <div class="block-title" style="color:#d97706;">⚖️ Weighing — 为什么「机会公平」比「奖励努力」更根本</div>
+          <div class="block-title" style="color:#d97706;">Weighing — 为什么「机会公平」比「奖励努力」更根本</div>
           <p class="en" style="font-size:13.5px;background:var(--warm-bg);padding:14px;border-radius:6px;line-height:1.8;">
           <strong>Rewarding effort</strong> is necessary but insufficient — effort alone cannot bridge gaps created by unequal starting points. A student working three part-time jobs is "working harder" than a student with tutors, but that effort is being <em>absorbed by survival</em>, not channeled into achievement.<br>
           <strong>Equalizing opportunity</strong> — through early education investment, accessible mentorship, and structural support — addresses the <em>root asymmetry</em>. It does not guarantee equal outcomes, but it removes the moral burden of failure from those who never had a fair chance. <strong>You cannot tell someone they failed because they didn't try hard enough, when the race was never run on the same track.</strong>
           </p>
         </div>
         <div class="pane-block" style="background:var(--accent-bg);">
-          <div class="block-title" style="color:var(--accent);">✍️ Sample Argument Paragraph</div>
+          <div class="block-title" style="color:var(--accent);">Sample Argument Paragraph</div>
           <p class="en" style="font-size:14px;line-height:1.85;"><em>Meritocracy, <strong>for all its</strong> rhetorical appeal, has become <strong>a recipe for</strong> collective exhaustion rather than collective motivation. When a society frames every failure as a personal deficiency, it imposes what philosopher Michael Sandel calls <strong>the tyranny of merit</strong> — a system in which those who succeed feel entitled to their success, and those who fail are left not only with the consequences of failure, but with the shame of having "deserved" it. <strong>Critics counter that</strong> abandoning meritocracy would mean abandoning standards altogether — but this is a false choice. The alternative is not the rejection of excellence, but the recognition that <strong>talent is distributed far more evenly than opportunity ever has been</strong>. We do not need to stop rewarding effort; we need to stop <strong>confusing effort with virtue</strong> in a world where not everyone has the same capacity to convert effort into achievement.</em></p>
-          <p class="zh" style="font-size:12.5px;color:var(--muted);margin-top:10px;">📌 注意：这段用了全部 5 个今日表达（<strong>加粗标出</strong>），并且 thesis → causal chain → counter-argument → reframing → conclusion 一气呵成。注意最后一句的节奏：否定 + 肯定在同一句中完成，不拖泥带水。对比你自己的版本，找出差距。</p>
+          <p class="zh" style="font-size:12.5px;color:var(--muted);margin-top:10px;">注意：这段用了全部 5 个今日表达（<strong>加粗标出</strong>），并且 thesis → causal chain → counter-argument → reframing → conclusion 一气呵成。注意最后一句的节奏：否定 + 肯定在同一句中完成，不拖泥带水。对比你自己的版本，找出差距。</p>
         </div>
       </div>
       <!-- Pane: 输出任务 -->
       <div class="sample-pane" id="pane-output">
-        <h3>✍️ 今日输出任务</h3>
+        <h3>今日输出任务</h3>
         <div class="pane-sub">TEM-8 / IELTS Task 2 / 课堂 presentation 风格。带结构指引和 self-check。</div>
         <div class="pane-block">
           <div class="block-title">写作任务（IELTS Task 2 / TEM-8 风格）</div>
@@ -780,7 +1086,7 @@
           <div class="step-en">INPUT</div>
           <div class="step-cn">输入 — 建立语境，识别论证框架</div>
           <div class="divider"></div>
-          <p>读今日议题背景（中文）+ 外刊核心段落（英文）。不依赖 VPN，中文背景帮你快速进入议题语境，在不查词典的前提下定位外刊段落的论证框架。</p>
+          <p>读今日议题背景（中文）+ 核心英文段落。你不需要依赖外部链接，中文背景帮你快速进入议题语境，在不查词典的前提下定位英文段落的论证框架。</p>
           <div class="en-quote">Read to notice, not just to understand.</div>
         </div>
         <!-- Card 02: Noticing -->
@@ -789,7 +1095,7 @@
           <div class="step-en">NOTICING</div>
           <div class="step-cn">留意 — 训练识别 argument 结构的眼力</div>
           <div class="divider"></div>
-          <p>主动标注外刊段落中 thesis / premise / evidence / counter-argument / conclusion 的位置。把「被动阅读」升级为「主动标注」，培养一眼看穿论证结构的习惯。</p>
+          <p>主动标注英文段落中 thesis / premise / evidence / counter-argument / conclusion 的位置。把「被动阅读」升级为「主动标注」，培养一眼看穿论证结构的习惯。</p>
           <div class="en-quote">Find the skeleton beneath the prose.</div>
         </div>
         <!-- Card 03: Analysis -->
@@ -834,34 +1140,41 @@
 <!-- ═══ 6. Who It Is For ═══ -->
 <section class="who" id="who">
   <div class="section-inner">
-    <div class="section-label fade-in">Who It Is For</div>
-    <h2 class="section-title fade-in">适合谁</h2>
-    <p class="section-desc fade-in">不是给每个人的。如果你只是随便看看，这个产品可能不适合你。</p>
-    <div class="who-grid">
-      <div class="who-card fade-in">
-        <div class="who-icon">🎓</div>
+    <div class="section-heading centered">
+      <span class="eyebrow fade-in">Who It Is For</span>
+      <h2 class="section-title fade-in">适合谁</h2>
+      <p class="section-desc fade-in">不是给每个人的。如果你只是随便看看，这个产品可能不适合你。</p>
+    </div>
+    <div class="audience-grid">
+
+      <article class="audience-card fade-in">
+        <div class="icon-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div>
         <h3>英专生（TEM-4 / TEM-8）</h3>
-        <p>能读懂外刊大意，但写作/口语时感到「表达受限」。需要一个系统性的 argument 训练路径，而不只是更多精读材料。从中文想法到英文论证，每一期都在练专八真实考点。</p>
-        <div class="pain">「专八作文写来写去还是 simple sentences。」</div>
-      </div>
-      <div class="who-card fade-in">
-        <div class="who-icon">🌍</div>
+        <p>能读懂外刊大意，但写作/口语时感到「表达受限」。需要一个系统性的 argument 训练路径，从中文想法到英文论证，每一期都在练专八真实考点。</p>
+        <div class="audience-quote">「专八作文写来写去还是 simple sentences。」</div>
+      </article>
+
+      <article class="audience-card fade-in">
+        <div class="icon-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
         <h3>IELTS 备考者（写作 6.0→7.5）</h3>
         <p>Task 2 反复卡在 6.0。问题通常不在词汇量，而在 argument structure 和 cohesive devices 的使用。每期训练让你积累真正能在考场上复用的论证框架。</p>
-        <div class="pain">「写作一直 6.0，不知道怎么突破 7.0。」</div>
-      </div>
-      <div class="who-card fade-in">
-        <div class="who-icon">💬</div>
+        <div class="audience-quote">「写作一直 6.0，不知道怎么突破 7.0。」</div>
+      </article>
+
+      <article class="audience-card fade-in">
+        <div class="icon-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
         <h3>口语 Part 3 / Presentation 需求者</h3>
-        <p>Part 1–2 没问题，但 Part 3 被追问就「卡壳」。或者课堂 presentation 需要即兴发表有深度的英文观点。训练的是：听到抽象问题 → 快速搭建 argument chain 的能力。</p>
-        <div class="pain">「Part 3 一被追问就退回到 I think… because…」</div>
-      </div>
-      <div class="who-card fade-in">
-        <div class="who-icon">📚</div>
+        <p>Part 1–2 没问题，但 Part 3 被追问就「卡壳」。或者课堂 presentation 需要即兴发表有深度的英文观点。训练的是从抽象问题到 structured argument 的能力。</p>
+        <div class="audience-quote">「Part 3 一被追问就退回到 I think… because…」</div>
+      </article>
+
+      <article class="audience-card fade-in">
+        <div class="icon-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
         <h3>外刊精读营「毕业」学员</h3>
         <p>跟完精读营，停下来不知道下一步学什么。ArgueLab 是精读的自然延伸——从「读懂这篇文章在说什么」到「这篇文章的 argument，我可以怎么用」。</p>
-        <div class="pain">「精读营学了很多，但自己写还是写不出来。」</div>
-      </div>
+        <div class="audience-quote">「精读营学了很多，但自己写还是写不出来。」</div>
+      </article>
+
     </div>
   </div>
 </section>
@@ -874,12 +1187,15 @@
     <p class="section-desc fade-in">市面上的东西在教「这篇文章讲了什么」；ArgueLab 关心的是「这篇文章的论证方式，你能不能自己用出来」。</p>
     <div class="compare-table">
       <table>
+        <thead>
         <tr>
           <th>对比维度</th>
           <th>普通外刊精读</th>
           <th>新闻订阅 / 词汇推送</th>
           <th class="highlight-col">ArgueLab</th>
         </tr>
+        </thead>
+        <tbody>
         <tr>
           <td><strong>核心目标</strong></td>
           <td>阅读理解</td>
@@ -923,11 +1239,12 @@
           <td class="highlight-col"><span class="check">主动输出 · 有训练闭环</span></td>
         </tr>
         <tr>
-          <td><strong>VPN 依赖</strong></td>
+          <td><strong>外部依赖</strong></td>
           <td><span class="dash">通常需要</span></td>
           <td><span class="dash">通常需要</span></td>
-          <td class="highlight-col"><span class="check">不需要——内容通过邮件发送</span></td>
+          <td class="highlight-col"><span class="check">不需要——核心内容内嵌在训练卡中</span></td>
         </tr>
+        </tbody>
       </table>
     </div>
   </div>
@@ -946,7 +1263,7 @@
         <div class="price-desc">加入即可在 Beta 阶段免费接收全部训练内容。</div>
         <ul class="price-features">
           <li>每周 3 期完整训练内容</li>
-          <li>议题背景（中文）+ 外刊核心段落</li>
+          <li>议题背景（中文）+ 核心英文段落</li>
           <li>5 个可迁移表达 + 功能标注</li>
           <li>1 个高级句型拆解 + 仿写模板</li>
           <li>中文观点 → Argument Chain 引导</li>
@@ -980,7 +1297,7 @@
     <div class="faq-list">
       <div class="faq-item">
         <button class="faq-q" onclick="toggleFaq(this)">ArgueLab 和外刊精读营有什么区别？<span class="faq-arrow">⌄</span></button>
-        <div class="faq-a">精读营的核心是「读懂」——逐字逐句翻译，帮你建立理解。ArgueLab 的核心是「输出」——用外刊的 argument 结构，训练你自己的表达能力。你可以把 ArgueLab 理解为一个「精读之后」的东西：当你不满足于读懂，但还不知道怎么把读到的变成自己能写能说的——这就是 ArgueLab 做的事。</div>
+        <div class="faq-a">精读营的核心是「读懂」——逐字逐句翻译，帮你建立理解。ArgueLab 的核心是「输出」——用英文高质量材料的 argument 结构，训练你自己的表达能力。你可以把 ArgueLab 理解为一个「精读之后」的东西：当你不满足于读懂，但还不知道怎么把读到的变成自己能写能说的——这就是 ArgueLab 做的事。</div>
       </div>
       <div class="faq-item">
         <button class="faq-q" onclick="toggleFaq(this)">ArgueLab 不适合谁？<span class="faq-arrow">⌄</span></button>
@@ -992,11 +1309,11 @@
       </div>
       <div class="faq-item">
         <button class="faq-q" onclick="toggleFaq(this)">每周几期？每期需要多少时间？<span class="faq-arrow">⌄</span></button>
-        <div class="faq-a">Beta 阶段每周 3 期（周一、周三、周五发送）。每期约 20 分钟：议题背景（3 分钟）+ 外刊段落（5 分钟）+ 表达+句型（7 分钟）+ 输出任务（5 分钟）。你可以灵活调整——但即使只做「表达+句型」部分，也是在积累 usable expressions。</div>
+        <div class="faq-a">Beta 阶段每周 3 期（周一、周三、周五发送）。每期约 20 分钟：议题背景（3 分钟）+ 英文段落（5 分钟）+ 表达+句型（7 分钟）+ 输出任务（5 分钟）。你可以灵活调整——但即使只做「表达+句型」部分，也是在积累 usable expressions。</div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">需要 VPN 吗？需要打开外刊原文吗？<span class="faq-arrow">⌄</span></button>
-        <div class="faq-a">不需要。所有内容通过邮件发送，外刊段落已内嵌在邮件中，议题背景用中文撰写。你不需要访问任何外部网站就能完成一期完整的训练。当然，如果方便的话，我们也鼓励你去读原文——但这不是训练的必要条件。</div>
+        <button class="faq-q" onclick="toggleFaq(this)">需要访问外部网站吗？需要打开原文链接吗？<span class="faq-arrow">⌄</span></button>
+        <div class="faq-a">不需要。每份训练卡都包含完整的中文背景、英文核心材料、表达迁移、句型拆解、Argument Chain 和输出任务——你不需要访问任何外部网站就能完成一期完整的训练。原文链接如有提供，仅作为延伸阅读。</div>
       </div>
       <div class="faq-item">
         <button class="faq-q" onclick="toggleFaq(this)">Beta 阶段持续多久？什么时候收费？<span class="faq-arrow">⌄</span></button>
@@ -1010,56 +1327,181 @@
   </div>
 </section>
 
-<!-- ═══ 9. Signup / CTA ═══ -->
-<section class="cta" id="cta">
-  <div class="section-inner">
-    <div class="section-label fade-in" style="color:#93c5fd;">Try It</div>
-    <h2 class="section-title fade-in">试试看，不收钱</h2>
-    <p class="section-desc fade-in">Beta 阶段不收费。留下邮箱，收到邀请后第一期训练内容会直接发到你收件箱。下面的偏好调查是选填的——但填了能帮我把内容做得更对路。</p>
-    <div class="cta-form">
-      <div class="cta-row">
-        <input type="email" class="cta-input" placeholder="your@email.com" id="email-input" style="flex:1;">
-        <button class="btn-primary" onclick="subscribe(this)">免费加入</button>
-      </div>
+<!-- ═══ 9. Beta Intake Form / Subscribe ═══ -->
+<section class="beta-section" id="cta">
+  <div class="beta-grid">
 
-      <!-- Learning Preference Survey -->
-      <div class="survey-group">
-        <label>你的当前水平（选填）</label>
-        <select class="survey-select" id="survey-level">
-          <option value="">请选择…</option>
-          <option value="tem4">英语专四备考</option>
-          <option value="tem8">英语专八备考</option>
-          <option value="ielts6">IELTS 6.0–6.5 冲刺</option>
-          <option value="ielts7">IELTS 7.0+ 冲刺</option>
-          <option value="toefl">TOEFL 备考</option>
-          <option value="self">自学者 / 非考试需求</option>
-        </select>
+    <!-- Left: Intro -->
+    <div class="beta-intro">
+      <div class="section-label fade-in">TRY ARGUELAB</div>
+      <h2 class="section-title fade-in">加入 ArgueLab Beta</h2>
+      <div class="section-desc fade-in">
+        <p>ArgueLab 还在内测阶段。你将收到 3 份表达训练卡，每份围绕一个真实议题，包含中文背景、英文核心段落、表达迁移、句型拆解、Argument Chain 和输出任务。</p>
+        <p>这不是新闻订阅，也不是普通英文精读。我们想测试的是：这样的训练是否真的能帮助学习者从 reading comprehension 走向 argument production。</p>
       </div>
-
-      <div class="survey-group">
-        <label>你最想提升的能力（可多选）</label>
-        <div class="survey-chips" id="survey-goals">
-          <span class="survey-chip" onclick="toggleChip(this)" data-value="essay">议论文写作</span>
-          <span class="survey-chip" onclick="toggleChip(this)" data-value="speaking">口语 express 观点</span>
-          <span class="survey-chip" onclick="toggleChip(this)" data-value="structure">Argument 结构思维</span>
-          <span class="survey-chip" onclick="toggleChip(this)" data-value="expression">高级表达积累</span>
-          <span class="survey-chip" onclick="toggleChip(this)" data-value="presentation">课堂 presentation</span>
-        </div>
-      </div>
-
-      <div class="survey-group">
-        <label>你感兴趣的话题领域（可多选）</label>
-        <div class="survey-chips" id="survey-topics">
-          <span class="survey-chip" onclick="toggleChip(this)" data-value="tech">科技与 AI</span>
-          <span class="survey-chip" onclick="toggleChip(this)" data-value="society">社会与文化</span>
-          <span class="survey-chip" onclick="toggleChip(this)" data-value="education">教育</span>
-          <span class="survey-chip" onclick="toggleChip(this)" data-value="environment">环境</span>
-          <span class="survey-chip" onclick="toggleChip(this)" data-value="politics">国际政治</span>
-          <span class="survey-chip" onclick="toggleChip(this)" data-value="economics">经济</span>
-        </div>
+      <div class="beta-perks fade-in">
+        <span class="beta-perk">免费参与</span>
+        <span class="beta-perk">每周 2–3 份训练卡</span>
+        <span class="beta-perk">每份约 20 分钟</span>
+        <span class="beta-perk">可随时取消订阅</span>
+        <span class="beta-perk">你的反馈会帮助我们调整内容方向</span>
       </div>
     </div>
-    <p class="cta-note">不收钱 · 可随时退订 · 只发训练内容，不发广告</p>
+
+    <!-- Right: Form -->
+    <div class="beta-form-card fade-in" id="beta-form-card">
+      <!-- Form Fields -->
+      <div class="beta-form-fields" id="beta-form-fields">
+
+        <!-- Error Banner -->
+        <div class="beta-error-banner" id="beta-error-banner"></div>
+
+        <!-- 1. Email -->
+        <div class="beta-field">
+          <label class="beta-label" for="beta-email">Email Address <span class="required">*</span></label>
+          <input type="email" class="beta-input" id="beta-email" placeholder="your@email.com" autocomplete="email">
+          <div class="beta-error" id="beta-error-email">Please enter a valid email address</div>
+        </div>
+
+        <!-- 2. Identity -->
+        <div class="beta-field">
+          <label class="beta-label" for="beta-identity">你现在的学习身份？ <span class="required">*</span></label>
+          <select class="beta-select" id="beta-identity">
+            <option value="">请选择…</option>
+            <option value="english-major">英语专业学生</option>
+            <option value="non-english">非英专大学生</option>
+            <option value="tem4-8">专四 / 专八备考</option>
+            <option value="ielts-toefl">IELTS / TOEFL 备考</option>
+            <option value="postgrad">考研 / 保研 / 留学申请</option>
+            <option value="advanced-learner">其他高阶英语学习者</option>
+          </select>
+        </div>
+
+        <!-- 3. Goals (chips) -->
+        <div class="beta-field">
+          <label class="beta-label">你最想提升什么？ <span class="required">*</span></label>
+          <div class="beta-chips" id="beta-goals">
+            <span class="beta-chip" data-value="writing">英文写作</span>
+            <span class="beta-chip" data-value="speaking">英文口语</span>
+            <span class="beta-chip" data-value="presentation">Presentation</span>
+            <span class="beta-chip" data-value="reading">外刊阅读</span>
+            <span class="beta-chip" data-value="vocab">词汇表达</span>
+            <span class="beta-chip" data-value="argument">论证结构</span>
+            <span class="beta-chip" data-value="cn2en">中文观点转英文表达</span>
+          </div>
+          <div class="beta-error" id="beta-error-goals">Please select at least one goal</div>
+        </div>
+
+        <!-- 4. Pain Point (radio cards) -->
+        <div class="beta-field">
+          <label class="beta-label">你现在最卡在哪里？ <span class="required">*</span></label>
+          <div class="beta-radios" id="beta-pain">
+            <div class="beta-radio" data-value="read-not-write">
+              <span class="beta-radio-dot"></span> 读得懂，但写不出
+            </div>
+            <div class="beta-radio" data-value="no-structure">
+              <span class="beta-radio-dot"></span> 有观点，但英文里没结构
+            </div>
+            <div class="beta-radio" data-value="vocab-unused">
+              <span class="beta-radio-dot"></span> 背了词汇，但不会用
+            </div>
+            <div class="beta-radio" data-value="no-chain">
+              <span class="beta-radio-dot"></span> 不会展开 argument chain
+            </div>
+            <div class="beta-radio" data-value="no-transfer">
+              <span class="beta-radio-dot"></span> 不知道如何把外刊表达迁移到写作 / 口语
+            </div>
+            <div class="beta-radio" data-value="no-routine">
+              <span class="beta-radio-dot"></span> 缺少持续训练节奏
+            </div>
+          </div>
+          <div class="beta-error" id="beta-error-pain">Please select your biggest challenge</div>
+        </div>
+
+        <!-- 5. Topics (chips) -->
+        <div class="beta-field">
+          <label class="beta-label">你最感兴趣的议题方向？ <span class="optional">(可多选)</span></label>
+          <div class="beta-chips" id="beta-topics">
+            <span class="beta-chip" data-value="ai-education">AI 与教育</span>
+            <span class="beta-chip" data-value="meritocracy">优绩主义与内卷</span>
+            <span class="beta-chip" data-value="social-media">社交媒体与注意力</span>
+            <span class="beta-chip" data-value="gender-body">性别与身体</span>
+            <span class="beta-chip" data-value="climate">气候与未来</span>
+            <span class="beta-chip" data-value="culture-critique">文化批评</span>
+            <span class="beta-chip" data-value="international">国际关系</span>
+            <span class="beta-chip" data-value="business-tech">商业与科技</span>
+            <span class="beta-chip" data-value="literature-modernity">文学 / 哲学 / 现代性</span>
+          </div>
+        </div>
+
+        <!-- 6. Frequency (radio) -->
+        <div class="beta-field">
+          <label class="beta-label">你更希望收到的频率？ <span class="required">*</span></label>
+          <div class="beta-radios" id="beta-frequency">
+            <div class="beta-radio" data-value="weekly-1">
+              <span class="beta-radio-dot"></span> 每周 1 份
+            </div>
+            <div class="beta-radio" data-value="weekly-2-3">
+              <span class="beta-radio-dot"></span> 每周 2–3 份
+            </div>
+            <div class="beta-radio" data-value="3-in-7-days">
+              <span class="beta-radio-dot"></span> 7 天内测收到 3 份
+            </div>
+            <div class="beta-radio" data-value="sample-only">
+              <span class="beta-radio-dot"></span> 暂时只想看样例
+            </div>
+          </div>
+          <div class="beta-error" id="beta-error-frequency">Please select your preferred frequency</div>
+        </div>
+
+        <!-- 7. Message (textarea) -->
+        <div class="beta-field">
+          <label class="beta-label" for="beta-message">留言 / 你希望 ArgueLab 帮你解决什么？ <span class="optional">(选填)</span></label>
+          <textarea class="beta-textarea" id="beta-message" placeholder="例如：我想提高专四材料作文 / 我想练雅思 Task 2 / 我想把中文观点转成更自然的英文表达……"></textarea>
+        </div>
+
+        <!-- 8. Consent -->
+        <div class="beta-field">
+          <label class="beta-consent" id="beta-consent-label">
+            <input type="checkbox" id="beta-consent-check">
+            <span class="beta-checkbox"></span>
+            <span>我同意接收 ArgueLab Beta 邮件，并理解可以随时取消订阅。</span>
+          </label>
+          <div class="beta-error" id="beta-error-consent">Please confirm that you agree to receive ArgueLab Beta emails.</div>
+        </div>
+
+        <!-- Submit -->
+        <button class="beta-submit" id="beta-submit-btn" onclick="handleBetaSubmit(event)">Subscribe to Beta</button>
+        <p class="beta-submit-note">We only use your email and learning preferences to send ArgueLab materials and improve the beta. No spam, no data selling.</p>
+      </div>
+
+      <!-- Success State -->
+      <div class="beta-success" id="beta-success-msg">
+        <div class="beta-success-icon">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="24" cy="24" r="22" stroke="var(--accent, #3B6EA8)" stroke-width="1" opacity="0.2"/>
+            <circle cx="24" cy="24" r="14" stroke="var(--accent, #3B6EA8)" stroke-width="0.75" opacity="0.12"/>
+            <path d="M17 24.5l3.5 3.5 7-7" stroke="var(--accent, #3B6EA8)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" opacity="0.65"/>
+          </svg>
+        </div>
+        <div class="beta-success-title">You're on the Beta list.</div>
+        <p class="beta-success-subtitle">第一份 ArgueLab 训练卡会发送到你的邮箱。</p>
+        <p class="beta-success-text">接下来你会收到 3 份表达训练卡。每份卡都会围绕一个真实议题，带你完成从 context 到 expression transfer，再到 argument output 的一次训练。<br><br>我们会根据你的学习偏好调整后续内容方向。你也可以直接回复邮件告诉我们：哪一部分最有用，哪一部分太重，或者你希望看到什么议题。</p>
+
+        <div class="beta-summary" id="beta-summary">
+          <div class="beta-summary-title">Your Beta Profile</div>
+          <div class="beta-summary-rows" id="beta-summary-rows"></div>
+        </div>
+
+        <div class="beta-success-actions">
+          <button class="beta-success-btn primary" onclick="document.getElementById('sample').scrollIntoView({behavior:'smooth'})">View Sample Issue</button>
+          <button class="beta-success-btn secondary" onclick="restoreFormState()">Edit My Response</button>
+        </div>
+
+        <p class="beta-success-footer">No spam. No data selling. You can unsubscribe or request deletion anytime.</p>
+      </div>
+    </div>
+
   </div>
 </section>
 
@@ -1083,42 +1525,96 @@
 </footer>
 
 <script>
-  /* ── 1. Tab switching with fade/slide animation ── */
-  function switchTab(btn, name) {
-    var oldPane = document.querySelector('.sample-pane.active');
-    var nextPane = document.getElementById('pane-' + name);
-    if (oldPane === nextPane) return;
+  /* ── Theme Toggle ── */
+  var STORAGE_KEY = 'arguelab-theme';
 
-    // Update tab buttons
-    document.querySelectorAll('.sample-tab').forEach(function(t) { t.classList.remove('active'); });
-    btn.classList.add('active');
-
-    // Fade out current pane
-    if (oldPane) {
-      oldPane.classList.remove('anim-in');
-      oldPane.addEventListener('transitionend', function handler() {
-        oldPane.removeEventListener('transitionend', handler);
-        oldPane.classList.remove('active');
-        showNext();
-      });
-      // Fallback if transitionend doesn't fire
-      setTimeout(function() {
-        if (oldPane.classList.contains('active')) {
-          oldPane.classList.remove('active');
-          showNext();
-        }
-      }, 400);
+  function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem(STORAGE_KEY, theme);
+    var icon = document.getElementById('theme-icon');
+    var label = document.getElementById('theme-label');
+    if (theme === 'dark') {
+      if (icon) icon.textContent = '\u263e';
+      if (label) label.textContent = 'Dark Mode';
     } else {
-      showNext();
-    }
-
-    function showNext() {
-      nextPane.classList.add('active');
-      // Force reflow then animate in
-      nextPane.offsetHeight;
-      nextPane.classList.add('anim-in');
+      if (icon) icon.textContent = '\u2600\ufe0e';
+      if (label) label.textContent = 'Reading Mode';
     }
   }
+
+  var savedTheme = localStorage.getItem(STORAGE_KEY);
+  if (savedTheme) {
+    applyTheme(savedTheme);
+  } else {
+    applyTheme('light');
+  }
+
+  var toggleBtn = document.getElementById('theme-toggle');
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', function() {
+      var current = document.documentElement.getAttribute('data-theme');
+      applyTheme(current === 'dark' ? 'light' : 'dark');
+    });
+  }
+
+
+  /* ── 1. Tab switching (stable, no transitionend dependency) ── */
+  function switchTab(btn, name) {
+    var nextPane = document.getElementById('pane-' + name);
+    if (!nextPane) {
+      console.warn('Sample pane not found:', name);
+      return;
+    }
+
+    // Update tab buttons
+    var allTabs = document.querySelectorAll('.sample-tab');
+    allTabs.forEach(function(t) {
+      t.classList.remove('active');
+      t.setAttribute('aria-selected', 'false');
+      t.setAttribute('tabindex', '-1');
+    });
+    btn.classList.add('active');
+    btn.setAttribute('aria-selected', 'true');
+    btn.setAttribute('tabindex', '0');
+
+    // Switch pane — animation is pure CSS via .active class
+    document.querySelectorAll('.sample-pane').forEach(function(p) {
+      p.classList.remove('active');
+      p.setAttribute('aria-hidden', 'true');
+    });
+    nextPane.classList.add('active');
+    nextPane.setAttribute('aria-hidden', 'false');
+  }
+
+  // Safety: ensure first pane is visible on load
+  document.addEventListener('DOMContentLoaded', function() {
+    var anyActive = document.querySelector('.sample-pane.active');
+    if (!anyActive) {
+      var defaultPane = document.getElementById('pane-bg');
+      if (defaultPane) { defaultPane.classList.add('active'); defaultPane.setAttribute('aria-hidden', 'false'); }
+    }
+    // Ensure first tab matches
+    var activeTab = document.querySelector('.sample-tab.active');
+    if (!activeTab) {
+      var firstTab = document.querySelector('.sample-tab');
+      if (firstTab) { firstTab.classList.add('active'); firstTab.setAttribute('aria-selected', 'true'); firstTab.setAttribute('tabindex', '0'); }
+    }
+    // Add keyboard navigation for tabs (arrow keys)
+    var tabList = document.querySelector('.sample-tabs');
+    if (tabList) {
+      tabList.addEventListener('keydown', function(e) {
+        var tabs = Array.from(tabList.querySelectorAll('.sample-tab'));
+        var idx = tabs.indexOf(document.activeElement);
+        if (idx === -1) return;
+        if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+          e.preventDefault();
+          var next = e.key === 'ArrowRight' ? (idx + 1) % tabs.length : (idx - 1 + tabs.length) % tabs.length;
+          tabs[next].focus();
+          tabs[next].click();
+        }
+      });
+    }
+  });
 
   /* ── 2. FAQ smooth height toggle ── */
   function toggleFaq(btn) {
@@ -1149,28 +1645,294 @@
     }
   }
 
-  /* ── 3. Chip toggle ── */
-  function toggleChip(chip) { chip.classList.toggle('selected'); }
+  /* ── 3. Beta Form ── */
+  /* Standalone demo mode — form shows success state without any backend fetch.
+     Set DEMO_MODE=false and inject window.ARGUELAB_API_BASE_URL to wire to a real API. */
+  var DEMO_MODE = true;
+  var _savedFormState = null;
+  var API_BASE_URL = window.ARGUELAB_API_BASE_URL || '';
+
+  /* Label maps for summary display */
+  var GOAL_LABELS = {
+    writing: '英文写作', speaking: '英文口语', presentation: 'Presentation',
+    reading: '外刊阅读', vocab: '词汇表达', argument: '论证结构',
+    'cn2en': '中文观点转英文表达'
+  };
+  var TOPIC_LABELS = {
+    'ai-education': 'AI 与教育', meritocracy: '优绩主义与内卷',
+    'social-media': '社交媒体与注意力', 'gender-body': '性别与身体',
+    climate: '气候与未来', 'culture-critique': '文化批评',
+    international: '国际关系', 'business-tech': '商业与科技',
+    'literature-modernity': '文学 / 哲学 / 现代性'
+  };
+  var FREQ_LABELS = {
+    'weekly-1': '每周 1 份', 'weekly-2-3': '每周 2–3 份',
+    '3-in-7-days': '7 天内测收到 3 份', 'sample-only': '暂时只想看样例'
+  };
+
+  /* Chip toggle */
+  function initBetaChips() {
+    document.querySelectorAll('.beta-chip').forEach(function(chip) {
+      chip.addEventListener('click', function() {
+        this.classList.toggle('selected');
+      });
+    });
+  }
+
   function getSelectedChips(containerId) {
-    var chips = document.querySelectorAll('#' + containerId + ' .survey-chip.selected');
+    var chips = document.querySelectorAll('#' + containerId + ' .beta-chip.selected');
     return Array.from(chips).map(function(c) { return c.getAttribute('data-value'); });
   }
 
-  /* ── 4. Subscribe ── */
-  async function subscribe(btn) {
-    var email = document.getElementById('email-input').value.trim();
-    if (!email || !email.includes('@')) { alert('请输入有效的邮箱地址'); return; }
-    btn.textContent = '提交中…'; btn.disabled = true;
-    var surveyData = { email: email, level: document.getElementById('survey-level').value, goals: getSelectedChips('survey-goals'), topics: getSelectedChips('survey-topics') };
-    try {
-      var resp = await fetch('/api/subscribe', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(surveyData) });
-      var data = await resp.json();
-      if (data.success) { btn.textContent = '已加入 ✓'; btn.style.background = '#16a34a'; btn.style.borderColor = '#16a34a'; document.querySelector('.cta .section-desc').textContent = '检查你的收件箱！你的第一期训练内容即将发送。'; }
-      else { btn.textContent = data.error || '提交失败'; btn.disabled = false; setTimeout(function(){ btn.textContent = '免费加入'; }, 2000); }
-    } catch(e) { btn.textContent = '已加入 ✓ (Demo)'; btn.style.background = '#16a34a'; btn.style.borderColor = '#16a34a'; document.querySelector('.cta .section-desc').textContent = 'Demo 模式：订阅成功！部署后端服务后可正常使用。'; }
+  function setSelectedChips(containerId, values) {
+    var chips = document.querySelectorAll('#' + containerId + ' .beta-chip');
+    chips.forEach(function(c) {
+      var val = c.getAttribute('data-value');
+      if (values.indexOf(val) !== -1) c.classList.add('selected');
+      else c.classList.remove('selected');
+    });
   }
 
-  /* ── 5. Header scroll effect ── */
+  /* Radio card toggle */
+  function initBetaRadios() {
+    document.querySelectorAll('.beta-radios').forEach(function(group) {
+      group.querySelectorAll('.beta-radio').forEach(function(radio) {
+        radio.addEventListener('click', function() {
+          group.querySelectorAll('.beta-radio').forEach(function(r) { r.classList.remove('selected'); });
+          this.classList.add('selected');
+        });
+      });
+    });
+  }
+
+  function setSelectedRadio(containerId, value) {
+    var radios = document.querySelectorAll('#' + containerId + ' .beta-radio');
+    radios.forEach(function(r) {
+      r.classList.toggle('selected', r.getAttribute('data-value') === value);
+    });
+  }
+
+  /* Consent toggle */
+  function initBetaConsent() {
+    var label = document.getElementById('beta-consent-label');
+    var check = document.getElementById('beta-consent-check');
+    label.addEventListener('click', function() {
+      check.checked = !check.checked;
+      label.classList.toggle('checked', check.checked);
+    });
+  }
+
+  /* ── Form data collection ── */
+  function collectFormPayload() {
+    var painRadio = document.querySelector('#beta-pain .beta-radio.selected');
+    var freqRadio = document.querySelector('#beta-frequency .beta-radio.selected');
+    return {
+      email: document.getElementById('beta-email').value.trim(),
+      identity: document.getElementById('beta-identity').value,
+      goals: getSelectedChips('beta-goals'),
+      painPoint: painRadio ? painRadio.getAttribute('data-value') : '',
+      topics: getSelectedChips('beta-topics'),
+      frequency: freqRadio ? freqRadio.getAttribute('data-value') : '',
+      message: document.getElementById('beta-message').value.trim(),
+      consent: document.getElementById('beta-consent-check').checked,
+      createdAt: new Date().toISOString()
+    };
+  }
+
+  /* ── Validation ── */
+  function validateBetaForm(payload) {
+    var errors = {};
+    if (!payload.email || !payload.email.includes('@')) errors.email = 'Please enter a valid email address.';
+    if (!payload.goals || !payload.goals.length) errors.goals = 'Please select at least one goal.';
+    if (!payload.painPoint) errors.pain = 'Please select your biggest challenge.';
+    if (!payload.frequency) errors.frequency = 'Please select your preferred frequency.';
+    if (!payload.consent) errors.consent = 'Please confirm that you agree to receive ArgueLab Beta emails.';
+    return { valid: Object.keys(errors).length === 0, errors: errors };
+  }
+
+  /* ── Error display ── */
+  function showFieldError(fieldName, message) {
+    if (fieldName === 'banner' || fieldName === 'submit') {
+      var banner = document.getElementById('beta-error-banner');
+      if (banner) { banner.textContent = message || ''; banner.classList.toggle('visible', !!message); }
+      return;
+    }
+    var el = document.getElementById('beta-error-' + fieldName);
+    if (el && message) { el.textContent = message; }
+    if (el) { el.classList.toggle('visible', !!message); }
+    // Also toggle .error class on the input/container
+    var input = document.getElementById('beta-' + fieldName);
+    if (input) { input.classList.toggle('error', !!message); }
+    // For pain/frequency (radio groups), also style the container
+    if (fieldName === 'pain' || fieldName === 'frequency') {
+      var container = document.getElementById('beta-' + fieldName);
+      if (container) container.classList.toggle('error', !!message);
+    }
+    // For goals/topics (chip groups), also style the container
+    if (fieldName === 'goals' || fieldName === 'topics') {
+      var container = document.getElementById('beta-' + fieldName);
+      if (container) container.classList.toggle('error', !!message);
+    }
+  }
+
+  function clearErrors() {
+    // Banner
+    var banner = document.getElementById('beta-error-banner');
+    if (banner) banner.classList.remove('visible');
+    // Field errors
+    ['email','goals','pain','frequency','consent'].forEach(function(f) { showFieldError(f, null); });
+  }
+
+  /* ── Loading state ── */
+  function showLoadingState() {
+    var card = document.getElementById('beta-form-card');
+    var btn = document.getElementById('beta-submit-btn');
+    if (card) card.classList.add('loading');
+    if (btn) { btn.textContent = 'Subscribing…'; btn.disabled = true; }
+  }
+
+  function hideLoadingState() {
+    var card = document.getElementById('beta-form-card');
+    var btn = document.getElementById('beta-submit-btn');
+    if (card) card.classList.remove('loading');
+    if (btn) { btn.textContent = 'Subscribe to Beta'; btn.disabled = false; }
+  }
+
+  /* ── Save / restore form state ── */
+  function saveFormState() {
+    _savedFormState = collectFormPayload();
+  }
+
+  function restoreFormState() {
+    var card = document.getElementById('beta-form-card');
+    if (!card) return;
+    card.classList.remove('success-state');
+    // Use timeout to let CSS transition reset before repopulating
+    setTimeout(function() {
+      if (!_savedFormState) return;
+      var s = _savedFormState;
+      document.getElementById('beta-email').value = s.email || '';
+      document.getElementById('beta-identity').value = s.identity || '';
+      setSelectedChips('beta-goals', s.goals || []);
+      setSelectedRadio('beta-pain', s.painPoint || '');
+      setSelectedChips('beta-topics', s.topics || []);
+      setSelectedRadio('beta-frequency', s.frequency || '');
+      document.getElementById('beta-message').value = s.message || '';
+      var check = document.getElementById('beta-consent-check');
+      var label = document.getElementById('beta-consent-label');
+      if (check) check.checked = s.consent || false;
+      if (label) label.classList.toggle('checked', s.consent || false);
+      clearErrors();
+      document.getElementById('beta-form-card').scrollIntoView({behavior:'smooth'});
+    }, 150);
+  }
+
+  /* ── Success state ── */
+  function showSuccessState(payload) {
+    // Build summary rows
+    var rows = document.getElementById('beta-summary-rows');
+    if (!rows) return;
+    var html = '';
+    if (payload.email) {
+      html += '<div class="beta-summary-row"><span class="beta-summary-label">Email</span><span class="beta-summary-value">' + escHtml(payload.email) + '</span></div>';
+    }
+    if (payload.goals && payload.goals.length) {
+      var goalLabels = payload.goals.map(function(g) { return GOAL_LABELS[g] || g; });
+      html += '<div class="beta-summary-row"><span class="beta-summary-label">Focus</span><span class="beta-summary-value">' + escHtml(goalLabels.join(', ')) + '</span></div>';
+    }
+    if (payload.topics && payload.topics.length) {
+      var topicLabels = payload.topics.map(function(t) { return TOPIC_LABELS[t] || t; });
+      html += '<div class="beta-summary-row"><span class="beta-summary-label">Topics</span><span class="beta-summary-value">' + escHtml(topicLabels.join(', ')) + '</span></div>';
+    }
+    if (payload.frequency) {
+      html += '<div class="beta-summary-row"><span class="beta-summary-label">Frequency</span><span class="beta-summary-value">' + escHtml(FREQ_LABELS[payload.frequency] || payload.frequency) + '</span></div>';
+    }
+    rows.innerHTML = html;
+
+    // Show/hide summary if no rows
+    var summary = document.getElementById('beta-summary');
+    if (summary) summary.style.display = html ? '' : 'none';
+
+    // Transition to success
+    saveFormState();
+    var card = document.getElementById('beta-form-card');
+    card.classList.add('success-state');
+  }
+
+  function escHtml(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  /* ── Main submit handler ── */
+  async function handleBetaSubmit(e) {
+    e.preventDefault();
+    var payload = collectFormPayload();
+    clearErrors();
+
+    // Validate
+    var result = validateBetaForm(payload);
+    if (!result.valid) {
+      var fields = Object.keys(result.errors);
+      for (var i = 0; i < fields.length; i++) {
+        showFieldError(fields[i], result.errors[fields[i]]);
+      }
+      // Focus first errored field
+      var firstInput = document.getElementById('beta-' + fields[0]);
+      if (firstInput) firstInput.focus();
+      return;
+    }
+
+    showLoadingState();
+
+    if (DEMO_MODE) {
+      console.log('ArgueLab Beta form submitted (demo)');
+      setTimeout(function() {
+        hideLoadingState();
+        showSuccessState(payload);
+      }, 600);
+      return;
+    }
+
+    // Production mode — hit the backend
+    try {
+      var resp = await fetch(API_BASE_URL + '/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      // 200: new or updated  |  409: email exists, preferences updated
+      if (resp.ok || resp.status === 409) {
+        if (DEMO_MODE) {
+          resp.clone().json().then(function(data) {
+            console.log('ArgueLab response:', data);
+          }).catch(function(){});
+        }
+        hideLoadingState();
+        showSuccessState(payload);
+      } else {
+        // Try to extract error message from response body
+        var errorMsg = 'Something went wrong. Please try again, or contact us directly.';
+        try {
+          var body = await resp.json();
+          if (body && body.error) errorMsg = body.error;
+        } catch (parseErr) {}
+        hideLoadingState();
+        showFieldError('banner', errorMsg);
+      }
+    } catch (err) {
+      if (DEMO_MODE) console.error('ArgueLab subscription error:', err);
+      hideLoadingState();
+      showFieldError('banner', 'Something went wrong. Please try again, or contact us directly.');
+    }
+  }
+
+  /* Init all beta form interactions */
+  initBetaChips();
+  initBetaRadios();
+  initBetaConsent();
+
+  /* ── 4. Header scroll effect ── */
   var header = document.querySelector('header');
   var scrollTicking = false;
   window.addEventListener('scroll', function() {
@@ -1284,6 +2046,10 @@
       if (!section) return;
       var rect = section.getBoundingClientRect();
       if (rect.top < window.innerHeight && rect.bottom > 0) {
+        // Don't intercept arrow keys if user is typing in a form field
+        var active = document.activeElement;
+        var isFormField = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.tagName === 'SELECT' || active.isContentEditable);
+        if (isFormField) return;
         if (e.key === 'ArrowLeft') { e.preventDefault(); goTo(idx - 1); }
         if (e.key === 'ArrowRight') { e.preventDefault(); goTo(idx + 1); }
       }

@@ -862,22 +862,93 @@ def _send_via_smtp(to_email: str, subject: str, html_body: str) -> None:
 
 # ── Issue Page Renderer ──
 
-ISSUE_PAGE_CSS = """
-  /* ── Design Tokens ── */
+ISSUE_PAGE_CSS = r"""
+  /* ═══════════════════════════════════════════════
+     ArgueLab — Dual-Theme Design System
+     Default: Light Reading Mode (paper-like)
+     Toggle:  Dark Mode (editorial night)
+     ═══════════════════════════════════════════════ */
+
+  /* ── Light Theme (default) ── */
   :root {
-    /* Surfaces */
-    --bg: #0A0D12;
-    --surface: #0D1117;
+    /* Surfaces — paper reading mode */
+    --bg: #F7F4ED;
+    --surface: #FFFCF7;
+    --card-bg: #FFFFFF;
+    --card-elevated: #FBF8F1;
+    /* Ink — warm, readable */
+    --ink: #1F2933;
+    --ink-dim: #5E6673;
+    --ink-muted: #8A8F98;
+    /* Functional Module Colors — richer for light bg */
+    --color-context: #3B6EA8;
+    --color-context-soft: rgba(59,110,168,0.07);
+    --color-context-border: rgba(59,110,168,0.16);
+    --color-passage: #3D6A9E;
+    --color-passage-soft: rgba(61,106,158,0.07);
+    --color-passage-border: rgba(61,106,158,0.16);
+    --color-expression: #A67C2E;
+    --color-expression-soft: rgba(166,124,46,0.07);
+    --color-expression-border: rgba(166,124,46,0.18);
+    --color-sentence: #9E5670;
+    --color-sentence-soft: rgba(158,86,112,0.07);
+    --color-sentence-border: rgba(158,86,112,0.18);
+    --color-chain: #3A7D6A;
+    --color-chain-soft: rgba(58,125,106,0.07);
+    --color-chain-border: rgba(58,125,106,0.18);
+    --color-output: #9E7E3E;
+    --color-output-soft: rgba(158,126,62,0.07);
+    --color-output-border: rgba(158,126,62,0.18);
+    --color-check: #4A7C80;
+    --color-check-soft: rgba(74,124,128,0.07);
+    --color-check-border: rgba(74,124,128,0.16);
+    /* Argument labels */
+    --thesis: #B8860B;
+    --premise: #2E8B57;
+    --evidence: #4682B4;
+    --counter: #B22222;
+    --conclusion: #6A5ACD;
+    /* Argument label soft backgrounds */
+    --arg-thesis-bg: rgba(184,134,11,0.08);
+    --arg-premise-bg: rgba(46,139,87,0.08);
+    --arg-evidence-bg: rgba(70,130,180,0.08);
+    --arg-counter-bg: rgba(178,34,34,0.08);
+    --arg-conclusion-bg: rgba(106,90,205,0.08);
+    /* Borders */
+    --border: rgba(0,0,0,0.08);
+    --border-strong: rgba(0,0,0,0.14);
+    --divider: rgba(0,0,0,0.06);
+    /* Accent */
+    --accent: #3B6EA8;
+    --accent-soft: rgba(59,110,168,0.08);
+    --accent-warm: #B48A45;
+    --accent-warm-soft: rgba(180,138,69,0.08);
+    /* Shadows */
+    --shadow: 0 18px 50px rgba(31,41,51,0.06);
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
+    /* Code */
+    --code-bg: rgba(0,0,0,0.04);
+    --code-text: #5E6673;
+    --pre-bg: #F3F0E9;
+    --pre-text: #5E6673;
+    /* Spacing */
+    --section-gap: 72px;
+    --card-radius: 14px;
+    --card-padding: 26px 30px;
+  }
+
+  /* ── Dark Theme (toggle) ── */
+  html[data-theme="dark"] {
+    --bg: #070B11;
+    --surface: #0B0F14;
     --card-bg: #111820;
     --card-elevated: #151D28;
-    /* Ink */
-    --ink: #E2E5EC;
-    --ink-dim: #B0B8C4;
-    --ink-muted: #5A6375;
-    /* Functional Module Colors */
-    --color-context: #7B9CB8;
-    --color-context-soft: rgba(123,156,184,0.10);
-    --color-context-border: rgba(123,156,184,0.18);
+    --ink: #E8EDF5;
+    --ink-dim: #B8C3D4;
+    --ink-muted: #7E8A9D;
+    --color-context: #8FA7C8;
+    --color-context-soft: rgba(143,167,200,0.10);
+    --color-context-border: rgba(143,167,200,0.18);
     --color-passage: #8BA4C0;
     --color-passage-soft: rgba(139,164,192,0.10);
     --color-passage-border: rgba(139,164,192,0.18);
@@ -890,33 +961,97 @@ ISSUE_PAGE_CSS = """
     --color-chain: #7AAA9A;
     --color-chain-soft: rgba(122,170,154,0.10);
     --color-chain-border: rgba(122,170,154,0.20);
-    --color-output: #C9A96E;
-    --color-output-soft: rgba(201,169,110,0.10);
-    --color-output-border: rgba(201,169,110,0.20);
+    --color-output: #D3AA63;
+    --color-output-soft: rgba(211,170,99,0.10);
+    --color-output-border: rgba(211,170,99,0.20);
     --color-check: #7BA3A8;
     --color-check-soft: rgba(123,163,168,0.10);
     --color-check-border: rgba(123,163,168,0.18);
-    /* Argument labels (keep existing) */
     --thesis: #F0C060;
     --premise: #78C0E0;
     --evidence: #A0D890;
     --counter: #E088A0;
     --conclusion: #D0A8F0;
-    /* Borders */
+    --arg-thesis-bg: rgba(240,192,96,0.12);
+    --arg-premise-bg: rgba(120,192,224,0.12);
+    --arg-evidence-bg: rgba(160,216,144,0.12);
+    --arg-counter-bg: rgba(224,136,160,0.12);
+    --arg-conclusion-bg: rgba(208,168,240,0.12);
     --border: rgba(136,157,196,0.08);
     --border-strong: rgba(136,157,196,0.15);
     --divider: rgba(136,157,196,0.06);
-    /* Spacing */
-    --section-gap: 72px;
-    --card-radius: 14px;
-    --card-padding: 26px 30px;
+    --accent: #8FA7C8;
+    --accent-soft: rgba(143,167,200,0.12);
+    --accent-warm: #D3AA63;
+    --accent-warm-soft: rgba(211,170,99,0.10);
+    --shadow: 0 18px 50px rgba(0,0,0,0.35);
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.20);
+    --code-bg: rgba(255,255,255,0.06);
+    --code-text: #B0B8C4;
+    --pre-bg: rgba(0,0,0,0.25);
+    --pre-text: #B0B8C4;
+  }
+
+  /* ── Smooth theme transition ── */
+  html { transition: background 0.3s ease; }
+  body {
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html, body, *, *::before, *::after { transition: none !important; }
+  }
+
+  /* ── Theme Toggle ── */
+  .theme-toggle-wrapper {
+    position: fixed;
+    top: 20px;
+    right: 24px;
+    z-index: 1000;
+  }
+  .theme-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 24px;
+    border: 1px solid var(--border-strong);
+    background: var(--card-bg);
+    color: var(--ink-dim);
+    font-size: 12px;
+    font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow-sm);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  .theme-toggle:hover {
+    border-color: var(--accent);
+    color: var(--ink);
+  }
+  .theme-toggle:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .theme-toggle .toggle-icon {
+    font-size: 15px;
+    line-height: 1;
+  }
+  .theme-toggle .toggle-label {
+    letter-spacing: 0.04em;
+    font-weight: 500;
+  }
+  @media (max-width: 640px) {
+    .theme-toggle-wrapper { top: 12px; right: 12px; }
+    .theme-toggle { padding: 6px 12px; }
+    .theme-toggle .toggle-label { display: none; }
   }
 
   /* ── Reset & Base ── */
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
   body {
-    font-family: Georgia, 'Times New Roman', 'PingFang SC', 'Microsoft YaHei', serif;
+    font-family: Georgia, 'Times New Roman', 'Noto Serif SC', 'PingFang SC', 'Microsoft YaHei', serif;
     background: var(--bg);
     color: var(--ink);
     line-height: 1.85;
@@ -967,14 +1102,14 @@ ISSUE_PAGE_CSS = """
 
   /* ── Sticky TOC (Desktop) ── */
   .issue-toc {
-    color: #7E8A9D;
+    color: var(--ink-muted);
     font-size: 13px;
   }
   .toc-label {
     font-size: 11px;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: #8A93A5;
+    color: var(--ink-muted);
     margin-bottom: 24px;
     font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
   }
@@ -984,7 +1119,7 @@ ISSUE_PAGE_CSS = """
     align-items: center;
     gap: 12px;
     padding: 10px 0;
-    color: #748095;
+    color: var(--ink-muted);
     text-decoration: none;
     transition: color .2s ease, transform .2s ease;
     font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
@@ -1001,13 +1136,13 @@ ISSUE_PAGE_CSS = """
     content: "";
     width: 12px;
     height: 1px;
-    background: rgba(148, 163, 184, 0.4);
+    background: var(--border-strong);
     flex-shrink: 0;
   }
-  .toc-link:hover { color: #D8E2F0; }
-  .toc-link.active { color: #D8E2F0; }
+  .toc-link:hover { color: var(--ink); }
+  .toc-link.active { color: var(--ink); }
   .toc-link.active::before {
-    background: #8FA7C8;
+    background: var(--accent);
     width: 22px;
   }
   .toc-link.toc-context.active { color: var(--color-context); }
@@ -1049,7 +1184,7 @@ ISSUE_PAGE_CSS = """
     border: 1px solid var(--border);
     transition: all 0.2s ease;
   }
-  .toc-mobile .toc-chip.active { color: var(--ink); border-color: var(--border-strong); }
+  .toc-mobile .toc-chip.active { color: var(--ink); border-color: var(--border-strong); background: var(--card-bg); }
   .toc-mobile .toc-chip.active.toc-context { background: var(--color-context-soft); border-color: var(--color-context-border); color: var(--color-context); }
   .toc-mobile .toc-chip.active.toc-passage { background: var(--color-passage-soft); border-color: var(--color-passage-border); color: var(--color-passage); }
   .toc-mobile .toc-chip.active.toc-expression { background: var(--color-expression-soft); border-color: var(--color-expression-border); color: var(--color-expression); }
@@ -1066,30 +1201,30 @@ ISSUE_PAGE_CSS = """
   .issue-hero {
     text-align: center;
     padding: 40px 0 56px;
-    border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+    border-bottom: 1px solid var(--border-strong);
     margin-bottom: 64px;
   }
   .issue-kicker {
     font-size: 12px;
     letter-spacing: 0.18em;
-    color: #8FA7C8;
+    color: var(--accent);
     margin-bottom: 18px;
     font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
     text-transform: uppercase;
   }
   .issue-hero h1 {
-    font-family: Georgia, "Times New Roman", serif;
+    font-family: Georgia, "Times New Roman", "Noto Serif SC", serif;
     font-size: clamp(34px, 5vw, 54px);
     line-height: 1.08;
     letter-spacing: -0.035em;
-    color: #E8EDF5;
+    color: var(--ink);
     margin: 0 0 18px;
   }
   .issue-title {
-    font-family: Georgia, "Times New Roman", serif;
+    font-family: Georgia, "Times New Roman", "Noto Serif SC", serif;
     font-size: 18px;
     line-height: 1.6;
-    color: #B8C3D4;
+    color: var(--ink-dim);
     font-style: italic;
     margin: 0 auto 16px;
     max-width: 720px;
@@ -1097,7 +1232,7 @@ ISSUE_PAGE_CSS = """
   .issue-meta {
     font-size: 14px;
     line-height: 1.6;
-    color: #7E8A9D;
+    color: var(--ink-muted);
     margin: 0;
     font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
   }
@@ -1177,33 +1312,54 @@ ISSUE_PAGE_CSS = """
     text-transform: uppercase;
     font-weight: 700;
     font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
-    border: 1px solid rgba(148, 163, 184, 0.22);
-    background: rgba(15, 23, 42, 0.42);
+    border: 1px solid var(--border-strong);
+    background: var(--card-bg);
+    color: var(--ink-muted);
   }
   .source-badge.source {
+    color: #3B6EA8;
+    border-color: rgba(59,110,168,0.26);
+    background: rgba(59,110,168,0.07);
+  }
+  html[data-theme="dark"] .source-badge.source {
     color: #93C5FD;
-    border-color: rgba(147, 197, 253, 0.26);
-    background: rgba(59, 130, 246, 0.08);
+    border-color: rgba(147,197,253,0.26);
+    background: rgba(59,130,246,0.08);
   }
   .source-badge.training {
+    color: #A67C2E;
+    border-color: rgba(166,124,46,0.26);
+    background: rgba(166,124,46,0.07);
+  }
+  html[data-theme="dark"] .source-badge.training {
     color: #F0C987;
-    border-color: rgba(240, 201, 135, 0.26);
-    background: rgba(245, 158, 11, 0.08);
+    border-color: rgba(240,201,135,0.26);
+    background: rgba(245,158,11,0.08);
   }
   .source-badge.ai {
+    color: #6A5ACD;
+    border-color: rgba(106,90,205,0.22);
+    background: rgba(106,90,205,0.06);
+  }
+  html[data-theme="dark"] .source-badge.ai {
     color: #C4B5FD;
-    border-color: rgba(196, 181, 253, 0.26);
-    background: rgba(139, 92, 246, 0.08);
+    border-color: rgba(196,181,253,0.26);
+    background: rgba(139,92,246,0.08);
   }
   .source-badge.practice {
+    color: #3A7D6A;
+    border-color: rgba(58,125,106,0.24);
+    background: rgba(58,125,106,0.07);
+  }
+  html[data-theme="dark"] .source-badge.practice {
     color: #86EFAC;
-    border-color: rgba(134, 239, 172, 0.24);
-    background: rgba(34, 197, 94, 0.08);
+    border-color: rgba(134,239,172,0.24);
+    background: rgba(34,197,94,0.08);
   }
   .source-note {
     font-size: 13px;
     line-height: 1.7;
-    color: #8390A3;
+    color: var(--ink-muted);
     margin-top: -6px;
     margin-bottom: 18px;
   }
@@ -1212,15 +1368,15 @@ ISSUE_PAGE_CSS = """
   .source-list {
     margin-top: 18px;
     padding: 14px 16px;
-    border: 1px solid rgba(148, 163, 184, 0.14);
-    background: rgba(15, 23, 42, 0.30);
+    border: 1px solid var(--border);
+    background: var(--surface);
     border-radius: 12px;
   }
   .source-list-title {
     font-size: 11px;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: #8FA7C8;
+    color: var(--accent);
     margin-bottom: 8px;
     font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
   }
@@ -1232,7 +1388,7 @@ ISSUE_PAGE_CSS = """
   .source-list li {
     font-size: 13px;
     line-height: 1.65;
-    color: #95A1B4;
+    color: var(--ink-dim);
     padding: 3px 0;
   }
 
@@ -1243,6 +1399,7 @@ ISSUE_PAGE_CSS = """
     border-radius: var(--card-radius);
     padding: var(--card-padding);
     margin-bottom: 24px;
+    box-shadow: var(--shadow-sm);
   }
   .content-card:last-child { margin-bottom: 0; }
   .content-card > * + * { margin-top: 16px; }
@@ -1273,15 +1430,15 @@ ISSUE_PAGE_CSS = """
     line-height: 1.85;
     margin-bottom: 16px;
   }
-  .cn-body strong { color: var(--ink); }
+  .cn-body strong { color: var(--ink); font-weight: 700; }
   .en-body {
     font-size: 16px;
     color: var(--ink);
     line-height: 1.8;
     margin-bottom: 16px;
-    font-family: Georgia, 'Times New Roman', 'PingFang SC', serif;
+    font-family: Georgia, 'Times New Roman', 'Noto Serif SC', 'PingFang SC', serif;
   }
-  .en-body strong { color: var(--ink); }
+  .en-body strong { color: var(--ink); font-weight: 700; }
 
   /* Long paragraph handling */
   .cn-body.long, .en-body.long {
@@ -1311,6 +1468,7 @@ ISSUE_PAGE_CSS = """
     padding: 28px 30px;
     margin-bottom: 0;
     border-left: 3px solid var(--color-passage);
+    box-shadow: var(--shadow-sm);
   }
   .passage-block p {
     font-size: 16px;
@@ -1338,11 +1496,11 @@ ISSUE_PAGE_CSS = """
     position: relative;
     top: -1px;
   }
-  .arg-thesis { background: rgba(240,192,96,0.12); color: var(--thesis); }
-  .arg-premise { background: rgba(120,192,224,0.12); color: var(--premise); }
-  .arg-evidence { background: rgba(160,216,144,0.12); color: var(--evidence); }
-  .arg-counter { background: rgba(224,136,160,0.12); color: var(--counter); }
-  .arg-conclusion { background: rgba(208,168,240,0.12); color: var(--conclusion); }
+  .arg-thesis { background: var(--arg-thesis-bg); color: var(--thesis); }
+  .arg-premise { background: var(--arg-premise-bg); color: var(--premise); }
+  .arg-evidence { background: var(--arg-evidence-bg); color: var(--evidence); }
+  .arg-counter { background: var(--arg-counter-bg); color: var(--counter); }
+  .arg-conclusion { background: var(--arg-conclusion-bg); color: var(--conclusion); }
 
   /* ── Reading Guide (callout) ── */
   .guide-block {
@@ -1365,8 +1523,10 @@ ISSUE_PAGE_CSS = """
     padding: 24px 28px;
     margin-bottom: 20px;
     border-left: 3px solid var(--color-expression);
-    transition: border-color 0.2s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: var(--shadow-sm);
   }
+  .expr-card:hover { border-color: var(--color-expression); }
   .expr-card:last-child { margin-bottom: 0; }
   .expr-card .expr-num {
     font-size: 11px;
@@ -1430,6 +1590,7 @@ ISSUE_PAGE_CSS = """
     border-radius: var(--card-radius);
     padding: 24px 28px;
     border-left: 3px solid var(--color-sentence);
+    box-shadow: var(--shadow-sm);
   }
   .target-sentence-card .ts-label {
     font-size: 11px;
@@ -1453,6 +1614,7 @@ ISSUE_PAGE_CSS = """
     border: 1px solid var(--border);
     border-radius: var(--card-radius);
     padding: 20px 24px;
+    box-shadow: var(--shadow-sm);
   }
   .why-card .why-label {
     font-size: 11px;
@@ -1475,6 +1637,7 @@ ISSUE_PAGE_CSS = """
     border: 1px solid var(--border);
     border-radius: var(--card-radius);
     padding: 20px 24px;
+    box-shadow: var(--shadow-sm);
   }
   .structure-card .struct-label {
     font-size: 11px;
@@ -1515,6 +1678,7 @@ ISSUE_PAGE_CSS = """
     padding: 16px 20px;
     margin-bottom: 12px;
     border-left: 3px solid var(--color-sentence);
+    box-shadow: var(--shadow-sm);
   }
   .grammar-mini-card:last-child { margin-bottom: 0; }
   .grammar-mini-card .gm-title {
@@ -1533,10 +1697,10 @@ ISSUE_PAGE_CSS = """
     display: block;
     font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
     font-size: 13px;
-    background: rgba(0,0,0,0.25);
+    background: var(--pre-bg);
     padding: 10px 14px;
     border-radius: 6px;
-    color: var(--ink-dim);
+    color: var(--pre-text);
     margin-top: 8px;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
@@ -1551,6 +1715,7 @@ ISSUE_PAGE_CSS = """
     border-radius: var(--card-radius);
     padding: 20px 24px;
     border-left: 3px solid var(--color-sentence);
+    box-shadow: var(--shadow-sm);
   }
   .template-card .tpl-label {
     font-size: 11px;
@@ -1564,10 +1729,10 @@ ISSUE_PAGE_CSS = """
   .template-card .tpl-code {
     font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
     font-size: 13px;
-    background: rgba(0,0,0,0.25);
+    background: var(--pre-bg);
     padding: 14px 18px;
     border-radius: 8px;
-    color: var(--ink-dim);
+    color: var(--pre-text);
     line-height: 1.7;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
@@ -1580,6 +1745,7 @@ ISSUE_PAGE_CSS = """
     border: 1px solid var(--border);
     border-radius: var(--card-radius);
     padding: 20px 24px;
+    box-shadow: var(--shadow-sm);
   }
   .imitation-card .imit-label {
     font-size: 11px;
@@ -1621,6 +1787,7 @@ ISSUE_PAGE_CSS = """
     border-radius: var(--card-radius);
     padding: 20px 24px;
     border-left: 3px solid var(--color-chain);
+    box-shadow: var(--shadow-sm);
   }
   .chain-step .step-label {
     font-size: 11px;
@@ -1647,10 +1814,10 @@ ISSUE_PAGE_CSS = """
     display: block;
     font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
     font-size: 12px;
-    background: rgba(0,0,0,0.25);
+    background: var(--pre-bg);
     padding: 12px 16px;
     border-radius: 6px;
-    color: var(--ink-dim);
+    color: var(--pre-text);
     margin-top: 8px;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
@@ -1665,6 +1832,7 @@ ISSUE_PAGE_CSS = """
     border-radius: var(--card-radius);
     padding: 24px 28px;
     border-left: 3px solid var(--color-chain);
+    box-shadow: var(--shadow-sm);
   }
   .weighing-card .weigh-label {
     font-size: 11px;
@@ -1690,6 +1858,7 @@ ISSUE_PAGE_CSS = """
     border-radius: var(--card-radius);
     padding: 24px 28px;
     border-left: 3px solid var(--color-chain);
+    box-shadow: var(--shadow-sm);
   }
   .sample-paragraph-card .sp-label {
     font-size: 11px;
@@ -1727,6 +1896,7 @@ ISSUE_PAGE_CSS = """
     border-radius: var(--card-radius);
     padding: 24px 28px;
     border-top: 3px solid var(--color-output);
+    box-shadow: var(--shadow-sm);
   }
   .task-card .task-type {
     font-size: 11px;
@@ -1756,6 +1926,7 @@ ISSUE_PAGE_CSS = """
     border-radius: var(--card-radius);
     padding: 24px 28px;
     margin-bottom: 24px;
+    box-shadow: var(--shadow-sm);
   }
   .guide-card .guide-label {
     font-size: 11px;
@@ -1807,6 +1978,7 @@ ISSUE_PAGE_CSS = """
     border-radius: var(--card-radius);
     padding: 24px 28px;
     border-left: 3px solid var(--color-check);
+    box-shadow: var(--shadow-sm);
   }
   .check-card .check-label {
     font-size: 11px;
@@ -1846,10 +2018,11 @@ ISSUE_PAGE_CSS = """
   /* ── Task Block (new two-task layout) ── */
   .task-block {
     margin-bottom: 40px;
-    border: 1px solid rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
     border-radius: 12px;
     padding: 28px;
-    background: rgba(255,255,255,0.015);
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
   }
   .task-block .task-header {
     display: flex;
@@ -1857,7 +2030,7 @@ ISSUE_PAGE_CSS = """
     gap: 12px;
     margin-bottom: 16px;
     padding-bottom: 12px;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
+    border-bottom: 1px solid var(--border);
   }
   .task-block .task-header .task-type {
     font-size: 13px;
@@ -1865,7 +2038,7 @@ ISSUE_PAGE_CSS = """
     text-transform: uppercase;
     letter-spacing: 0.06em;
     color: var(--accent);
-    background: rgba(136,157,196,0.12);
+    background: var(--accent-soft);
     padding: 4px 12px;
     border-radius: 6px;
   }
@@ -1878,7 +2051,7 @@ ISSUE_PAGE_CSS = """
     line-height: 1.7;
     color: var(--ink);
     padding: 16px 20px;
-    background: rgba(255,255,255,0.03);
+    background: var(--card-bg);
     border-left: 3px solid var(--accent);
     border-radius: 0 8px 8px 0;
     margin-bottom: 20px;
@@ -1893,8 +2066,12 @@ ISSUE_PAGE_CSS = """
   .premium-hint-card {
     margin-top: 32px;
     padding: 24px 28px;
-    border: 1px solid rgba(255,215,0,0.15);
+    border: 1px solid rgba(180,138,69,0.20);
     border-radius: 12px;
+    background: linear-gradient(135deg, rgba(180,138,69,0.04), rgba(180,138,69,0.01));
+  }
+  html[data-theme="dark"] .premium-hint-card {
+    border: 1px solid rgba(255,215,0,0.15);
     background: linear-gradient(135deg, rgba(255,215,0,0.04), rgba(255,215,0,0.01));
   }
   .premium-hint-card .ph-label {
@@ -1902,9 +2079,10 @@ ISSUE_PAGE_CSS = """
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: #d4a853;
+    color: #A67C2E;
     margin-bottom: 12px;
   }
+  html[data-theme="dark"] .premium-hint-card .ph-label { color: #d4a853; }
   .premium-hint-card .ph-text {
     font-size: 13px;
     line-height: 1.65;
@@ -1929,7 +2107,7 @@ ISSUE_PAGE_CSS = """
     margin-bottom: 6px;
   }
   li::before {
-    content: '—';
+    content: '\2014';
     position: absolute;
     left: 0;
     color: var(--ink-muted);
@@ -1938,15 +2116,15 @@ ISSUE_PAGE_CSS = """
   /* ── Code / Template / Pre ── */
   code {
     font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
-    background: rgba(255,255,255,0.06);
+    background: var(--code-bg);
     padding: 2px 6px;
     border-radius: 4px;
     font-size: 0.9em;
-    color: var(--ink-dim);
+    color: var(--code-text);
   }
   pre {
     font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
-    background: rgba(0,0,0,0.25);
+    background: var(--pre-bg);
     padding: 16px 20px;
     border-radius: 8px;
     font-size: 13px;
@@ -1955,15 +2133,15 @@ ISSUE_PAGE_CSS = """
     white-space: pre-wrap;
     overflow-wrap: anywhere;
     word-break: break-word;
-    color: var(--ink-dim);
+    color: var(--pre-text);
   }
   .template-box {
     font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
     font-size: 13px;
-    background: rgba(0,0,0,0.25);
+    background: var(--pre-bg);
     padding: 14px 18px;
     border-radius: 8px;
-    color: var(--ink-dim);
+    color: var(--pre-text);
     line-height: 1.7;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
@@ -1987,7 +2165,7 @@ ISSUE_PAGE_CSS = """
     margin-top: 48px;
   }
   .page-footer .brand {
-    font-family: Georgia, 'Times New Roman', serif;
+    font-family: Georgia, 'Times New Roman', 'Noto Serif SC', serif;
     font-size: 20px;
     font-weight: 700;
     color: var(--ink);
@@ -2025,6 +2203,7 @@ ISSUE_PAGE_CSS = """
     font-size: 14px;
     color: var(--ink-dim);
     line-height: 1.75;
+    box-shadow: var(--shadow-sm);
   }
   .callout-box strong { color: var(--ink); }
 
@@ -2091,11 +2270,13 @@ ISSUE_PAGE_CSS = """
       --counter: #b22222; --conclusion: #6a5acd;
       --border: rgba(0,0,0,0.08); --border-strong: rgba(0,0,0,0.15);
       --divider: rgba(0,0,0,0.06);
+      --accent: #4a7c80;
       --section-gap: 32px;
+      --shadow: none; --shadow-sm: none;
     }
     body { font-size: 11pt; }
     .issue-shell { display: block; max-width: 100%; padding: 0; }
-    .issue-toc, .toc-mobile { display: none !important; }
+    .issue-toc, .toc-mobile, .theme-toggle-wrapper { display: none !important; }
     .issue-main { max-width: 100%; padding: 0; }
     .issue-hero { padding: 20px 0 16px; }
     .issue-hero h1 { font-size: 18pt; }
@@ -2117,14 +2298,17 @@ ISSUE_PAGE_CSS = """
 """
 
 
+
 def _render_issue_page(md_text: str, issue_date: str = "") -> str:
-    """Convert ArgueLab v2 briefing markdown into a full self-contained dark-themed HTML page.
+    """Convert ArgueLab v2 briefing markdown into a full self-contained HTML page.
 
     This renders the 6-pane briefing as a beautiful standalone web page with:
+    - Light paper reading mode (default) with dark mode toggle
     - Functional color system per module
     - Card-based content chunking
     - Sticky TOC navigation
     - Proper typography and visual rhythm
+    - Theme persistence via localStorage
     """
     # Strip YAML frontmatter
     if md_text.startswith("---"):
@@ -2457,8 +2641,45 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
 </script>
 """
 
+    # Theme toggle JS
+    theme_js = """
+<script>
+(function() {
+  var STORAGE_KEY = 'arguelab-theme';
+  var toggleBtn = document.getElementById('theme-toggle-btn');
+  var toggleIcon = document.getElementById('toggle-icon');
+  var toggleLabel = document.getElementById('toggle-label');
+  if (!toggleBtn) return;
+
+  function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem(STORAGE_KEY, theme);
+    if (theme === 'dark') {
+      toggleIcon.innerHTML = '&#x263E;';
+      toggleLabel.textContent = 'Dark Mode';
+    } else {
+      toggleIcon.innerHTML = '&#x2600;';
+      toggleLabel.textContent = 'Reading Mode';
+    }
+  }
+
+  // Default: light. Check localStorage first, then system preference.
+  var savedTheme = localStorage.getItem(STORAGE_KEY);
+  if (savedTheme) {
+    applyTheme(savedTheme);
+  }
+
+  toggleBtn.addEventListener('click', function() {
+    var current = document.documentElement.getAttribute('data-theme');
+    var next = (current === 'dark') ? 'light' : 'dark';
+    applyTheme(next);
+  });
+})();
+</script>
+"""
+
     return f'''<!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -2466,6 +2687,13 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
 <style>{ISSUE_PAGE_CSS}</style>
 </head>
 <body>
+<!-- Theme Toggle -->
+<div class="theme-toggle-wrapper">
+  <button class="theme-toggle" id="theme-toggle-btn" aria-label="Toggle reading mode" title="Switch between Reading Mode and Dark Mode">
+    <span class="toggle-icon" id="toggle-icon">&#x2600;</span>
+    <span class="toggle-label" id="toggle-label">Reading Mode</span>
+  </button>
+</div>
 <div class="issue-shell">
 {toc_desktop}
 <main class="issue-main">
@@ -2473,6 +2701,7 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
 </main>
 </div>
 {toc_js}
+{theme_js}
 </body>
 </html>'''
 

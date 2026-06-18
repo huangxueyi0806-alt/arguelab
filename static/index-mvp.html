@@ -1,90 +1,271 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>ArgueLab — 用外刊议题训练英文表达</title>
 <style>
+  :root {
+    --bg: #F7F4ED;
+    --surface: #FFFCF7;
+    --card-bg: #FFFFFF;
+    --card-elevated: #FBF8F1;
+    --ink: #1F2933;
+    --ink-dim: #5E6673;
+    --ink-muted: #8A8F98;
+    --accent: #3B6EA8;
+    --accent-hover: #2C5A8A;
+    --accent-soft: rgba(59,110,168,0.08);
+    --accent-soft-hover: rgba(59,110,168,0.14);
+    --warm: #A67C2E;
+    --warm-soft: rgba(166,124,46,0.08);
+    --border: #E5E0D5;
+    --border-hover: #C5C0B5;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+    --shadow: 0 2px 8px rgba(0,0,0,0.08);
+    --code-bg: #F0EDE5;
+    --code-text: #3B6EA8;
+    --surface-elevated: #FFFFFF;
+    --shadow-soft: 0 1px 3px rgba(0,0,0,0.06);
+    --icon-bg: rgba(59,110,168,0.08);
+    --font-serif: Georgia, "Times New Roman", "Noto Serif SC", "Songti SC", serif;
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+    --font-mono: "SF Mono", Menlo, Consolas, monospace;
+    --serif: 'Georgia', 'Noto Serif SC', serif;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans SC', sans-serif;
+  }
+
+  html[data-theme="dark"] {
+    --bg: #070B11;
+    --surface: #0B0F14;
+    --card-bg: #111820;
+    --card-elevated: #151D28;
+    --ink: #E8EDF5;
+    --ink-dim: #B8C3D4;
+    --ink-muted: #7E8A9D;
+    --accent: #889DC4;
+    --accent-hover: #A3B8DE;
+    --accent-soft: rgba(136,157,196,0.08);
+    --accent-soft-hover: rgba(136,157,196,0.14);
+    --warm: #C4954A;
+    --warm-soft: rgba(196,149,74,0.08);
+    --border: #1E2332;
+    --border-hover: #2D3548;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.25);
+    --shadow: 0 2px 8px rgba(0,0,0,0.35);
+    --code-bg: rgba(136,157,196,0.12);
+    --code-text: #A3B8DE;
+    --surface-elevated: #111722;
+    --shadow-soft: 0 1px 3px rgba(0,0,0,0.25);
+    --icon-bg: rgba(136,157,196,0.08);
+  }
+
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans SC', sans-serif; color: #1a1a2e; background: #fff; line-height: 1.7; }
-  a { color: #2563eb; text-decoration: none; }
+  html { transition: background-color 0.3s ease, color 0.3s ease; }
+  body {
+    font-family: var(--font-sans);
+    color: var(--ink);
+    background: var(--bg);
+    line-height: 1.75;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); text-decoration: none; transition: color 0.2s; }
+  a:hover { color: var(--accent-hover); }
+
+  /* Theme Toggle */
+  .theme-toggle-wrap {
+    position: fixed; top: 16px; right: 20px; z-index: 1000;
+  }
+  .theme-toggle-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 16px; border-radius: 22px;
+    font-size: 12.5px; font-weight: 600; cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    color: var(--ink-dim);
+    font-family: var(--font-sans);
+    transition: all 0.25s;
+    box-shadow: var(--shadow-sm);
+  }
+  .theme-toggle-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .theme-toggle-btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .theme-toggle-icon {
+    width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .theme-toggle-icon svg {
+    width: 16px; height: 16px;
+    stroke: currentColor; stroke-width: 1.7; fill: none;
+    stroke-linecap: round; stroke-linejoin: round;
+  }
+
+  /* ── Icon Mark ── */
+  .icon-mark {
+    width: 38px; height: 38px; border-radius: 11px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--icon-bg); border: 1px solid var(--border);
+    color: var(--accent); flex-shrink: 0;
+  }
+  .icon-mark svg {
+    width: 19px; height: 19px;
+    stroke: currentColor; stroke-width: 1.7;
+    fill: none; stroke-linecap: round; stroke-linejoin: round;
+  }
+  .icon-mark-lg { width: 44px; height: 44px; border-radius: 12px; }
+  .icon-mark-lg svg { width: 22px; height: 22px; }
 
   /* Layout */
   .wrap { max-width: 680px; margin: 0 auto; padding: 0 20px; }
   section { padding: 56px 0; }
-  section + section { border-top: 1px solid #f0f0f0; }
+  section + section { border-top: 1px solid var(--border); }
 
   /* Hero */
   .hero { padding: 72px 0 56px; text-align: center; }
-  .hero .tag { display: inline-block; font-size: 12px; color: #2563eb; background: #eff6ff; padding: 4px 14px; border-radius: 20px; margin-bottom: 20px; font-weight: 500; }
-  .hero h1 { font-size: 28px; font-weight: 700; line-height: 1.35; letter-spacing: -0.5px; }
-  .hero h1 em { color: #2563eb; font-style: normal; }
-  .hero .sub { font-size: 16px; color: #555; margin: 16px auto 28px; max-width: 480px; }
+  .hero .tag {
+    display: inline-block; font-size: 12px; color: var(--accent);
+    background: var(--accent-soft); padding: 4px 14px; border-radius: 20px;
+    margin-bottom: 20px; font-weight: 500;
+  }
+  .hero h1 {
+    font-size: 28px; font-weight: 700; line-height: 1.35; letter-spacing: -0.5px;
+    color: var(--ink);
+  }
+  .hero h1 em { color: var(--accent); font-style: normal; }
+  .hero .sub { font-size: 16px; color: var(--ink-dim); margin: 16px auto 28px; max-width: 480px; }
   .hero .cta-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
-  .btn { display: inline-block; padding: 12px 28px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; border: none; }
-  .btn-primary { background: #2563eb; color: #fff; }
-  .btn-primary:hover { background: #1d4ed8; }
-  .btn-secondary { background: #f0f0f0; color: #333; }
-  .hero .note { font-size: 12px; color: #999; margin-top: 12px; }
+  .btn { display: inline-block; padding: 12px 28px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; border: none; font-family: var(--font-sans); transition: all 0.2s; }
+  .btn-primary { background: var(--accent); color: #FFFFFF; }
+  .btn-primary:hover { background: var(--accent-hover); color: #FFFFFF; text-decoration: none; }
+  .btn-secondary { background: var(--card-bg); color: var(--ink-dim); border: 1px solid var(--border); }
+  .btn-secondary:hover { background: var(--card-elevated); color: var(--ink); }
+  .hero .note { font-size: 12px; color: var(--ink-muted); margin-top: 12px; }
 
   /* Section headers */
-  .sec-label { font-size: 11px; font-weight: 600; letter-spacing: 1.5px; color: #2563eb; text-transform: uppercase; margin-bottom: 8px; }
-  .sec-title { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
-  .sec-desc { font-size: 15px; color: #555; margin-bottom: 32px; }
+  .sec-label {
+    font-size: 11px; font-weight: 600; letter-spacing: 1.5px;
+    color: var(--accent); text-transform: uppercase; margin-bottom: 8px;
+  }
+  .sec-title { font-size: 22px; font-weight: 700; margin-bottom: 6px; color: var(--ink); }
+  .sec-desc { font-size: 15px; color: var(--ink-dim); margin-bottom: 32px; }
 
   /* Pain points */
   .pains { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .pain-card { background: #fafafa; border-radius: 10px; padding: 20px; border: 1px solid #f0f0f0; }
+  .pain-card {
+    background: var(--surface-elevated); border-radius: 18px; padding: 24px 22px;
+    border: 1px solid var(--border); box-shadow: var(--shadow-soft);
+    transition: box-shadow 0.25s;
+  }
+  .pain-card:hover { box-shadow: var(--shadow); }
   .pain-card .icon { font-size: 20px; margin-bottom: 8px; }
-  .pain-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
-  .pain-card p { font-size: 13px; color: #666; line-height: 1.6; }
-  .why-close { text-align: center; margin-top: 28px; font-size: 15px; color: #333; font-weight: 500; }
-  .why-close em { color: #2563eb; font-style: normal; }
+  .pain-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 4px; color: var(--ink); }
+  .pain-card p { font-size: 13px; color: var(--ink-dim); line-height: 1.6; }
+  .why-close { text-align: center; margin-top: 28px; font-size: 15px; color: var(--ink); font-weight: 500; }
+  .why-close em { color: var(--accent); font-style: normal; }
 
   /* What you get */
   .get-list { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  .get-item { display: flex; gap: 14px; padding: 18px; background: #fafafa; border-radius: 10px; border: 1px solid #f0f0f0; }
-  .get-num { font-size: 20px; font-weight: 800; color: #2563eb; opacity: 0.35; flex-shrink: 0; line-height: 1; }
-  .get-item h3 { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
-  .get-item p { font-size: 13px; color: #666; line-height: 1.6; }
-  .get-item .time { font-size: 11px; color: #999; margin-top: 4px; }
+  .get-item {
+    display: flex; gap: 14px; padding: 22px 20px;
+    background: var(--surface-elevated); border-radius: 18px;
+    border: 1px solid var(--border); box-shadow: var(--shadow-soft);
+    transition: box-shadow 0.25s;
+  }
+  .get-item:hover { box-shadow: var(--shadow); }
+  .get-num {
+    font-size: 20px; font-weight: 800; color: var(--accent);
+    opacity: 0.35; flex-shrink: 0; line-height: 1;
+  }
+  .get-item h3 { font-size: 14px; font-weight: 600; margin-bottom: 3px; color: var(--ink); }
+  .get-item p { font-size: 13px; color: var(--ink-dim); line-height: 1.6; }
+  .get-item .time { font-size: 11px; color: var(--ink-muted); margin-top: 4px; }
 
   /* Sample */
-  .sample-box { background: #fafafa; border-radius: 10px; border: 1px solid #e5e7eb; overflow: hidden; }
-  .sample-header { background: #eff6ff; padding: 14px 20px; font-size: 13px; font-weight: 600; color: #2563eb; }
+  .sample-box {
+    background: var(--card-bg); border-radius: 10px;
+    border: 1px solid var(--border); overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+  .sample-header {
+    background: var(--accent-soft); padding: 14px 20px;
+    font-size: 13px; font-weight: 600; color: var(--accent);
+  }
   .sample-body { padding: 20px; }
-  .sample-body h4 { font-size: 14px; font-weight: 600; color: #2563eb; margin: 18px 0 8px; }
+  .sample-body h4 { font-size: 14px; font-weight: 600; color: var(--accent); margin: 18px 0 8px; }
   .sample-body h4:first-child { margin-top: 0; }
-  .sample-body p { font-size: 14px; color: #333; line-height: 1.8; margin-bottom: 8px; }
-  .sample-body blockquote { border-left: 3px solid #2563eb; padding: 10px 16px; background: #f0f4ff; border-radius: 0 6px 6px 0; margin: 12px 0; font-size: 13px; color: #333; line-height: 1.7; }
-  .sample-body .en { font-family: Georgia, serif; font-style: italic; color: #1a1a2e; }
+  .sample-body p { font-size: 14px; color: var(--ink); line-height: 1.8; margin-bottom: 8px; }
+  .sample-body blockquote {
+    border-left: 3px solid var(--accent); padding: 10px 16px;
+    background: var(--accent-soft); border-radius: 0 6px 6px 0;
+    margin: 12px 0; font-size: 13px; color: var(--ink); line-height: 1.7;
+  }
+  .sample-body .en { font-family: var(--font-serif); font-style: italic; color: var(--ink); }
   .sample-body table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 13px; }
-  .sample-body th { background: #f0f4ff; padding: 8px 12px; text-align: left; font-weight: 600; color: #2563eb; border-bottom: 1px solid #e5e7eb; }
-  .sample-body td { padding: 8px 12px; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
-  .sample-body .chain { background: #f0f4ff; padding: 14px 18px; border-radius: 8px; margin: 10px 0; font-size: 13px; line-height: 2; }
-  .sample-body .chain .arrow { color: #2563eb; font-weight: 600; }
+  .sample-body th {
+    background: var(--accent-soft); padding: 8px 12px;
+    text-align: left; font-weight: 600; color: var(--accent);
+    border-bottom: 1px solid var(--border);
+  }
+  .sample-body td {
+    padding: 8px 12px; border-bottom: 1px solid var(--border);
+    vertical-align: top; color: var(--ink-dim);
+  }
+  .sample-body .chain {
+    background: var(--accent-soft); padding: 14px 18px;
+    border-radius: 8px; margin: 10px 0; font-size: 13px; line-height: 2;
+    color: var(--ink);
+  }
+  .sample-body .chain .arrow { color: var(--accent); font-weight: 600; }
 
   /* Beta plan */
-  .beta-box { background: #fafafa; border-radius: 10px; padding: 28px; border: 1px solid #f0f0f0; }
-  .beta-box h3 { font-size: 17px; font-weight: 700; margin-bottom: 12px; }
+  .beta-box {
+    background: var(--card-bg); border-radius: 10px; padding: 28px;
+    border: 1px solid var(--border); box-shadow: var(--shadow-sm);
+  }
+  .beta-box h3 { font-size: 17px; font-weight: 700; margin-bottom: 12px; color: var(--ink); }
   .beta-box ul { list-style: none; padding: 0; }
-  .beta-box li { padding: 6px 0; font-size: 14px; color: #333; padding-left: 20px; position: relative; }
-  .beta-box li::before { content: '→'; position: absolute; left: 0; color: #2563eb; font-weight: 600; }
-  .beta-note { margin-top: 16px; padding: 14px 18px; background: #eff6ff; border-radius: 8px; font-size: 13px; color: #333; line-height: 1.7; }
-  .beta-note em { color: #2563eb; font-style: normal; font-weight: 500; }
+  .beta-box li {
+    padding: 6px 0; font-size: 14px; color: var(--ink-dim);
+    padding-left: 20px; position: relative;
+  }
+  .beta-box li::before {
+    content: '→'; position: absolute; left: 0;
+    color: var(--accent); font-weight: 600;
+  }
+  .beta-note {
+    margin-top: 16px; padding: 14px 18px;
+    background: var(--accent-soft); border-radius: 8px;
+    font-size: 13px; color: var(--ink-dim); line-height: 1.7;
+  }
+  .beta-note em { color: var(--accent); font-style: normal; font-weight: 500; }
 
   /* Signup */
   .signup { text-align: center; padding: 56px 0 72px; }
-  .signup h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
-  .signup p { font-size: 15px; color: #555; margin-bottom: 24px; }
+  .signup h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; color: var(--ink); }
+  .signup p { font-size: 15px; color: var(--ink-dim); margin-bottom: 24px; }
   .signup-form { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; max-width: 420px; margin: 0 auto; }
-  .signup-form input { flex: 1; min-width: 200px; padding: 12px 16px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; outline: none; }
-  .signup-form input:focus { border-color: #2563eb; }
-  .signup .form-note { font-size: 12px; color: #999; margin-top: 12px; }
-  .signup .count { font-size: 13px; color: #2563eb; font-weight: 600; margin-top: 10px; }
+  .signup-form input {
+    flex: 1; min-width: 200px; padding: 12px 16px;
+    border: 1px solid var(--border); border-radius: 8px;
+    font-size: 15px; outline: none; background: var(--card-bg);
+    color: var(--ink); font-family: var(--font-sans);
+  }
+  .signup-form input:focus { border-color: var(--accent); }
+  .signup-form input::placeholder { color: var(--ink-muted); }
+  .signup .form-note { font-size: 12px; color: var(--ink-muted); margin-top: 12px; }
+  .signup .count { font-size: 13px; color: var(--accent); font-weight: 600; margin-top: 10px; }
 
   /* Footer */
-  footer { text-align: center; padding: 28px 0; font-size: 12px; color: #999; border-top: 1px solid #f0f0f0; }
+  footer {
+    text-align: center; padding: 28px 0; font-size: 12px;
+    color: var(--ink-muted); border-top: 1px solid var(--border);
+  }
 
   /* Responsive */
   @media (max-width: 600px) {
@@ -92,9 +273,26 @@
     .pains, .get-list { grid-template-columns: 1fr; }
     .sec-title { font-size: 19px; }
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { transition: none; }
+    *, *::before, *::after {
+      transition-duration: 0.01ms !important;
+    }
+  }
 </style>
 </head>
 <body>
+
+<div class="theme-toggle-wrap">
+  <button class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle reading mode / dark mode">
+    <span class="theme-toggle-icon" id="theme-icon">
+      <svg id="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      <svg id="icon-moon" viewBox="0 0 24 24" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </span>
+    <span id="theme-label">Reading Mode</span>
+  </button>
+</div>
 
 <!-- Hero -->
 <section class="hero">
@@ -118,22 +316,22 @@
     <p class="sec-desc">读得懂外刊，不等于能用英文表达有分量的观点。</p>
     <div class="pains">
       <div class="pain-card">
-        <div class="icon">📖</div>
+        <div class="icon-mark icon-mark-lg" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div>
         <h3>读得懂，写不出</h3>
         <p>外刊每个词都认识，自己写 argument 就回到中式英语。</p>
       </div>
       <div class="pain-card">
-        <div class="icon">🏗️</div>
+        <div class="icon-mark icon-mark-lg" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="4 7 12 3 20 7"/><polyline points="4 12 12 8 20 12"/><line x1="4" y1="17" x2="12" y2="13"/><line x1="20" y1="17" x2="12" y2="13"/></svg></div>
         <h3>有观点，没结构</h3>
         <p>中文能说清楚，转成英文就变成简单句的堆砌。</p>
       </div>
       <div class="pain-card">
-        <div class="icon">🔤</div>
+        <div class="icon-mark icon-mark-lg" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><circle cx="5" cy="12" r="2"/><circle cx="19" cy="12" r="2"/><circle cx="12" cy="19" r="2"/><line x1="10.5" y1="6.5" x2="6.5" y2="10.5"/><line x1="13.5" y1="6.5" x2="17.5" y2="10.5"/><line x1="10.5" y1="17.5" x2="6.5" y2="13.5"/><line x1="13.5" y1="17.5" x2="17.5" y2="13.5"/></svg></div>
         <h3>词汇会背，不会用</h3>
         <p>AWL 背了，写作时还是只能用 good / important / think。</p>
       </div>
       <div class="pain-card">
-        <div class="icon">🛑</div>
+        <div class="icon-mark icon-mark-lg" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
         <h3>精读营「毕业即止」</h3>
         <p>跟了半年，停下来就不知道读什么、怎么练。</p>
       </div>
@@ -209,7 +407,7 @@
     <p class="sec-desc">这是一期完整 briefing 的精简版，可以直接用在每天的训练里。</p>
 
     <div class="sample-box">
-      <div class="sample-header">📅 2026-06-11 · AI 与学术诚信</div>
+      <div class="sample-header">2026-06-11 · AI 与学术诚信</div>
       <div class="sample-body">
 
         <h4>① 今日议题背景</h4>
@@ -217,7 +415,7 @@
 
         <h4>② 外刊核心段落</h4>
         <blockquote class="en">"The University of Cambridge has announced that students may use AI tools in assessed coursework, provided they declare their use. The move has divided faculty, with some arguing it represents a necessary adaptation to a changing world, others warning it risks eroding the very skills a university education is meant to cultivate."<br>
-        <span style="font-size:12px;color:#999;font-style:normal;">— The Guardian, 2026-06-10</span></blockquote>
+        <span style="font-size:12px;color:var(--ink-muted);font-style:normal;">— The Guardian, 2026-06-10</span></blockquote>
 
         <h4>③ 5 个可迁移表达</h4>
         <table>
@@ -250,7 +448,7 @@
         </table>
 
         <h4>④ 中文观点 → 英文 Argument Chain</h4>
-        <p style="font-size:13px;color:#555;margin-bottom:10px;">中文观点：「允许用 AI 是好事，但学校必须教学生怎么用，而不是只说可以用。」</p>
+        <p style="font-size:13px;color:var(--ink-dim);margin-bottom:10px;">中文观点：「允许用 AI 是好事，但学校必须教学生怎么用，而不是只说可以用。」</p>
         <div class="chain">
           <div><strong>Thesis:</strong> Permitting AI use is a constructive step, but universities must go further.</div>
           <div class="arrow">↓</div>
@@ -323,6 +521,42 @@
 </footer>
 
 <script>
+  /* ── Theme Toggle ── */
+  var STORAGE_KEY = 'arguelab-theme';
+
+  function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem(STORAGE_KEY, theme);
+    var sunIcon = document.getElementById('icon-sun');
+    var moonIcon = document.getElementById('icon-moon');
+    var label = document.getElementById('theme-label');
+    if (theme === 'dark') {
+      if (sunIcon) sunIcon.style.display = 'none';
+      if (moonIcon) moonIcon.style.display = 'block';
+      if (label) label.textContent = 'Dark Mode';
+    } else {
+      if (sunIcon) sunIcon.style.display = 'block';
+      if (moonIcon) moonIcon.style.display = 'none';
+      if (label) label.textContent = 'Reading Mode';
+    }
+  }
+
+  var savedTheme = localStorage.getItem(STORAGE_KEY);
+  if (savedTheme) {
+    applyTheme(savedTheme);
+  } else {
+    applyTheme('light');
+  }
+
+  var toggleBtn = document.getElementById('theme-toggle');
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', function() {
+      var current = document.documentElement.getAttribute('data-theme');
+      applyTheme(current === 'dark' ? 'light' : 'dark');
+    });
+  }
+
+  /* ── Subscribe ── */
   function subscribe(btn) {
     const email = document.getElementById('email-input').value.trim();
     if (!email || !email.includes('@')) {
@@ -340,6 +574,7 @@
       if (data.success) {
         btn.textContent = '已加入 ✓';
         btn.style.background = '#16a34a';
+        btn.style.color = '#fff';
         document.querySelector('.form-note').textContent = '检查你的收件箱！确认邮件已发送。';
       } else {
         btn.textContent = data.error || '提交失败，请重试';
