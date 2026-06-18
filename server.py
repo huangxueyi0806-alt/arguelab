@@ -585,10 +585,13 @@ def build_email_html(md_text: str, issue_number: int = 1, read_url: str = "", pd
         '<tr>\n'
         '<td align="center" style="padding:40px 16px;">\n'
 
-        # ── Card ──
+        # ── Card (bgcolor on <td> not <table> — Gmail strips table bgcolor) ──
         '<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="620"'
-        ' class="email-card" bgcolor="#0B0F14"'
+        ' class="email-card"'
         ' style="max-width:620px;border-radius:18px;border:1px solid rgba(148,163,184,0.16);overflow:hidden;">\n'
+        '<tr>\n'
+        '<td bgcolor="#0B0F14" style="background-color:#0B0F14;border-radius:18px;padding:0;">\n'
+        '<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">\n'
 
         # ── Header: Logo + Tagline ──
         '<tr>\n'
@@ -693,7 +696,10 @@ def build_email_html(md_text: str, issue_number: int = 1, read_url: str = "", pd
         '</td>\n'
         '</tr>\n'
 
-        '</table>\n'  # end card
+        '</table>\n'  # end inner card content table
+        '</td>\n'     # end wrapper td with bgcolor
+        '</tr>\n'
+        '</table>\n'  # end card table
         '</td>\n'
         '</tr>\n'
         '</table>\n'  # end centering table
