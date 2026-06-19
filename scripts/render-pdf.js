@@ -42,30 +42,14 @@ if (!puppeteer) {
 // White background, Songti/Georgia, muted functional colors, printable
 // ═══════════════════════════════════════════════════════════════════════
 const PRINT_CSS = `
-  /* ── CJK Font Face (system-installed via fonts-noto-cjk) ── */
-  /* Primary: system-installed font (PostScript name + full name) */
+  /* ── CJK Font Face ── */
+  /* WQY Zen Hei (sans-serif, reliable on Debian) */
   @font-face {
-    font-family: 'Noto Serif CJK SC';
-    src: local('NotoSerifCJK-Regular'),
-         local('Noto Serif CJK SC'),
-         local('Noto Serif CJK'),
-         local('NotoSerifCJK');
-    font-weight: normal;
-    font-style: normal;
-  }
-  @font-face {
-    font-family: 'Noto Serif CJK SC';
-    src: local('NotoSerifCJK-Bold'),
-         local('Noto Serif CJK SC Bold'),
-         local('NotoSerifCJK Bold');
-    font-weight: bold;
-    font-style: normal;
-  }
-  @font-face {
-    font-family: 'Noto Sans CJK SC';
-    src: local('NotoSansCJK-Regular'),
+    font-family: 'WenQuanYi Zen Hei';
+    src: local('WenQuanYi Zen Hei'),
+         local('WenQuanYiZhenHei'),
          local('Noto Sans CJK SC'),
-         local('NotoSansCJK');
+         local('NotoSansCJK-Regular');
     font-weight: normal;
     font-style: normal;
   }
@@ -116,7 +100,7 @@ const PRINT_CSS = `
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    font-family: Georgia, 'Times New Roman', 'Noto Serif CJK SC', 'Charter',
+    font-family: Georgia, 'Times New Roman', 'WenQuanYi Zen Hei', 'Noto Serif CJK SC', 'Charter',
                  'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
     font-size: 11pt;
     line-height: 1.65;
@@ -126,9 +110,9 @@ const PRINT_CSS = `
 
   /* ── Chinese text uses serif CJK ── */
   .cn-body, .ctx-text, .expr-cn, .step-cn, .weigh-text {
-    font-family: 'Noto Serif CJK SC', 'Songti SC', 'SimSun',
+    font-family: 'WenQuanYi Zen Hei', 'Noto Serif CJK SC', 'Songti SC', 'SimSun',
                  'Source Han Serif SC', 'Noto Serif CJK TC',
-                 'PingFang SC', 'Microsoft YaHei', serif;
+                 'PingFang SC', 'Microsoft YaHei', sans-serif;
     font-size: 10.5pt;
     line-height: 1.7;
     color: var(--ink-dim);

@@ -8,12 +8,12 @@ WORKDIR /app
 
 # ── All system deps in one layer ──
 # chromium + CJK fonts (Chinese character rendering in PDF)
-# fonts-noto-cjk = 100MB, provides Noto Serif/Sans CJK SC (best quality)
-# fonts-wqy-zenhei = fallback Chinese font (smaller)
+# Strategy: WQY Zen Hei (reliable, small) as base Chinese font
+# Noto CJK (large) as premium serif CJK font if build succeeds
 RUN apt-get update && apt-get install -y --no-install-recommends \
     nodejs npm chromium \
-    fonts-noto-cjk \
     fonts-wqy-zenhei \
+    fonts-wqy-microhei \
     && ln -sf /usr/bin/nodejs /usr/local/bin/node \
     && apt-get clean && rm -rf /var/lib/apt/lists/* \
     && fc-cache -fv 2>/dev/null || true
