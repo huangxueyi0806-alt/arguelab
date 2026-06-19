@@ -27,24 +27,32 @@ from datetime import datetime
 from pathlib import Path
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import parse_qs
+from pathlib import Path
+
+# ── Paths (define early so supabase_client can be loaded by path) ──
+BASE_DIR = Path(__file__).parent
 
 # ── Supabase client (primary subscriber store) ──
 SUPABASE_IMPORT_ERROR = None
 try:
-    from supabase_client import (
-        get_subscribers as sb_get_subscribers,
-        add_subscriber as sb_add_subscriber,
-        remove_subscriber as sb_remove_subscriber,
-        update_subscriber as sb_update_subscriber,
-    )
-    SUPABASE_AVAILABLE = True
+    import importlib.util, sys
+    sb_path = BASE_DIR / "supabase_client.py"
+    if sb_path.exists():
+        spec = importlib.util.spec_from_file_location("supabase_client", sb_path)
+        sb_mod = importlib.util.module_from_spec(spec)
+        sys.modules["supabase_client"] = sb_mod
+        spec.loader.exec_module(sb_mod)
+        sb_get_subscribers = sb_mod.get_subscribers
+        sb_add_subscriber = sb_mod.add_subscriber
+        sb_remove_subscriber = sb_mod.remove_subscriber
+        sb_update_subscriber = sb_mod.update_subscriber
+        SUPABASE_AVAILABLE = True
+    else:
+        raise FileNotFoundError(f"supabase_client.py not found at {sb_path}")
 except Exception as _e:
     SUPABASE_AVAILABLE = False
     SUPABASE_IMPORT_ERROR = str(_e)
     print(f"[warn] supabase_client not available: {_e} — using local JSON only")
-
-# ── Paths ──
-BASE_DIR = Path(__file__).parent
 
 # Auto-load .env file (if python-dotenv is installed)
 try:
