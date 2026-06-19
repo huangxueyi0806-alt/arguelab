@@ -28,6 +28,19 @@ from pathlib import Path
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import parse_qs
 
+# ── Supabase client (primary subscriber store) ──
+try:
+    from supabase_client import (
+        get_subscribers as sb_get_subscribers,
+        add_subscriber as sb_add_subscriber,
+        remove_subscriber as sb_remove_subscriber,
+        update_subscriber as sb_update_subscriber,
+    )
+    SUPABASE_AVAILABLE = True
+except ImportError:
+    SUPABASE_AVAILABLE = False
+    print("[warn] supabase_client not available — using local JSON only")
+
 # ── Paths ──
 BASE_DIR = Path(__file__).parent
 
@@ -87,18 +100,43 @@ SERVER_PORT = int(os.environ.get("PORT", "8080"))
 # ── Subscriber storage ──
 
 def load_subscribers() -> list[dict]:
+    """Load subscribers from Supabase (primary) with local JSON fallback."""
+    if SUPABASE_AVAILABLE:
+        try:
+            return sb_get_subscribers()
+        except Exception as e:
+            print(f"[supabase] load failed: {e} — falling back to local JSON")
     if not SUBSCRIBERS_FILE.exists():
         return []
     return json.loads(SUBSCRIBERS_FILE.read_text())
 
 
 def save_subscribers(subs: list[dict]) -> None:
+    """Persist subscribers. With Supabase, we sync FROM Supabase TO local JSON.
+    Call this after any Supabase write to keep the local cache fresh."""
+    if SUPABASE_AVAILABLE:
+        try:
+            from supabase_client import _sync_to_local_json
+            _sync_to_local_json()
+            return
+        except Exception:
+            pass
     SUBSCRIBERS_FILE.write_text(json.dumps(subs, indent=2, ensure_ascii=False))
 
 
-def add_subscriber(email: str, name: str = "") -> dict:
-    subs = load_subscribers()
+def add_subscriber(email: str, name: str = "", **kwargs) -> dict:
+    """Add subscriber via Supabase (primary), with local JSON fallback."""
     email = email.strip().lower()
+    if SUPABASE_AVAILABLE:
+        try:
+            result = sb_add_subscriber(email, name, **kwargs)
+            if result.get("status") in ("exists", "ok"):
+                save_subscribers(load_subscribers())  # refresh local cache
+                return result
+        except Exception as e:
+            print(f"[supabase] add failed: {e} — falling back to local JSON")
+    # Fallback: local JSON only
+    subs = load_subscribers()
     if any(s["email"] == email for s in subs):
         return {"status": "exists", "email": email}
     sub = {
@@ -110,20 +148,26 @@ def add_subscriber(email: str, name: str = "") -> dict:
     }
     subs.append(sub)
     save_subscribers(subs)
-    # Push updated list to Railway so both sides stay in sync
-    push_subscribers_to_remote(subs)
     return {"status": "ok", "email": email, "token": sub["token"]}
 
 
 def remove_subscriber(email: str) -> dict:
-    subs = load_subscribers()
+    """Remove subscriber via Supabase (primary), with local JSON fallback."""
     email = email.strip().lower()
-    new_subs = [s for s in subs if s["email"] != email]
-    if len(new_subs) == len(subs):
+    if SUPABASE_AVAILABLE:
+        try:
+            result = sb_remove_subscriber(email)
+            if result.get("status") in ("ok", "not_found"):
+                save_subscribers(load_subscribers())  # refresh local cache
+                return result
+        except Exception as e:
+            print(f"[supabase] remove failed: {e} — falling back to local JSON")
+    # Fallback: local JSON only
+    subs = load_subscribers()
+    new = [s for s in subs if s["email"] != email]
+    if len(new) == len(subs):
         return {"status": "not_found", "email": email}
-    save_subscribers(new_subs)
-    # Push updated list to Railway so both sides stay in sync
-    push_subscribers_to_remote(new_subs)
+    save_subscribers(new)
     return {"status": "ok", "email": email}
 
 
