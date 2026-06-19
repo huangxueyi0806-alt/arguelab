@@ -12,9 +12,11 @@ import urllib.error
 from datetime import datetime
 
 # ── Config ──
-SUPABASE_URL = "https://guhcfdllaxzbcvqwhzzc.supabase.co"
+import os as _os
+SUPABASE_URL = _os.environ.get("SUPABASE_URL") or "https://guhcfdllaxzbcvqwhzzc.supabase.co"
 SUPABASE_KEY = (
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9."
+    _os.environ.get("SUPABASE_SERVICE_KEY")
+    or "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9."
     "eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1aGNmZGxsYXh6YmN2cXdoenpjIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MTI1ODgxOSwiZXhwIjoyMDk2ODM0ODE5fQ."
     "ACm_S8iG0RnccwsnyavvToiwk9v3wyJwQqYRi2KGxfA"
 )
