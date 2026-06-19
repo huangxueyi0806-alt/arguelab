@@ -37,9 +37,9 @@ try:
         update_subscriber as sb_update_subscriber,
     )
     SUPABASE_AVAILABLE = True
-except ImportError:
+except Exception as _e:
     SUPABASE_AVAILABLE = False
-    print("[warn] supabase_client not available — using local JSON only")
+    print(f"[warn] supabase_client not available: {_e} — using local JSON only")
 
 # ── Paths ──
 BASE_DIR = Path(__file__).parent
