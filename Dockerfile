@@ -7,10 +7,13 @@ ENV PYTHONUNBUFFERED=1
 WORKDIR /app
 
 # ── All system deps in one layer ──
+# chromium + CJK fonts (required for Chinese characters in PDF)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     nodejs npm chromium \
+    fonts-noto-cjk \
     && ln -sf /usr/bin/nodejs /usr/local/bin/node \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+    && apt-get clean && rm -rf /var/lib/apt/lists/* \
+    && fc-cache -fv 2>/dev/null || true
 
 # ── Python deps ──
 COPY requirements.txt .

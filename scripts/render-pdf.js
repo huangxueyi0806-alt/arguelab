@@ -88,9 +88,8 @@ const PRINT_CSS = `
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    font-family: Georgia, 'Times New Roman', 'Charter', 'Songti SC', 'SimSun',
-                 'Noto Serif CJK SC', 'Source Han Serif SC', 'PingFang SC',
-                 'Microsoft YaHei', serif;
+    font-family: Georgia, 'Times New Roman', 'Noto Serif CJK SC', 'Charter',
+                 'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
     font-size: 11pt;
     line-height: 1.65;
     color: var(--ink);
@@ -99,8 +98,9 @@ const PRINT_CSS = `
 
   /* ── Chinese text uses serif CJK ── */
   .cn-body, .ctx-text, .expr-cn, .step-cn, .weigh-text {
-    font-family: 'Songti SC', 'SimSun', 'Noto Serif CJK SC',
-                 'Source Han Serif SC', 'PingFang SC', 'Microsoft YaHei', serif;
+    font-family: 'Noto Serif CJK SC', 'Songti SC', 'SimSun',
+                 'Source Han Serif SC', 'Noto Serif CJK TC',
+                 'PingFang SC', 'Microsoft YaHei', serif;
     font-size: 10.5pt;
     line-height: 1.7;
     color: var(--ink-dim);
