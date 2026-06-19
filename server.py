@@ -4701,6 +4701,26 @@ class APIHandler(BaseHTTPRequestHandler):
             self._send_json({"count": len(subs), "subscribers": [{k: s[k] for k in ("email","name","subscribed_at")} for s in subs]})
         elif self.path == "/api/health":
             self._send_json({"status": "ok", "subscribers": len(load_subscribers()), "email_configured": bool(RESEND_API_KEY or SMTP_HOST)})
+        elif self.path == "/api/debug":
+            # Debug endpoint: check Supabase connectivity
+            import os as _os
+            info = {
+                "supabase_available": SUPABASE_AVAILABLE,
+                "supabase_url_set": bool(_os.environ.get("SUPABASE_URL")),
+                "supabase_key_set": bool(_os.environ.get("SUPABASE_SERVICE_KEY")),
+                "subscribers_count": len(load_subscribers()),
+                "email_configured": bool(RESEND_API_KEY or SMTP_HOST),
+                "smtp_host": SMTP_HOST or "(not set)",
+            }
+            # Try a live Supabase query
+            if SUPABASE_AVAILABLE:
+                try:
+                    from supabase_client import get_subscribers
+                    sb_subs = get_subscribers()
+                    info["supabase_query"] = f"ok ({len(sb_subs)} rows)"
+                except Exception as e:
+                    info["supabase_query"] = f"error: {e}"
+            self._send_json(info)
         elif self.path == "/api/preview":
             # Show latest briefing preview
             briefing_dir = _get_briefing_dir()
