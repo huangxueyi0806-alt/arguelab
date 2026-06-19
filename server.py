@@ -123,6 +123,63 @@ def remove_subscriber(email: str) -> dict:
     return {"status": "ok", "email": email}
 
 
+# ── Remote subscriber sync ──
+# Before sending emails, pull subscribers from Railway and merge.
+# This ensures signups from the landing page aren't lost.
+
+def fetch_remote_subscribers() -> list[dict]:
+    """Fetch subscriber list from the Railway deployment.
+    Returns empty list if unreachable (Railway may be down, deploying, etc.)."""
+    import urllib.request
+    import urllib.error
+    base = os.environ.get("BASE_URL", f"http://localhost:{SERVER_PORT}")
+    url = f"{base}/api/subscribers"
+    try:
+        req = urllib.request.Request(url)
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            data = json.loads(resp.read())
+            return data.get("subscribers", [])
+    except Exception:
+        # Railway unreachable — that's fine, fall back to local
+        return []
+
+
+def merge_subscribers(local: list[dict], remote: list[dict]) -> list[dict]:
+    """Merge remote subscribers into local, keeping whichever has more info.
+    Returns merged list (not saved to disk)."""
+    merged = {s["email"].strip().lower(): dict(s) for s in local}
+    for s in remote:
+        email = s.get("email", "").strip().lower()
+        if not email:
+            continue
+        if email in merged:
+            # Keep the entry with more fields or newer timestamp
+            existing = merged[email]
+            remote_ts = s.get("subscribed_at", "")
+            local_ts = existing.get("subscribed_at", "")
+            if remote_ts > local_ts:
+                merged[email].update(s)
+        else:
+            merged[email] = dict(s)
+    return list(merged.values())
+
+
+def push_subscribers_to_remote(subs: list[dict]) -> bool:
+    """Push the merged subscriber list back to Railway so it persists."""
+    import urllib.request
+    import urllib.error
+    base = os.environ.get("BASE_URL", f"http://localhost:{SERVER_PORT}")
+    url = f"{base}/api/subscribers/sync"
+    data = json.dumps({"subscribers": subs}).encode("utf-8")
+    try:
+        req = urllib.request.Request(url, data=data, method="PUT",
+            headers={"Content-Type": "application/json"})
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            return True
+    except Exception:
+        return False
+
+
 # ── Email template builder ──
 
 EMAIL_CSS = """
@@ -786,7 +843,12 @@ def send_briefing_to_all(md_path: str, issue_number: int = 1, read_url: str = ""
     if not SMTP_HOST:
         return {"status": "error", "message": "SMTP not configured. Set SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS environment variables."}
 
-    subs = load_subscribers()
+    # ── Sync: pull Railway subscribers, merge with local ──
+    local_subs = load_subscribers()
+    remote_subs = fetch_remote_subscribers()
+    subs = merge_subscribers(local_subs, remote_subs)
+    if remote_subs:
+        print(f"  (synced {len(remote_subs)} remote subscribers, merged total: {len(subs)})")
     if not subs:
         return {"status": "error", "message": "No subscribers found."}
 
@@ -821,6 +883,17 @@ def send_briefing_to_all(md_path: str, issue_number: int = 1, read_url: str = ""
         except Exception as e:
             failed.append({"email": sub["email"], "error": str(e)})
             print(f"  ✗ {sub['email']}: {e}")
+
+    # ── Save merged subscribers locally and push to Railway ──
+    if len(subs) > len(local_subs):
+        save_subscribers(subs)
+        print(f"  (saved {len(subs)} subscribers locally)")
+        if remote_subs or len(subs) > len(local_subs):
+            ok = push_subscribers_to_remote(subs)
+            if ok:
+                print(f"  (pushed to Railway)")
+            else:
+                print(f"  (⚠ Railway unreachable, sync on next send)")
 
     return {"status": "ok", "sent": len(sent), "failed": failed}
 
@@ -4808,6 +4881,16 @@ class APIHandler(BaseHTTPRequestHandler):
             status_val = data.get("status", existing.get("status", "draft"))
             updated = upsert_issue(slug, {"status": status_val})
             self._send_json(updated, 200)
+
+        # Sync subscribers (receive merged list from local machine)
+        elif self.path == "/api/subscribers/sync":
+            subs_data = data.get("subscribers", [])
+            if not isinstance(subs_data, list):
+                self._send_json({"error": "subscribers must be an array"}, 400)
+                return
+            save_subscribers(subs_data)
+            self._send_json({"status": "ok", "count": len(subs_data)})
+
         else:
             self._send_json({"error": "Not found"}, 404)
 
