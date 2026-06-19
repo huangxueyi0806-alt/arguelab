@@ -110,6 +110,8 @@ def add_subscriber(email: str, name: str = "") -> dict:
     }
     subs.append(sub)
     save_subscribers(subs)
+    # Push updated list to Railway so both sides stay in sync
+    push_subscribers_to_remote(subs)
     return {"status": "ok", "email": email, "token": sub["token"]}
 
 
@@ -120,6 +122,8 @@ def remove_subscriber(email: str) -> dict:
     if len(new_subs) == len(subs):
         return {"status": "not_found", "email": email}
     save_subscribers(new_subs)
+    # Push updated list to Railway so both sides stay in sync
+    push_subscribers_to_remote(new_subs)
     return {"status": "ok", "email": email}
 
 
