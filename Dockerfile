@@ -28,6 +28,7 @@ RUN cd /app/scripts && npm install
 
 # ── App code ──
 COPY server.py .
+COPY supabase_client.py .
 COPY static/ static/
 COPY briefings/ briefings/
 COPY scripts/render-pdf.js scripts/render-pdf.js
