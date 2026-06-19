@@ -29,6 +29,7 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import parse_qs
 
 # ── Supabase client (primary subscriber store) ──
+SUPABASE_IMPORT_ERROR = None
 try:
     from supabase_client import (
         get_subscribers as sb_get_subscribers,
@@ -39,6 +40,7 @@ try:
     SUPABASE_AVAILABLE = True
 except Exception as _e:
     SUPABASE_AVAILABLE = False
+    SUPABASE_IMPORT_ERROR = str(_e)
     print(f"[warn] supabase_client not available: {_e} — using local JSON only")
 
 # ── Paths ──
@@ -4706,6 +4708,7 @@ class APIHandler(BaseHTTPRequestHandler):
             import os as _os
             info = {
                 "supabase_available": SUPABASE_AVAILABLE,
+                "supabase_import_error": SUPABASE_IMPORT_ERROR,
                 "supabase_url_set": bool(_os.environ.get("SUPABASE_URL")),
                 "supabase_key_set": bool(_os.environ.get("SUPABASE_SERVICE_KEY")),
                 "subscribers_count": len(load_subscribers()),
