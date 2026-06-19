@@ -43,6 +43,32 @@ TEMPLATES_DIR = BASE_DIR / "templates"
 
 DATA_DIR.mkdir(exist_ok=True)
 
+# ── Issues storage ──
+ISSUES_FILE = DATA_DIR / "issues.json"
+
+def load_issues() -> list[dict]:
+    if not ISSUES_FILE.exists():
+        return []
+    return json.loads(ISSUES_FILE.read_text(encoding="utf-8"))
+
+def save_issues(issues: list[dict]) -> None:
+    ISSUES_FILE.write_text(json.dumps(issues, indent=2, ensure_ascii=False), encoding="utf-8")
+
+def upsert_issue(slug: str, data: dict) -> dict:
+    """Create or update an issue by slug."""
+    issues = load_issues()
+    existing = next((i for i in issues if i.get("slug") == slug), None)
+    now = datetime.now().isoformat()
+    if existing:
+        existing.update(data)
+        existing["updated_at"] = now
+    else:
+        issue = {"slug": slug, "created_at": now, "updated_at": now, **data}
+        issues.append(issue)
+    save_issues(issues)
+    return next(i for i in load_issues() if i.get("slug") == slug)
+
+
 # ── SMTP Config ──
 # Set these via environment variables. Works with any SMTP provider.
 # For Resend: SMTP_HOST=live.smtp.resend.com, SMTP_PORT=587, SMTP_USER=resend
@@ -4540,7 +4566,7 @@ class APIHandler(BaseHTTPRequestHandler):
     def do_OPTIONS(self):
         self.send_response(204)
         self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS")
         self.send_header("Access-Control-Allow-Headers", "Content-Type")
         self.end_headers()
 
@@ -4735,6 +4761,53 @@ class APIHandler(BaseHTTPRequestHandler):
             name = data.get("name", "")
             result = add_subscriber(email, name)
             self._send_json(result)
+
+        elif self.path == "/api/issues":
+            content_json = data.get("content_json")
+            if not content_json:
+                self._send_json({"error": "Missing content_json"}, 400)
+                return
+            slug = content_json.get("header", {}).get("slug")
+            if not slug:
+                self._send_json({"error": "Missing slug in content_json.header"}, 400)
+                return
+            status_val = data.get("status", "draft")
+            issue_data = {
+                "content_json": content_json,
+                "status": status_val,
+            }
+            result = upsert_issue(slug, issue_data)
+            self._send_json(result, 201)
+
+        else:
+            self._send_json({"error": "Not found"}, 404)
+
+    def do_PUT(self):
+        content_length = int(self.headers.get("Content-Length", 0))
+        body = self.rfile.read(content_length) if content_length else b"{}"
+        content_type = self.headers.get("Content-Type", "")
+
+        if "application/json" in content_type:
+            try:
+                data = json.loads(body)
+            except json.JSONDecodeError:
+                self._send_json({"error": "Invalid JSON"}, 400)
+                return
+        else:
+            self._send_json({"error": "Unsupported Content-Type"}, 415)
+            return
+
+        # Update issue status
+        match = re.match(r"^/api/issues/(.+)$", self.path)
+        if match:
+            slug = match.group(1)
+            existing = next((i for i in load_issues() if i.get("slug") == slug), None)
+            if not existing:
+                self._send_json({"error": "Issue not found"}, 404)
+                return
+            status_val = data.get("status", existing.get("status", "draft"))
+            updated = upsert_issue(slug, {"status": status_val})
+            self._send_json(updated, 200)
         else:
             self._send_json({"error": "Not found"}, 404)
 
