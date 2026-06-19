@@ -7,10 +7,13 @@ ENV PYTHONUNBUFFERED=1
 WORKDIR /app
 
 # ── All system deps in one layer ──
-# chromium + CJK fonts (required for Chinese characters in PDF)
+# chromium + CJK fonts (Chinese character rendering in PDF)
+# fonts-noto-cjk = 100MB, provides Noto Serif/Sans CJK SC (best quality)
+# fonts-wqy-zenhei = fallback Chinese font (smaller)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     nodejs npm chromium \
     fonts-noto-cjk \
+    fonts-wqy-zenhei \
     && ln -sf /usr/bin/nodejs /usr/local/bin/node \
     && apt-get clean && rm -rf /var/lib/apt/lists/* \
     && fc-cache -fv 2>/dev/null || true

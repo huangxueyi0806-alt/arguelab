@@ -43,15 +43,29 @@ if (!puppeteer) {
 // ═══════════════════════════════════════════════════════════════════════
 const PRINT_CSS = `
   /* ── CJK Font Face (system-installed via fonts-noto-cjk) ── */
+  /* Primary: system-installed font (PostScript name + full name) */
   @font-face {
     font-family: 'Noto Serif CJK SC';
-    src: local('Noto Serif CJK SC'), local('NotoSerifCJK-Regular');
+    src: local('NotoSerifCJK-Regular'),
+         local('Noto Serif CJK SC'),
+         local('Noto Serif CJK'),
+         local('NotoSerifCJK');
     font-weight: normal;
     font-style: normal;
   }
   @font-face {
+    font-family: 'Noto Serif CJK SC';
+    src: local('NotoSerifCJK-Bold'),
+         local('Noto Serif CJK SC Bold'),
+         local('NotoSerifCJK Bold');
+    font-weight: bold;
+    font-style: normal;
+  }
+  @font-face {
     font-family: 'Noto Sans CJK SC';
-    src: local('Noto Sans CJK SC'), local('NotoSansCJK-Regular');
+    src: local('NotoSansCJK-Regular'),
+         local('Noto Sans CJK SC'),
+         local('NotoSansCJK');
     font-weight: normal;
     font-style: normal;
   }
@@ -1986,6 +2000,7 @@ async function main() {
   const mdText = fs.readFileSync(mdPath, 'utf-8');
   const html = renderPrintHtml(mdText, issueDate);
 
+  // Debug: write HTML to temp file (for inspection if needed)
   const tmpHtml = outPath.replace(/\.pdf$/, '.tmp.html');
   fs.writeFileSync(tmpHtml, html, 'utf-8');
 
@@ -1998,7 +2013,8 @@ async function main() {
       args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-gpu'],
     });
     const page = await browser.newPage();
-    await page.goto('file://' + tmpHtml, { waitUntil: 'networkidle0', timeout: 30000 });
+    // Use setContent instead of file:// to avoid UTF-8 encoding issues with local files
+    await page.setContent(html, { waitUntil: 'networkidle0', timeout: 30000 });
 
     await page.pdf({
       path: outPath,
