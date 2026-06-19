@@ -42,6 +42,20 @@ if (!puppeteer) {
 // White background, Songti/Georgia, muted functional colors, printable
 // ═══════════════════════════════════════════════════════════════════════
 const PRINT_CSS = `
+  /* ── CJK Font Face (system-installed via fonts-noto-cjk) ── */
+  @font-face {
+    font-family: 'Noto Serif CJK SC';
+    src: local('Noto Serif CJK SC'), local('NotoSerifCJK-Regular');
+    font-weight: normal;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'Noto Sans CJK SC';
+    src: local('Noto Sans CJK SC'), local('NotoSansCJK-Regular');
+    font-weight: normal;
+    font-style: normal;
+  }
+
   /* ── Page setup ── */
   @page {
     size: A4;
