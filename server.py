@@ -3520,16 +3520,24 @@ def _render_paragraph(text: str, module_type: str = "context") -> str:
     if re.match(r'^###\s*(?:表达|Expression)\s*\d+', first_line):
         return _render_expression_card(text)
 
-    # --- Sentence deconstruction: contains 目标句 / 结构拆解 / 语法点 ---
-    if "**目标句**" in text or "**目标句：**" in text or "**结构拆解**" in text or "**结构拆解：**" in text or "**语法点" in text or "**语法要点" in text:
+    # --- Sentence deconstruction: 目标句/Target Sentence / 结构拆解/Structure / 语法点/Grammar Points ---
+    if ("**目标句**" in text or "**目标句：**" in text or
+        "**Target Sentence" in text or
+        "**结构拆解**" in text or "**结构拆解：**" in text or
+        "**Structure:**" in text or
+        "**语法点" in text or "**语法要点" in text or
+        "**Grammar Points" in text or
+        "**句型模板" in text or "**仿写练习" in text or "**适用场景" in text):
         return _render_sentence_decon(text)
 
-    # --- Output tasks: contains 写作任务 / 口语任务 / Task 1 / Task 2 / 结构引导 / 自我检查 ---
+    # --- Output tasks: 写作任务/Task/口语任务/Topic/Question/结构引导/自我检查 ---
     # NOTE: must check BEFORE argument chain, since output text may contain "Weighing" etc.
     if ("**写作任务" in text or "**口语任务" in text or
         "**结构指引" in text or "**结构引导" in text or
-        "**Self-check" in text or "**自我检查" in text or
-        "### Task 1" in text or "### Task 2" in text or
+        "**Self-check" in text or "**Self-Check" in text or "**自我检查" in text or
+        "### Task A" in text or "### Task B" in text or "### Task 1" in text or "### Task 2" in text or
+        "**Topic:**" in text or "**Question:**" in text or
+        "**Structure Guide:" in text or "**Speaking Guide:" in text or
         "**题目：**" in text):
         return _render_output_tasks(text)
 
@@ -3561,6 +3569,10 @@ def _render_paragraph(text: str, module_type: str = "context") -> str:
     # --- Italic sub-headers (only match single-line, single-asterisk) ---
     if first_line.startswith("*") and not first_line.startswith("**") and "\n" not in text.strip():
         return f'<p class="section-subtitle">{_markdown_inline_to_html(text.strip("*"))}</p>'
+
+    # --- Horizontal rules / section separators (skip rendering) ---
+    if re.match(r'^[-_*]{3,}\s*$', first_line):
+        return ""
 
     # --- Default: Chinese or English paragraph ---
     # For long paragraphs, split into multiple <p> tags if they exceed length limits
@@ -3790,27 +3802,29 @@ def _render_expression_section(text: str) -> str:
 
 
 def _render_expression_card(text: str) -> str:
-    """Render a single expression card (### 表达 N).
+    """Render a single expression card (### 表达 N / ### Expression N).
 
-    Supports two actual briefing formats:
+    Supports multiple briefing formats (tried in order):
 
-    Format A (standard):
+    Format C (current — blockquote + bullet metadata):
+    ### Expression N — Title
+    > **"phrase text"**
+    - **功能：** function description
+    - **语域：** register label
+    - **搭配链：** collocation examples
+    - **例句：** example sentence
+
+    Format A (legacy — inline code):
     ### 表达 N
     **`phrase`** `register label`
-    **`tag1 · tag2 · tag3`**
+    **常见搭配：** collocations
+    **例句：** example
 
-    Plain CN explanation paragraph(s)...
-
-    **常见搭配：** collocation examples
-    **例句：** example sentence
-
-    Format B (compact-tags):
+    Format B (legacy — compact-tags):
     ### 表达 N
     **紧凑标签：**`tag1 · tag2 · tag3`
     **`phrase`** `register label`
-    - CN explanation
     - **常见搭配：**...
-    - **例句：**...
     """
     phrase = ""
     tags = ""
@@ -3827,6 +3841,10 @@ def _render_expression_card(text: str) -> str:
     while i < len(lines):
         s = lines[i].strip()
 
+        # ── Strip blockquote prefix (> ) ──
+        if s.startswith("> "):
+            s = s[2:]
+
         # Extract card number from ### header
         if s.startswith("###"):
             m = re.match(r'^###\s*(?:表达|Expression)\s*(\d+)', s)
@@ -3840,7 +3858,17 @@ def _render_expression_card(text: str) -> str:
             i += 1
             continue
 
-        # ── Field-header lines: **常见搭配：** / **例句：** ──
+        # ── Phrase: **"text"** or **`text`** ──
+        if not phrase_found and not phrase:
+            # Blockquote-style: **"text"** (Format C)
+            mq = re.match(r'\*\*"(.+?)"\*\*$', s)
+            if mq:
+                phrase = mq.group(1)
+                phrase_found = True
+                i += 1
+                continue
+
+        # ── Field-header lines (standalone): **常见搭配：** / **例句：** ──
         if re.match(r'\*\*常见搭配[：:]', s):
             collocations = re.sub(r'\*\*常见搭配[：:]\*\*\s*', '', s)
             current_field = "colloc"
@@ -3860,10 +3888,9 @@ def _render_expression_card(text: str) -> str:
             i += 1
             continue
 
-        # ── Phrase or tags line: **`...`** ──
+        # ── Phrase or tags line: **`...`** (legacy Format A) ──
         if (s.startswith("**`") or (s.startswith("**") and "`" in s[:40])):
             if not phrase_found:
-                # First **`...`** line → phrase
                 m = re.match(r'\*\*`(.+?)`\*\*', s)
                 if m:
                     phrase = m.group(1)
@@ -3871,9 +3898,8 @@ def _render_expression_card(text: str) -> str:
                     phrase = re.sub(r'\*\*', '', s)
                     phrase = re.sub(r'`[^`]*`\s*$', '', phrase).strip()
                 phrase_found = True
-                current_field = None  # next **`...`** will be tags
+                current_field = None
             elif not tags:
-                # Second **...** line → tags (Format A: **`tag1 · tag2 · tag3`**)
                 tags = re.sub(r'\*\*', '', s).strip("`")
                 current_field = "tags"
             i += 1
@@ -3882,18 +3908,45 @@ def _render_expression_card(text: str) -> str:
         # ── Bullet lines ──
         if s.startswith("- "):
             content = s[2:]
+
+            # Format C: - **功能：** text  or  - **语域：** text → tags
+            m_func = re.match(r'\*\*功能[：:]\*\*\s*(.+)', content)
+            if m_func:
+                func_text = m_func.group(1).strip()
+                tags = (tags + " · " + func_text) if tags else func_text
+                i += 1
+                continue
+
+            m_reg = re.match(r'\*\*语域[：:]\*\*\s*(.+)', content)
+            if m_reg:
+                reg_text = m_reg.group(1).strip()
+                tags = (tags + " | " + reg_text) if tags else reg_text
+                i += 1
+                continue
+
+            if re.match(r'\*\*搭配链[：:]', content):
+                collocations = re.sub(r'\*\*搭配链[：:]\*\*\s*', '', content)
+                current_field = "colloc"
+                i += 1
+                continue
+
             if re.match(r'\*\*常见搭配[：:]', content):
                 collocations = re.sub(r'\*\*常见搭配[：:]\*\*\s*', '', content)
                 current_field = "colloc"
-            elif re.match(r'\*\*例句[：:]', content):
+                i += 1
+                continue
+
+            if re.match(r'\*\*例句[：:]', content):
                 example = re.sub(r'\*\*例句[：:]\*\*\s*', '', content)
                 current_field = "example"
-            elif not cn_explanation:
-                # First bullet → start CN explanation
+                i += 1
+                continue
+
+            if not cn_explanation:
+                # First non-metadata bullet → start CN explanation
                 cn_explanation = content
                 current_field = "cn"
             elif current_field == "cn":
-                # Still in CN explanation (multiple bullets before 常见搭配)
                 cn_explanation += "\n" + content
             elif not collocations:
                 collocations = content
@@ -3904,9 +3957,8 @@ def _render_expression_card(text: str) -> str:
             i += 1
             continue
 
-        # ── Plain paragraph → CN explanation (Format A) ──
-        # Only capture first paragraph(s) before **常见搭配** / **例句**
-        if not cn_explanation and current_field not in ("colloc", "example"):
+        # ── Plain paragraph → CN explanation (legacy formats) ──
+        if not cn_explanation and current_field not in ("colloc", "example", "tags"):
             cn_explanation = s
             current_field = "cn"
             i += 1
@@ -3920,6 +3972,8 @@ def _render_expression_card(text: str) -> str:
                 collocations += " " + s
             elif current_field == "example":
                 example += " " + s
+            elif current_field == "tags":
+                tags += " " + s
 
         i += 1
 
@@ -3968,40 +4022,61 @@ def _render_sentence_decon(text: str) -> str:
             i += 1
             continue
 
-        # Target sentence - inline format: **目标句：** text
-        if s.startswith("**目标句：**"):
-            target_sentence = re.sub(r'\*\*目标句：\*\*\s*', '', s)
-            # Also consume the blockquote content on next lines
+        # Target sentence - inline format: **目标句：** / **Target Sentence:** text
+        if s.startswith("**目标句：**") or s.startswith("**Target Sentence:**") or s.startswith("**Target Sentence**"):
+            ts = re.sub(r'\*\*(?:目标句|Target Sentence)[：:]?\*\*\s*', '', s)
+            if ts.strip():
+                target_sentence = ts
+            # Also consume the blockquote content on next lines (skip empty lines)
             j = i + 1
-            while j < len(lines) and lines[j].strip().startswith(">"):
-                target_sentence += " " + lines[j].strip()[1:].strip()
-                j += 1
+            while j < len(lines):
+                ls = lines[j].strip()
+                if not ls:
+                    j += 1
+                    continue
+                if ls.startswith(">"):
+                    target_sentence += " " + ls[1:].strip()
+                    j += 1
+                else:
+                    break
             i = j
             continue
 
-        # Target sentence - block format: **目标句** on one line, > on next
-        if s.startswith("**目标句**") and not s.startswith("**目标句：**"):
+        # Target sentence - block format: **目标句** / **Target Sentence** on one line, > on next
+        if (s.startswith("**目标句**") and not s.startswith("**目标句：**")) or \
+           (s.startswith("**Target Sentence**") and not s.startswith("**Target Sentence:**")):
             current_mode = "target"
             i += 1
-            # Consume blockquote lines
-            while i < len(lines) and lines[i].strip().startswith(">"):
-                target_sentence += " " + lines[i].strip()[1:].strip()
-                i += 1
+            # Consume blockquote lines (skip empty lines)
+            while i < len(lines):
+                ls = lines[i].strip()
+                if not ls:
+                    i += 1
+                    continue
+                if ls.startswith(">"):
+                    target_sentence += " " + ls[1:].strip()
+                    i += 1
+                else:
+                    break
             continue
 
-        if s.startswith("**结构拆解：**") or s.startswith("**结构拆解**"):
+        if s.startswith("**结构拆解：**") or s.startswith("**结构拆解**") or s.startswith("**Structure:**") or s.startswith("**Structure**"):
             if current_mode == "grammar" and current_grammar_title:
                 grammar_points.append((current_grammar_title, " ".join(current_grammar_body)))
                 current_grammar_body = []
             # Handle both "**结构拆解：** text" and "**结构拆解**" (bare header, content on next line)
-            structure_analysis = re.sub(r'\*\*结构拆解[：:]?\*\*\s*', '', s)
+            structure_analysis = re.sub(r'\*\*(?:结构拆解|Structure)[：:]?\*\*\s*', '', s)
             if not structure_analysis.strip():
                 # Content is on next lines
                 current_mode = "structure"
                 i += 1
                 j = i
-                while j < len(lines) and lines[j].strip() and not lines[j].strip().startswith("**"):
-                    structure_analysis += " " + lines[j].strip()
+                while j < len(lines) and lines[j].strip() and not lines[j].strip().startswith("**") and lines[j].strip() != "---":
+                    ls = lines[j].strip()
+                    # Strip blockquote prefix if present
+                    if ls.startswith("> "):
+                        ls = ls[2:]
+                    structure_analysis += " " + ls
                     j += 1
                 i = j
             else:
@@ -4010,20 +4085,23 @@ def _render_sentence_decon(text: str) -> str:
                 i += 1
                 # Also consume continuation lines
                 j = i
-                while j < len(lines) and lines[j].strip() and not lines[j].strip().startswith("**"):
-                    structure_analysis += " " + lines[j].strip()
+                while j < len(lines) and lines[j].strip() and not lines[j].strip().startswith("**") and lines[j].strip() != "---":
+                    ls = lines[j].strip()
+                    if ls.startswith("> "):
+                        ls = ls[2:]
+                    structure_analysis += " " + ls
                     j += 1
                 i = j
             continue
 
-        if s.startswith("**结构模板**") or s.startswith("**结构模板：**"):
+        if s.startswith("**结构模板**") or s.startswith("**结构模板：**") or s.startswith("**句型模板"):
             if current_mode == "grammar" and current_grammar_title:
                 grammar_points.append((current_grammar_title, " ".join(current_grammar_body)))
                 current_grammar_body = []
             current_mode = "template"
-            template_text = re.sub(r'\*\*结构模板\*\*:?\s*', '', s)
+            template_text = re.sub(r'\*\*(?:结构模板|句型模板)[^：:]*[：:]?\*\*\s*', '', s)
             if not template_text.strip():
-                # Template is on next lines (code block)
+                # Template is on next lines (code block or blockquote)
                 j = i + 1
                 template_lines = []
                 while j < len(lines):
@@ -4031,31 +4109,33 @@ def _render_sentence_decon(text: str) -> str:
                     if ls.startswith("```"):
                         j += 1
                         continue
-                    if ls.startswith("**"):
+                    if ls.startswith("**") or ls == "---":
                         break
                     if ls:
+                        # Strip blockquote prefix
+                        if ls.startswith("> "):
+                            ls = ls[2:]
                         template_lines.append(ls)
                     j += 1
                 template_text = "\n".join(template_lines)
                 i = j
             else:
-                # Template is inline in backticks
                 template_text = template_text.strip("`")
                 i += 1
             continue
 
-        if s.startswith("**语法点") or s.startswith("**语法要点"):
+        if s.startswith("**语法点") or s.startswith("**语法要点") or s.startswith("**Grammar Points"):
             current_mode = "grammar"
             i += 1
             continue
 
-        if s.startswith("**仿写模板：**") or s.startswith("**仿写模板**") or s.startswith("**模仿模板：**") or s.startswith("**模仿模板**"):
+        if s.startswith("**仿写模板：**") or s.startswith("**仿写模板**") or s.startswith("**模仿模板：**") or s.startswith("**模仿模板**") or s.startswith("**仿写练习：**") or s.startswith("**仿写练习**") or s.startswith("**Imitation:"):
             if current_mode == "grammar" and current_grammar_title:
                 grammar_points.append((current_grammar_title, " ".join(current_grammar_body)))
                 current_grammar_body = []
             current_mode = "imitation"
             # Check if content is inline (e.g. **模仿模板：** text)
-            inline = re.sub(r'\*\*(?:仿写模板|模仿模板)[：:]?\*\*\s*', '', s)
+            inline = re.sub(r'\*\*(?:仿写模板|模仿模板|仿写练习|Imitation)[：:]?\*\*\s*', '', s)
             if inline.strip() and not inline.strip().startswith(">"):
                 imitation_text = inline.strip()
                 i += 1
@@ -4068,7 +4148,7 @@ def _render_sentence_decon(text: str) -> str:
                     if ls.startswith("```"):
                         j += 1
                         continue
-                    if ls.startswith("**"):
+                    if ls.startswith("**") or ls == "---":
                         break
                     # Strip blockquote prefix
                     if ls.startswith("> "):
@@ -4283,7 +4363,7 @@ def _render_argument_chain(text: str) -> str:
                 if not ls:
                     j += 1
                     continue
-                if ls.startswith("**") or ls.startswith("🏗️") or ls.startswith("🇨🇳"):
+                if ls.startswith("**") or ls.startswith("🏗️") or ls.startswith("🇨🇳") or ls == "---":
                     break
                 # Strip blockquote prefix if present
                 if ls.startswith("> "):
@@ -4309,7 +4389,7 @@ def _render_argument_chain(text: str) -> str:
                 if not ls:
                     j += 1
                     continue
-                if ls.startswith("**") or ls.startswith("⛓️"):
+                if ls.startswith("**") or ls.startswith("⛓️") or ls == "---":
                     break
                 # Strip blockquote prefix if present
                 if ls.startswith("> "):
@@ -4335,9 +4415,16 @@ def _render_argument_chain(text: str) -> str:
                 if not ls:
                     j += 1
                     continue
-                if ls.startswith("**") or ls.startswith("⚖️") or ls.startswith("✍️"):
+                if ls.startswith("**") or ls.startswith("⚖️") or ls.startswith("✍️") or ls == "---":
                     break
-                causal_chain += "\n" + ls
+                # Strip blockquote prefix if present
+                if ls.startswith("> "):
+                    ls = ls[2:]
+                elif ls.startswith(">"):
+                    ls = ls[1:]
+                if not causal_chain.endswith("\n") and causal_chain:
+                    causal_chain += "\n"
+                causal_chain += ls
                 j += 1
             i = j
             continue
@@ -4351,12 +4438,12 @@ def _render_argument_chain(text: str) -> str:
             para = []
             while j < len(lines):
                 ls = lines[j].strip()
-                if ls.startswith("**示范段落：**") or ls.startswith("**示范段落**") or ls.startswith("✍️") or ls.startswith("**✍️") or "Sample Argument Paragraph" in ls or "Sample Paragraph" in ls[:40] or ls.startswith("📌") or ls.startswith("*ArgueLab"):
+                if ls.startswith("**示范段落：**") or ls.startswith("**示范段落**") or ls.startswith("✍️") or ls.startswith("**✍️") or "Sample Argument Paragraph" in ls or "Sample Paragraph" in ls[:40] or ls.startswith("📌") or ls.startswith("*ArgueLab") or ls == "---":
                     break
                 if ls == "" and para:
                     weighing_texts.append(" ".join(para))
                     para = []
-                elif ls and not ls.startswith("⚖️"):
+                elif ls and not ls.startswith("⚖️") and ls != "---":
                     para.append(ls)
                 j += 1
             if para:
@@ -4370,11 +4457,11 @@ def _render_argument_chain(text: str) -> str:
             j = i
             while j < len(lines):
                 ls = lines[j].strip()
-                if ls.startswith("📌") or ls.startswith("**📌") or ls.startswith("*ArgueLab"):
-                    sample_note = re.sub(r'\*\*', '', ls).strip("📌").strip()
+                if ls.startswith("📌") or ls.startswith("**📌") or ls.startswith("*ArgueLab") or ls == "---":
+                    sample_note = re.sub(r'\*\*', '', ls).strip("📌").strip() if not ls.startswith("---") else ""
                     j += 1
                     break
-                if ls:
+                if ls and ls != "---":
                     sample_para += ls + " "
                 j += 1
             i = j
@@ -4472,14 +4559,14 @@ def _render_output_tasks(text: str) -> str:
             i += 1
             continue
 
-        # Detect task headers: ### Task 1: ... or ### Task 2: ...
-        if s.startswith("### Task 1") or s.startswith("### Task 2"):
+        # Detect task headers: ### Task 1: ... / ### Task 2: ... / ### Task A: ... / ### Task B: ...
+        if s.startswith("### Task 1") or s.startswith("### Task 2") or s.startswith("### Task A") or s.startswith("### Task B"):
             if current_task:
                 tasks.append(current_task)
             # Determine task type from header
-            task_type = "Writing Task" if "写作" in s or "Writing" in s else "Speaking Task"
+            task_type = "Writing Task" if ("写作" in s or "Writing" in s) else "Speaking Task"
             current_task = {"type": task_type, "prompt": "", "guide": [], "check": [], "meta": ""}
-            current_section = "task1" if "Task 1" in s[:15] else "task2"
+            current_section = "task1"
             current_mode = None
             # Check for meta in header (e.g. "（IELTS Task 2 / TEM-8 写作）")
             m = re.search(r'[（(]([^)）]+)[)）]', s)
@@ -4536,16 +4623,16 @@ def _render_output_tasks(text: str) -> str:
             continue
 
         # Sub-headers within a task
-        if s.startswith("**题目：**") or s.startswith("**题目**"):
+        if s.startswith("**题目：**") or s.startswith("**题目**") or s.startswith("**Topic:**") or s.startswith("**Topic**") or s.startswith("**Question:**") or s.startswith("**Question**"):
             current_mode = "prompt"
             # Check if prompt text is inline
-            inline = re.sub(r'\*\*题目[：:]?\*\*\s*', '', s)
+            inline = re.sub(r'\*\*(?:题目|Topic|Question)[：:]?\*\*\s*', '', s)
             if inline.strip():
                 current_task["prompt"] = inline.strip()
             i += 1
             continue
 
-        if s.startswith("**结构引导：**") or s.startswith("**结构引导**") or s.startswith("**结构指引"):
+        if s.startswith("**结构引导：**") or s.startswith("**结构引导**") or s.startswith("**结构指引") or s.startswith("**Structure Guide:") or s.startswith("**Speaking Guide:"):
             current_mode = "guide"
             i += 1
             continue
