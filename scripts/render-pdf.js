@@ -1246,8 +1246,11 @@ function renderExpressions(allText) {
 
     // Detect format by checking for English metadata markers
     const allBlockText = block.lines.join('\n');
-    const isEnglishFormat = /-\s*\*\*[功能语搭配例句].*[：:]/.test(allBlockText) ||
-      /-\s*\*\*(?:Function|Register|Collocation|Example).*:/.test(allBlockText);
+    // Only trigger English format when distinct markers (功能/语域) are present.
+    // 例句 and 搭配 overlap with the current Chinese format and must NOT be used here.
+    const isEnglishFormat = /-\s*\*\*功能[：:]\*\*/.test(allBlockText) ||
+      /-\s*\*\*语域[：:]\*\*/.test(allBlockText) ||
+      /-\s*\*\*(?:Function|Register):\*\*/.test(allBlockText);
 
     let tags = '';
     let phrase = '';
@@ -2080,7 +2083,7 @@ async function main() {
     });
     const page = await browser.newPage();
     // Use setContent instead of file:// to avoid UTF-8 encoding issues with local files
-    await page.setContent(html, { waitUntil: 'networkidle0', timeout: 30000 });
+    await page.setContent(html, { waitUntil: 'load', timeout: 60000 });
 
     await page.pdf({
       path: outPath,
@@ -2101,4 +2104,20 @@ async function main() {
   }
 }
 
-main();
+if (require.main === module) {
+  main();
+}
+
+module.exports = {
+  renderPrintHtml,
+  renderExpressions,
+  renderSentenceDecon,
+  renderArgumentChain,
+  renderOutputTasks,
+  renderContext,
+  renderPassage,
+  esc,
+  mdInline,
+  cleanText,
+  stripMarkdown,
+};
