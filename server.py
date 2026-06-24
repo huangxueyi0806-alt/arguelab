@@ -3515,9 +3515,9 @@ def _render_paragraph(text: str, module_type: str = "context") -> str:
     # When module_type is "expression", always use the section renderer
     # which handles multiple cards. Only use single-card renderer for
     # non-expression modules that happen to contain an expression card.
-    if module_type == "expression" and re.search(r'^###\s*表达\s*\d+', text, re.MULTILINE):
+    if module_type == "expression" and re.search(r'^###\s*(?:表达|Expression)\s*\d+', text, re.MULTILINE):
         return _render_expression_section(text)
-    if re.match(r'^###\s*表达\s*\d+', first_line):
+    if re.match(r'^###\s*(?:表达|Expression)\s*\d+', first_line):
         return _render_expression_card(text)
 
     # --- Sentence deconstruction: contains 目标句 / 结构拆解 / 语法点 ---
@@ -3746,7 +3746,7 @@ def _render_expression_section(text: str) -> str:
         s = lines[i].strip()
 
         # Detect expression card header
-        if re.match(r'^###\s*表达\s*\d+', s):
+        if re.match(r'^###\s*(?:表达|Expression)\s*\d+', s):
             # Flush previous card
             if in_card and current_card_lines:
                 card_text = "\n".join(current_card_lines)
@@ -3829,7 +3829,7 @@ def _render_expression_card(text: str) -> str:
 
         # Extract card number from ### header
         if s.startswith("###"):
-            m = re.match(r'^###\s*表达\s*(\d+)', s)
+            m = re.match(r'^###\s*(?:表达|Expression)\s*(\d+)', s)
             if m:
                 card_num = m.group(1)
             i += 1
