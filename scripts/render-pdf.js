@@ -1230,7 +1230,7 @@ function renderExpressions(allText) {
   let curBlock = null;
   for (const line of lines) {
     const s = line.trim();
-    if (/^###\s*表达\s*\d+/.test(s)) {
+    if (/^###\s*(?:表达|Expression)\s*\d+/i.test(s)) {
       if (curBlock) blocks.push(curBlock);
       curBlock = { header: s, lines: [] };
     } else if (curBlock) {
@@ -1240,8 +1240,14 @@ function renderExpressions(allText) {
   if (curBlock) blocks.push(curBlock);
 
   for (const block of blocks) {
-    const numMatch = block.header.match(/表达\s*(\d+)/);
+    // Match both 表达 N and Expression N (case-insensitive)
+    const numMatch = block.header.match(/(?:表达|Expression)\s*(\d+)/i);
     const num = numMatch ? numMatch[1] : '';
+
+    // Detect format by checking for English metadata markers
+    const allBlockText = block.lines.join('\n');
+    const isEnglishFormat = /-\s*\*\*[功能语搭配例句].*[：:]/.test(allBlockText) ||
+      /-\s*\*\*(?:Function|Register|Collocation|Example).*:/.test(allBlockText);
 
     let tags = '';
     let phrase = '';
@@ -1249,39 +1255,84 @@ function renderExpressions(allText) {
     let colloc = '';
     let example = '';
 
-    let mode = 'init';
-    for (const line of block.lines) {
-      const s = line.trim();
-      if (!s) continue;
+    if (isEnglishFormat) {
+      // ── English format: > **"phrase"**, - **功能：**, - **语域：**, - **搭配链：**, - **例句：** ──
+      for (const line of block.lines) {
+        const s = line.trim();
+        if (!s) continue;
 
-      if (s.includes('`') && s.includes('·') && mode === 'init') {
-        const backtickMatch = s.match(/`([^`]+)`/);
-        tags = backtickMatch ? backtickMatch[1] : s.replace(/`/g, '').replace(/\*\*/g, '');
-        continue;
+        // Blockquote phrase: > **"phrase text"**
+        if (s.startsWith('>') && s.includes('**')) {
+          const phraseMatch = s.match(/>\s*\*\*["""](.+?)["""]\*\*/);
+          if (phraseMatch) {
+            phrase = phraseMatch[1];
+          } else {
+            const phraseMatch2 = s.match(/>\s*\*\*(.+?)\*\*/);
+            if (phraseMatch2) phrase = phraseMatch2[1];
+          }
+          continue;
+        }
+
+        // Function/Register/Collocation/Example metadata
+        if (/-\s*\*\*(?:功能|Function)[：:]\*\*/.test(s)) {
+          tags += (tags ? ' · ' : '') + s.replace(/^-\s*\*\*(?:功能|Function)[：:]\*\*\s*/, '').trim();
+          continue;
+        }
+        if (/-\s*\*\*(?:语域|Register)[：:]\*\*/.test(s)) {
+          tags += (tags ? ' · ' : '') + s.replace(/^-\s*\*\*(?:语域|Register)[：:]\*\*\s*/, '').trim();
+          continue;
+        }
+        if (/-\s*\*\*(?:搭配链|搭配|Collocation)[：:]\*\*/.test(s)) {
+          colloc = s.replace(/^-\s*\*\*(?:搭配链|搭配|Collocation)[：:]\*\*\s*/, '').replace(/\*\*/g, '').trim();
+          continue;
+        }
+        if (/-\s*\*\*(?:例句|Example)[：:]\*\*/.test(s)) {
+          example = s.replace(/^-\s*\*\*(?:例句|Example)[：:]\*\*\s*/, '').trim();
+          // Remove wrapping *italic* markers
+          example = example.replace(/^\*|\*$/g, '');
+          continue;
+        }
+        // Multi-line example continuation
+        if (example && !s.startsWith('- **') && !s.startsWith('>')) {
+          example += ' ' + s.replace(/^-\s*/, '').replace(/^\*|\*$/g, '');
+        }
       }
-      if (s.includes('**`') && s.includes('`**')) {
-        const phraseMatch = s.match(/\*\*`(.+?)`\*\*/);
-        phrase = phraseMatch ? phraseMatch[1] : s.replace(/\*\*/g, '').replace(/`/g, '');
-        mode = 'phrase';
-        continue;
-      }
-      if (s.startsWith('- ') && mode === 'phrase' && !s.includes('常见搭配') && !s.includes('**例句')) {
-        cn = s.replace(/^-\s*/, '');
-        mode = 'cn';
-        continue;
-      }
-      if (s.includes('常见搭配') || s.includes('搭配')) {
-        colloc = s.replace(/\*\*/g, '').replace(/^-\s*/, '').replace(/常见搭配[：:]\s*/, '').replace(/搭配[：:]\s*/, '');
-        mode = 'colloc';
-        continue;
-      }
-      if (s.includes('**例句') || (s.startsWith('-') && s.includes('*') && mode === 'colloc')) {
-        example = s.replace(/^-\s*/, '').replace(/\*\*/g, '').replace(/例句[：:]\s*/, '');
-        mode = 'example';
-        continue;
-      }
-      if (mode === 'example') {
-        example += (example ? ' ' : '') + s.replace(/^-\s*/, '');
+    } else {
+      // ── Legacy Chinese format ──
+      let mode = 'init';
+      for (const line of block.lines) {
+        const s = line.trim();
+        if (!s) continue;
+
+        if (s.includes('`') && s.includes('·') && mode === 'init') {
+          const backtickMatch = s.match(/`([^`]+)`/);
+          tags = backtickMatch ? backtickMatch[1] : s.replace(/`/g, '').replace(/\*\*/g, '');
+          continue;
+        }
+        if (s.includes('**`') && s.includes('`**')) {
+          const phraseMatch = s.match(/\*\*`(.+?)`\*\*/);
+          phrase = phraseMatch ? phraseMatch[1] : s.replace(/\*\*/g, '').replace(/`/g, '');
+          mode = 'phrase';
+          continue;
+        }
+        if (s.startsWith('- ') && mode === 'phrase' && !s.includes('常见搭配') && !s.includes('**例句')) {
+          cn = s.replace(/^-\s*/, '');
+          mode = 'cn';
+          continue;
+        }
+        if (s.includes('常见搭配') || s.includes('搭配')) {
+          colloc = s.replace(/\*\*/g, '').replace(/^-\s*/, '').replace(/常见搭配[：:]\s*/, '').replace(/搭配[：:]\s*/, '');
+          mode = 'colloc';
+          continue;
+        }
+        if (s.includes('**例句') || (s.startsWith('-') && s.includes('*') && mode === 'colloc')) {
+          example = s.replace(/^-\s*/, '').replace(/\*\*/g, '').replace(/例句[：:]\s*/, '');
+          mode = 'example';
+          continue;
+        }
+        if (mode === 'example') {
+          example += (example ? ' ' : '') + s.replace(/^-\s*/, '');
+        }
       }
     }
 
@@ -1318,28 +1369,36 @@ function renderSentenceDecon(allText) {
     const s = line.trim();
     if (!s) continue;
     if (s.startsWith('*') && !s.startsWith('**') && mode === 'init') continue;
+    if (s === '---') continue;
 
-    if (s.startsWith('**目标句**') || s.startsWith('**目标句：**')) {
+    // Target sentence — Chinese and English headers
+    if ((s.startsWith('**目标句**') || s.startsWith('**目标句：**') ||
+         s.startsWith('**Target Sentence:**') || s.startsWith('**Target Sentence**')) && !s.includes('结构') && !s.includes('模板')) {
       mode = 'target';
       continue;
     }
-    if (s.includes('结构拆解') && s.startsWith('**')) {
+    // Structure analysis — Chinese and English headers
+    if ((s.includes('结构拆解') || s.includes('**Structure:**') || s.includes('**Structure**')) && s.startsWith('**')) {
       mode = 'structure';
       continue;
     }
-    if (s.includes('语法要点') && s.startsWith('**')) {
+    // Grammar points — Chinese and English headers
+    if ((s.includes('语法要点') || s.includes('语法点') || s.includes('Grammar Points')) && s.startsWith('**')) {
       mode = 'grammar';
       continue;
     }
-    if ((s.includes('仿写模板') || s.includes('模仿模板') || s.includes('结构模板')) && s.startsWith('**')) {
+    // Template — Chinese headers (仿写模板, 模仿模板, 结构模板, 句型模板)
+    if ((s.includes('仿写模板') || s.includes('模仿模板') || s.includes('结构模板') || s.includes('句型模板')) && s.startsWith('**')) {
       mode = 'template';
       continue;
     }
-    if (s.includes('你的仿写') && s.startsWith('**')) {
+    // Imitation — Chinese and English
+    if ((s.includes('你的仿写') || s.includes('仿写练习') || s.includes('Imitation:')) && s.startsWith('**')) {
       mode = 'imitation';
       continue;
     }
-    if ((s.includes('适用场景') || s.includes('仿写场景')) && s.startsWith('**')) {
+    // Scenario — Chinese and English
+    if ((s.includes('适用场景') || s.includes('仿写场景') || s.includes('Applicable Scenarios')) && s.startsWith('**')) {
       mode = 'scenario';
       continue;
     }
@@ -1347,33 +1406,27 @@ function renderSentenceDecon(allText) {
     if (mode === 'target') {
       if (s.startsWith('>')) targetSentence += (targetSentence ? ' ' : '') + cleanText(s);
     } else if (mode === 'structure') {
-      if (!s.startsWith('**')) structureText.push(cleanText(s));
+      if (!s.startsWith('**') && !s.startsWith('---')) structureText.push(cleanText(s));
     } else if (mode === 'grammar') {
-      if (s.startsWith('- **')) {
+      // Match numbered grammar: 1. **title：** body or - **title：** body
+      const numMatch = s.match(/^(?:\d+[.\)]\s*|-)\s*\*\*(.+?)\*\*[：:]\s*(.*)/);
+      const numMatch2 = s.match(/^(?:\d+[.\)]\s*|-)\s*\*\*(.+?)[：:]\*\*\s*(.*)/);
+      if (numMatch || numMatch2) {
         if (curGrammar) grammarCards.push(curGrammar);
-        // Match **title**： body or **title：** body
-        let titleMatch = s.match(/^-\s+\*\*(.+?)\*\*[：:]\s*(.*)/);
-        if (!titleMatch) {
-          titleMatch = s.match(/^-\s+\*\*(.+?)[：:]\*\*\s*(.*)/);
-        }
-        if (titleMatch) {
-          curGrammar = { title: titleMatch[1], body: titleMatch[2] ? [titleMatch[2]] : [], code: '' };
-        } else {
-          const titleMatch2 = s.match(/^-\s+\*\*(.+?)\*\*/);
-          if (titleMatch2) curGrammar = { title: titleMatch2[1], body: [], code: '' };
-        }
+        const m = numMatch || numMatch2;
+        curGrammar = { title: m[1].trim(), body: m[2] ? [m[2].trim()] : [], code: '' };
         continue;
       }
       if (s.startsWith('```')) continue;
-      if (curGrammar && s.trim() && !s.startsWith('-')) {
+      if (curGrammar && s.trim() && !s.startsWith('-') && !s.startsWith('---')) {
         curGrammar.body.push(cleanText(s));
       }
     } else if (mode === 'template') {
-      if (!s.startsWith('**')) templateText += (templateText ? '\n' : '') + cleanText(s);
+      if (!s.startsWith('**') && !s.startsWith('---') && !s.startsWith('```')) templateText += (templateText ? '\n' : '') + cleanText(s);
     } else if (mode === 'imitation') {
-      if (!s.startsWith('**')) imitationText += (imitationText ? '\n' : '') + cleanText(s);
+      if (!s.startsWith('**') && !s.startsWith('---')) imitationText += (imitationText ? '\n' : '') + cleanText(s);
     } else if (mode === 'scenario') {
-      if (!s.startsWith('**')) scenarioText += (scenarioText ? ' ' : '') + cleanText(s);
+      if (!s.startsWith('**') && !s.startsWith('---')) scenarioText += (scenarioText ? ' ' : '') + cleanText(s);
     }
   }
 
@@ -1581,9 +1634,10 @@ function renderOutputTasks(allText) {
     const s = line.trim();
     if (!s) continue;
     if (s.startsWith('*') && !s.startsWith('**') && !inPremium) continue;
+    if (s === '---') continue;
 
-    // Task headers: ### Task 1: ... / ### Task 2: ...
-    if (s.startsWith('### Task 1') || s.startsWith('### Task 2')) {
+    // Task headers: ### Task 1/A: ... / ### Task 2/B: ...
+    if (/^###\s*Task\s*[1A]/.test(s)) {
       if (currentTask) tasks.push(currentTask);
       const taskType = (s.includes('写作') || s.includes('Writing')) ? 'Writing Task' : 'Speaking Task';
       const metaMatch = s.match(/[（(]([^)）]+)[)）]/);
@@ -1592,9 +1646,18 @@ function renderOutputTasks(allText) {
       inPremium = false;
       continue;
     }
+    if (/^###\s*Task\s*[2B]/.test(s)) {
+      if (currentTask) tasks.push(currentTask);
+      const taskType = (s.includes('口语') || s.includes('Speaking')) ? 'Speaking Task' : 'Writing Task';
+      const metaMatch = s.match(/[（(]([^)）]+)[)）]/);
+      currentTask = { type: taskType, prompt: '', meta: metaMatch ? metaMatch[1] : '' };
+      mode = 'init';
+      inPremium = false;
+      continue;
+    }
 
     // Legacy: **写作任务...**
-    if (s.startsWith('**写作任务') || s.startsWith('**IELTS Task') || s.startsWith('**写作任务')) {
+    if ((s.startsWith('**写作任务') || s.startsWith('**IELTS Task') || s.startsWith('**写作任务')) && !s.includes('Speaking')) {
       if (currentTask) tasks.push(currentTask);
       currentTask = { type: 'Writing Task', prompt: '', meta: '' };
       let task = s;
@@ -1610,7 +1673,7 @@ function renderOutputTasks(allText) {
     }
 
     // Legacy: **口语任务...**
-    if (s.startsWith('**口语任务') || s.startsWith('**IELTS Part 3') || s.startsWith('**口语')) {
+    if ((s.startsWith('**口语任务') || s.startsWith('**IELTS Part 3') || s.startsWith('**口语')) && !s.includes('写作')) {
       if (currentTask) tasks.push(currentTask);
       currentTask = { type: 'Speaking Task', prompt: '', meta: '' };
       let task = s;
@@ -1633,18 +1696,31 @@ function renderOutputTasks(allText) {
       continue;
     }
 
-    // Sub-headers — shared across all tasks
-    if (s.startsWith('**题目：**') || s.startsWith('**题目**')) {
+    // Sub-headers — Topic / Question (used in Task A/B format)
+    if (s.startsWith('**Topic:**') || s.startsWith('**Topic**') || s.startsWith('**题目：**') || s.startsWith('**题目**')) {
       mode = 'prompt';
-      const inline = s.replace(/\*\*题目[：:]?\*\*\s*/, '');
+      const inline = s.replace(/\*\*(?:Topic|题目)[：:]?\*\*\s*/, '');
       if (inline.trim() && currentTask) currentTask.prompt = cleanText(inline);
       continue;
     }
-    if (s.startsWith('**结构引导') || s.startsWith('**结构指引')) {
+    if (s.startsWith('**Question:**') || s.startsWith('**Question**')) {
+      mode = 'prompt';
+      const inline = s.replace(/\*\*(?:Question)[：:]?\*\*\s*/, '');
+      if (inline.trim() && currentTask) currentTask.prompt = cleanText(inline);
+      continue;
+    }
+    // Structure Guide — Chinese and English
+    if (s.startsWith('**结构引导') || s.startsWith('**结构指引') || s.startsWith('**Structure Guide')) {
       if (currentTask) { tasks.push(currentTask); currentTask = null; }
       mode = 'guide';
       continue;
     }
+    // Speaking Guide
+    if (s.startsWith('**Speaking Guide')) {
+      mode = 'guide';
+      continue;
+    }
+    // Self-Check — Chinese and English
     if (s.startsWith('**Self-Check') || s.startsWith('**Self-check') || s.startsWith('**自我检查') || s.startsWith('**Self-check 清单')) {
       mode = 'check';
       continue;
@@ -1655,9 +1731,14 @@ function renderOutputTasks(allText) {
       if (s.startsWith('>')) currentTask.prompt += (currentTask.prompt ? ' ' : '') + cleanText(s);
     } else if (mode === 'guide') {
       if (s.startsWith('- ')) sharedGuide.push(cleanText(s));
+      else if (/^\d+[.\)]\s/.test(s)) sharedGuide.push(cleanText(s));
     } else if (mode === 'check') {
-      if (s.startsWith('- [ ]') || s.startsWith('- [x]')) {
+      if (s.startsWith('- [ ]') || s.startsWith('- [x]') || s.startsWith('- [X]')) {
         sharedCheck.push(cleanText(s));
+      } else if (s.startsWith('- □') || s.startsWith('- ☐')) {
+        // Legacy checkbox format — extract content after checkbox
+        const cleaned = s.replace(/^-\s*[□☐☑☒✓✔✗✘]\s*/, '');
+        if (cleaned) sharedCheck.push(cleaned);
       } else if (s.startsWith('- ')) {
         sharedCheck.push(cleanText(s));
       }
@@ -1710,8 +1791,9 @@ function renderOutputTasks(allText) {
   // ── Shared Self-Check (only if check items exist) ──
   if (hasContent(sharedCheck)) {
     const checkItems = sharedCheck.map(item => {
-      // Remove □ checkbox character from text (we render our own)
-      const text = item.replace(/^[□☑☒✓✔✗✘]\s*/, '');
+      // Remove checkbox markers
+      let text = item.replace(/^\[[ xX]\]\s*/, '');
+      text = text.replace(/^[□☑☒✓✔✗✘]\s*/, '');
       if (!text.trim()) return '';
       return `<div class="check-item">` +
         `<span class="check-box"></span>` +
