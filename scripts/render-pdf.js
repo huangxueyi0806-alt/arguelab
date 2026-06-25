@@ -1176,10 +1176,17 @@ function renderPassage(allText) {
     const s = line.trim();
     if (!s) { inGuide = false; continue; }
 
-    // Reading guide: starts with 📖, capture all subsequent lines until ---
+    // Reading guide: starts with 📖 or Chinese reading guide, capture all subsequent lines until ---
     if (s.startsWith('📖') || s.startsWith('**📖')) {
       inGuide = true;
       const cleaned = s.replace(/^📖\s*\*\*.*?\*\*\s*/, '').replace(/^📖\s*/, '').replace(/\*\*/g, '').trim();
+      if (cleaned) guideText = cleaned;
+      continue;
+    }
+    // Chinese reading guide in blockquote
+    if (s.startsWith('> **阅读指引') || s.startsWith('> **阅读提示')) {
+      inGuide = true;
+      const cleaned = s.replace(/^>\s*\*\*阅读指引[：:]?\*\*\s*/, '').replace(/^>\s*\*\*阅读提示[：:]?\*\*\s*/, '');
       if (cleaned) guideText = cleaned;
       continue;
     }
@@ -1193,6 +1200,11 @@ function renderPassage(allText) {
       sourceLine = s.replace(/^\*|\*$/g, '').trim();
       continue;
     }
+    // Chinese source in blockquote: > **来源：** ...
+    if (s.startsWith('> **来源')) {
+      sourceLine = s.replace(/^>\s*\*\*来源[：:]?\*\*\s*/, '').replace(/\*\*/g, '');
+      continue;
+    }
     if (s === '📖' || s === '**📖**') continue;
     if (s.startsWith('**Argument Structure') || s.startsWith('**Argument structure')) continue;
 
@@ -1203,6 +1215,11 @@ function renderPassage(allText) {
     );
     processed = processed.replace(
       /\[(Thesis|Premise|Evidence|Counter-?argument|Conclusion)\s*[·•][^\]]+\]/g,
+      (_, label) => { const cls = LABEL_MAP[label] || 'arg-thesis'; return `\x00LABEL\x00${cls}\x00${label}\x00`; }
+    );
+    // Bold format: **Thesis**, **Premise**, etc. (no brackets)
+    processed = processed.replace(
+      /\*\*(Thesis|Premise|Evidence|Counter-?argument|Conclusion)\*\*/g,
       (_, label) => { const cls = LABEL_MAP[label] || 'arg-thesis'; return `\x00LABEL\x00${cls}\x00${label}\x00`; }
     );
     passageBody += ' ' + processed;
@@ -1626,8 +1643,6 @@ function renderOutputTasks(allText) {
   // Task-level structures
   const tasks = [];
   const premiumHints = [];
-  let sharedGuide = [];
-  let sharedCheck = [];
 
   let currentTask = null;
   let mode = 'init';
@@ -1644,7 +1659,7 @@ function renderOutputTasks(allText) {
       if (currentTask) tasks.push(currentTask);
       const taskType = (s.includes('写作') || s.includes('Writing')) ? 'Writing Task' : 'Speaking Task';
       const metaMatch = s.match(/[（(]([^)）]+)[)）]/);
-      currentTask = { type: taskType, prompt: '', meta: metaMatch ? metaMatch[1] : '' };
+      currentTask = { type: taskType, prompt: '', guide: [], check: [], meta: metaMatch ? metaMatch[1] : '' };
       mode = 'init';
       inPremium = false;
       continue;
@@ -1653,7 +1668,7 @@ function renderOutputTasks(allText) {
       if (currentTask) tasks.push(currentTask);
       const taskType = (s.includes('口语') || s.includes('Speaking')) ? 'Speaking Task' : 'Writing Task';
       const metaMatch = s.match(/[（(]([^)）]+)[)）]/);
-      currentTask = { type: taskType, prompt: '', meta: metaMatch ? metaMatch[1] : '' };
+      currentTask = { type: taskType, prompt: '', guide: [], check: [], meta: metaMatch ? metaMatch[1] : '' };
       mode = 'init';
       inPremium = false;
       continue;
@@ -1662,7 +1677,7 @@ function renderOutputTasks(allText) {
     // Legacy: **写作任务...**
     if ((s.startsWith('**写作任务') || s.startsWith('**IELTS Task') || s.startsWith('**写作任务')) && !s.includes('Speaking')) {
       if (currentTask) tasks.push(currentTask);
-      currentTask = { type: 'Writing Task', prompt: '', meta: '' };
+      currentTask = { type: 'Writing Task', prompt: '', guide: [], check: [], meta: '' };
       let task = s;
       task = task.replace(/\*\*写作任务[（(][^)）]*[)）]\*\*\s*/, '');
       task = task.replace(/\*\*写作任务[：:]\*\*\s*/, '');
@@ -1678,7 +1693,7 @@ function renderOutputTasks(allText) {
     // Legacy: **口语任务...**
     if ((s.startsWith('**口语任务') || s.startsWith('**IELTS Part 3') || s.startsWith('**口语')) && !s.includes('写作')) {
       if (currentTask) tasks.push(currentTask);
-      currentTask = { type: 'Speaking Task', prompt: '', meta: '' };
+      currentTask = { type: 'Speaking Task', prompt: '', guide: [], check: [], meta: '' };
       let task = s;
       task = task.replace(/\*\*口语任务[（(][^)）]*[)）]\*\*\s*/, '');
       task = task.replace(/\*\*口语任务[：:]\*\*\s*/, '');
@@ -1712,18 +1727,17 @@ function renderOutputTasks(allText) {
       if (inline.trim() && currentTask) currentTask.prompt = cleanText(inline);
       continue;
     }
-    // Structure Guide — Chinese and English
+    // Structure Guide — Chinese and English (do NOT flush task, just switch mode)
     if (s.startsWith('**结构引导') || s.startsWith('**结构指引') || s.startsWith('**Structure Guide')) {
-      if (currentTask) { tasks.push(currentTask); currentTask = null; }
       mode = 'guide';
       continue;
     }
-    // Speaking Guide
+    // Speaking Guide (do NOT flush task)
     if (s.startsWith('**Speaking Guide')) {
       mode = 'guide';
       continue;
     }
-    // Self-Check — Chinese and English
+    // Self-Check — Chinese and English (do NOT flush task)
     if (s.startsWith('**Self-Check') || s.startsWith('**Self-check') || s.startsWith('**自我检查') || s.startsWith('**Self-check 清单')) {
       mode = 'check';
       continue;
@@ -1732,18 +1746,17 @@ function renderOutputTasks(allText) {
     // Content collection
     if (mode === 'prompt' && currentTask) {
       if (s.startsWith('>')) currentTask.prompt += (currentTask.prompt ? ' ' : '') + cleanText(s);
-    } else if (mode === 'guide') {
-      if (s.startsWith('- ')) sharedGuide.push(cleanText(s));
-      else if (/^\d+[.\)]\s/.test(s)) sharedGuide.push(cleanText(s));
-    } else if (mode === 'check') {
+    } else if (mode === 'guide' && currentTask) {
+      if (s.startsWith('- ')) currentTask.guide.push(cleanText(s));
+      else if (/^\d+[.\)]\s/.test(s)) currentTask.guide.push(cleanText(s));
+    } else if (mode === 'check' && currentTask) {
       if (s.startsWith('- [ ]') || s.startsWith('- [x]') || s.startsWith('- [X]')) {
-        sharedCheck.push(cleanText(s));
+        currentTask.check.push(cleanText(s));
       } else if (s.startsWith('- □') || s.startsWith('- ☐')) {
-        // Legacy checkbox format — extract content after checkbox
         const cleaned = s.replace(/^-\s*[□☐☑☒✓✔✗✘]\s*/, '');
-        if (cleaned) sharedCheck.push(cleaned);
+        if (cleaned) currentTask.check.push(cleaned);
       } else if (s.startsWith('- ')) {
-        sharedCheck.push(cleanText(s));
+        currentTask.check.push(cleanText(s));
       }
     } else if (mode === 'premium' || inPremium) {
       if (s && !s.startsWith('---')) premiumHints.push(cleanText(s));
@@ -1752,13 +1765,13 @@ function renderOutputTasks(allText) {
 
   if (currentTask) tasks.push(currentTask);
 
-  // ── Render task blocks (only if they have content) ──
+  // ── Render task blocks with per-task guide and check ──
   for (const task of tasks) {
-    if (!hasContent(task.prompt)) continue;  // Skip empty tasks entirely
+    if (!hasContent(task.prompt)) continue;
 
     html.push('<div class="task-block">');
 
-    // Task header — only render type if there's a prompt
+    // Task header
     html.push(
       `<div class="task-header">` +
       `<span class="task-type">${esc(task.type)}</span>` +
@@ -1771,47 +1784,46 @@ function renderOutputTasks(allText) {
       html.push(`<div class="task-prompt">${mdInline(esc(task.prompt))}</div>`);
     }
 
-    html.push('</div>');
-  }
+    // Per-task Structure Guide
+    if (hasContent(task.guide)) {
+      const stepItems = task.guide.map((item, i) => {
+        return `<div class="step-item">` +
+          `<span class="step-number">${i + 1}</span>` +
+          `<div class="step-content">${mdInline(esc(item))}</div>` +
+          `</div>`;
+      }).join('');
 
-  // ── Shared Structure Guide (only if guide items exist) ──
-  if (hasContent(sharedGuide)) {
-    const stepItems = sharedGuide.map((item, i) => {
-      return `<div class="step-item">` +
-        `<span class="step-number">${i + 1}</span>` +
-        `<div class="step-content">${mdInline(esc(item))}</div>` +
-        `</div>`;
-    }).join('');
-
-    html.push(
-      `<div class="guide-card">` +
-      `<div class="guide-label">Structure Guide</div>` +
-      `<div class="structure-guide">${stepItems}</div>` +
-      `</div>`
-    );
-  }
-
-  // ── Shared Self-Check (only if check items exist) ──
-  if (hasContent(sharedCheck)) {
-    const checkItems = sharedCheck.map(item => {
-      // Remove checkbox markers
-      let text = item.replace(/^\[[ xX]\]\s*/, '');
-      text = text.replace(/^[□☑☒✓✔✗✘]\s*/, '');
-      if (!text.trim()) return '';
-      return `<div class="check-item">` +
-        `<span class="check-box"></span>` +
-        `<span class="check-text">${mdInline(esc(text))}</span>` +
-        `</div>`;
-    }).filter(Boolean).join('');
-
-    if (checkItems) {
       html.push(
-        `<div class="check-card self-check-section">` +
-        `<div class="check-label self-check-title">Self-Check</div>` +
-        `<div class="self-check-list">${checkItems}</div>` +
+        `<div class="guide-card">` +
+        `<div class="guide-label">Structure Guide</div>` +
+        `<div class="structure-guide">${stepItems}</div>` +
         `</div>`
       );
     }
+
+    // Per-task Self-Check
+    if (hasContent(task.check)) {
+      const checkItems = task.check.map(item => {
+        let text = item.replace(/^\[[ xX]\]\s*/, '');
+        text = text.replace(/^[□☑☒✓✔✗✘]\s*/, '');
+        if (!text.trim()) return '';
+        return `<div class="check-item">` +
+          `<span class="check-box"></span>` +
+          `<span class="check-text">${mdInline(esc(text))}</span>` +
+          `</div>`;
+      }).filter(Boolean).join('');
+
+      if (checkItems) {
+        html.push(
+          `<div class="check-card self-check-section">` +
+          `<div class="check-label self-check-title">Self-Check</div>` +
+          `<div class="self-check-list">${checkItems}</div>` +
+          `</div>`
+        );
+      }
+    }
+
+    html.push('</div>');
   }
 
   // ── Premium hints (only if they exist) ──

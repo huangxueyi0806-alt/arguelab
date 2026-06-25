@@ -956,6 +956,103 @@ def send_briefing_to_all(md_path: str, issue_number: int = 1, read_url: str = ""
     return {"status": "ok", "sent": len(sent), "failed": failed}
 
 
+def send_email_from_html(html_path: str) -> dict:
+    """Send a pre-written HTML email file to all subscribers.
+    
+    The subject is extracted from the <title> tag in the HTML.
+    The file should be a complete HTML document (DOCTYPE, html, head, body).
+    """
+    if not SMTP_HOST:
+        return {"status": "error", "message": "SMTP not configured. Set SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS environment variables."}
+
+    html_path = Path(html_path)
+    if not html_path.exists():
+        return {"status": "error", "message": f"File not found: {html_path}"}
+
+    html_body = html_path.read_text(encoding="utf-8")
+
+    # Extract subject from <title> tag
+    subject = "ArgueLab Daily Briefing"
+    title_match = re.search(r'<title>(.+?)</title>', html_body, re.IGNORECASE)
+    if title_match:
+        subject = title_match.group(1).strip()
+
+    # Sync subscribers (same as send_briefing_to_all)
+    local_subs = load_subscribers()
+    remote_subs = fetch_remote_subscribers()
+    subs = merge_subscribers(local_subs, remote_subs)
+    if remote_subs:
+        print(f"  (synced {len(remote_subs)} remote subscribers, merged total: {len(subs)})")
+    if not subs:
+        return {"status": "error", "message": "No subscribers found."}
+
+    sent, failed = [], []
+    for sub in subs:
+        try:
+            send_email(sub["email"], subject, html_body)
+            sent.append(sub["email"])
+            print(f"  ✓ {sub['email']}")
+        except Exception as e:
+            failed.append({"email": sub["email"], "error": str(e)})
+            print(f"  ✗ {sub['email']}: {e}")
+
+    # Save merged subscribers
+    if len(subs) > len(local_subs):
+        save_subscribers(subs)
+        print(f"  (saved {len(subs)} subscribers locally)")
+        ok = push_subscribers_to_remote(subs)
+        if ok:
+            print(f"  (pushed to Railway)")
+        else:
+            print(f"  (⚠ Railway unreachable)")
+
+    return {"status": "ok", "sent": len(sent), "failed": failed}
+
+
+def build_and_save_email(md_path: str, output_path: str = "",
+                          read_url: str = "", pdf_url: str = "",
+                          issue_number: int = 1) -> dict:
+    """Generate email HTML from a briefing markdown and save to file.
+    
+    Returns dict with: output_path, subject, preview_text (first 200 chars of body text).
+    The HTML file is a complete document with <title> for subject extraction.
+    """
+    md_text = Path(md_path).read_text(encoding="utf-8")
+
+    if not output_path:
+        output_path = str(Path(md_path).with_suffix(".email.html"))
+
+    subject, html, text = build_email_html(
+        md_text,
+        issue_number=issue_number,
+        read_url=read_url or "#",
+        pdf_url=pdf_url or "#",
+        recipient_name="Reader",
+        unsubscribe_url="#",
+    )
+
+    full_html = f"""<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>{_escape_html(subject)}</title>
+<style>{EMAIL_CSS}</style>
+</head>
+<body style="background:#E8E6DD;margin:0;padding:0;">
+{html}
+</body>
+</html>"""
+
+    Path(output_path).write_text(full_html, encoding="utf-8")
+
+    return {
+        "output_path": output_path,
+        "subject": subject,
+        "preview_text": text[:200].replace("\n", " ") + "..."
+    }
+
+
 def send_email(to_email: str, subject: str, html_body: str) -> None:
     """Send a single HTML email. Prefers Resend HTTP API (no domain needed);
     falls back to SMTP."""
@@ -3496,11 +3593,11 @@ def _render_paragraph(text: str, module_type: str = "context") -> str:
     lines = text.split("\n")
     first_line = lines[0]
 
-    # --- Passage block: starts with [Thesis, [Premise, etc (with optional > blockquote prefix and ** bold) ---
-    if re.match(r'^(> )?(\*\*)?\[(Thesis|Premise|Evidence|Counter-?argument|Conclusion)', first_line):
+    # --- Passage block: starts with [Thesis], **Thesis**, Thesis etc (with optional > blockquote prefix) ---
+    if re.match(r'^(> )?(\*\*)?\[?(Thesis|Premise|Evidence|Counter-?argument|Conclusion)\]?\s*$', first_line):
         return _render_passage_block(text)
     # Handle combined passage section text that may contain multiple blocks
-    if module_type == "passage" and re.search(r'(?:^|\n)(?:> )?(?:\*\*)?\[(Thesis|Premise|Evidence|Counter-?argument|Conclusion)', text):
+    if module_type == "passage" and re.search(r'(?:^|\n)(?:> )?(?:\*\*)?\[?(Thesis|Premise|Evidence|Counter-?argument|Conclusion)\]?(?:\*\*)?\s*\n', text):
         return _render_passage_section(text)
 
     # --- Reading guide ---
@@ -3643,12 +3740,35 @@ def _render_passage_section(text: str) -> str:
             i += 1
             continue
 
+        # Chinese source in blockquote: > **来源：** ...
+        if s.startswith("> **来源：**") or s.startswith("> **来源**"):
+            parts.append(f'<p class="source-line">{_markdown_inline_to_html(s.lstrip("> "))}</p>')
+            i += 1
+            continue
+
+        # Chinese reading guide in blockquote: > **阅读指引：** ...
+        if s.startswith("> **阅读指引：**") or s.startswith("> **阅读指引**") or s.startswith("> **阅读提示"):
+            guide_lines = [s]
+            j = i + 1
+            while j < len(lines) and lines[j].strip() and not lines[j].strip().startswith("---"):
+                # Stop if we encounter an arg label on its own line
+                nxt_clean = lines[j].strip().lstrip("> ").strip("*")
+                if re.match(r'^(?:\[)?(Thesis|Premise|Evidence|Counter-?argument|Conclusion)(?:\])?\s*$', nxt_clean):
+                    break
+                guide_lines.append(lines[j].strip())
+                j += 1
+            guide_text = "\n".join(guide_lines)
+            guide_text = _markdown_inline_to_html(guide_text)
+            parts.append(f'<div class="guide-block">{guide_text}</div>')
+            i = j
+            continue
+
         # "Argument Structure" header
         if s.startswith("**Argument Structure") or s == "**Argument Structure 标注**":
             i += 1
             continue
 
-        # Reading guide
+        # Reading guide (emoji format)
         if s.startswith("📖") or s.startswith("**📖"):
             guide_lines = []
             guide_lines.append(s)
@@ -3670,9 +3790,9 @@ def _render_passage_section(text: str) -> str:
             continue
 
         # Passage block: starts with > **[Thesis or > [Thesis or [Thesis (after strip)
-        # Also handles the case where the passage has already had > stripped
-        clean = s.lstrip("> ").lstrip("*")
-        if re.match(r'^\[(Thesis|Premise|Evidence|Counter-?argument|Conclusion)', clean):
+        # Also supports **Thesis** (bold) and plain Thesis formats
+        clean = s.lstrip("> ").strip("*")
+        if re.match(r'^(?:\[)?(Thesis|Premise|Evidence|Counter-?argument|Conclusion)(?:\])?\s*$', clean):
             # Collect all passage lines until empty line or next section marker
             passage_lines = []
             j = i
@@ -3701,7 +3821,13 @@ def _render_passage_section(text: str) -> str:
 
 
 def _render_passage_block(text: str) -> str:
-    """Render the argument-labeled passage block."""
+    """Render the argument-labeled passage block.
+
+    Supports formats:
+    - **[Thesis · 论点]:** body text (bracket with label)
+    - **Thesis**: body text (bold, no brackets)
+    - [Thesis]: body text (plain brackets)
+    """
     label_map = {
         "Thesis": "arg-thesis",
         "Premise": "arg-premise",
@@ -3712,6 +3838,7 @@ def _render_passage_block(text: str) -> str:
     }
     result_parts = []
     source_line = ""
+    pending_label = None  # Hold a label until we see its body on the next line
 
     for line in text.split("\n"):
         line = line.strip()
@@ -3721,7 +3848,13 @@ def _render_passage_block(text: str) -> str:
             source_line = line.strip("*").strip()
             continue
 
-        # Replace argument labels with colored spans
+        # Try to match as a standalone arg label: **Thesis** / [Thesis] / Thesis
+        label_match = re.match(r'^(?:\*\*)?\[?(Thesis|Premise|Evidence|Counter-?argument|Conclusion)\]?(?:\*\*)?\s*$', line)
+        if label_match:
+            pending_label = label_match.group(1)
+            continue
+
+        # Replace inline argument labels (bracket format: [Thesis · label])
         def replace_label(m):
             label = m.group(1)
             css_class = label_map.get(label, "arg-thesis")
@@ -3734,7 +3867,13 @@ def _render_passage_block(text: str) -> str:
         elif line.startswith(">"):
             line = line[1:]
 
-        result_parts.append(line)
+        # If we have a pending label, prepend it as a styled span
+        if pending_label:
+            css_class = label_map.get(pending_label, "arg-thesis")
+            result_parts.append(f'<span class="arg-label {css_class}">{pending_label}</span> {line}')
+            pending_label = None
+        else:
+            result_parts.append(line)
 
     source_html = f'<p class="source-line">{_markdown_inline_to_html(source_line)}</p>' if source_line else ""
     body = " ".join(result_parts)
@@ -4632,7 +4771,7 @@ def _render_output_tasks(text: str) -> str:
             i += 1
             continue
 
-        if s.startswith("**结构引导：**") or s.startswith("**结构引导**") or s.startswith("**结构指引") or s.startswith("**Structure Guide:") or s.startswith("**Speaking Guide:"):
+        if s.startswith("**结构引导：**") or s.startswith("**结构引导**") or s.startswith("**结构指引") or s.startswith("**Structure Guide") or s.startswith("**Speaking Guide"):
             current_mode = "guide"
             i += 1
             continue
@@ -4654,6 +4793,9 @@ def _render_output_tasks(text: str) -> str:
         if current_mode == "guide" and current_task:
             if s.startswith("- "):
                 current_task["guide"].append(s[2:])
+            elif re.match(r'^\d+[.\)]\s', s):
+                # Numbered items: 1. ..., 2) ...
+                current_task["guide"].append(re.sub(r'^\d+[.\)]\s*', '', s))
             i += 1
             continue
 
@@ -5079,6 +5221,9 @@ def run_server():
 def main():
     parser = argparse.ArgumentParser(description="ArgueLab — subscription backend")
     parser.add_argument("--send", metavar="PATH", help="Send briefing markdown to all subscribers")
+    parser.add_argument("--send-email-html", metavar="PATH", help="Send a pre-written HTML email file to all subscribers")
+    parser.add_argument("--build-email", metavar="PATH", help="Generate email HTML from briefing markdown")
+    parser.add_argument("--output", metavar="PATH", help="Output path for --build-email (default: <briefing>.email.html)")
     parser.add_argument("--read-url", metavar="URL", default="", help="URL for Read Online button")
     parser.add_argument("--pdf-url", metavar="URL", default="", help="URL for Download PDF button (omit to hide button)")
     parser.add_argument("--add", metavar="EMAIL", help="Add a new subscriber")
@@ -5094,6 +5239,17 @@ def main():
     elif args.send:
         result = send_briefing_to_all(
             args.send,
+            read_url=args.read_url or "",
+            pdf_url=args.pdf_url or "",
+        )
+        print(json.dumps(result, indent=2))
+    elif args.send_email_html:
+        result = send_email_from_html(args.send_email_html)
+        print(json.dumps(result, indent=2))
+    elif args.build_email:
+        result = build_and_save_email(
+            args.build_email,
+            output_path=args.output or "",
             read_url=args.read_url or "",
             pdf_url=args.pdf_url or "",
         )
