@@ -1090,70 +1090,124 @@ function renderContext(allText) {
   const lines = allText.split('\n');
 
   let topic = '';
-  let background = [];
-  let debate = [];
-  let rationale = '';
-  let rationaleBody = [];
-  let framings = [];
-  let framingsBody = [];
+  let bgLines = [];
+  let debateLines = [];
+  let rationaleLines = [];
+  let framingLines = [];
 
   let mode = 'intro';
   for (const line of lines) {
     const s = line.trim();
     if (!s) continue;
 
-    if (s.startsWith('**议题：**') || s.startsWith('**议题**')) {
-      topic = s.replace(/\*\*议题[：:]?\*\*\s*/, '');
+    // Sub-header detection — ordered by specificity
+    if (s.startsWith('**背景：**') || s.startsWith('**背景**')) {
+      // Background detected — capture any inline content, switch mode
+      const inline = s.replace(/\*\*背景[：:]?\*\*\s*/, '');
+      if (inline) bgLines.push(cleanText(inline));
       mode = 'background';
-    } else if (s.startsWith('**为什么选这个议题？**') || s.startsWith('**为什么选这个议题**')) {
-      rationale = s.replace(/\*\*为什么选这个议题[？?]\*\*\s*/, '');
+    } else if (s.startsWith('**争议：**') || s.startsWith('**争议**')) {
+      const inline = s.replace(/\*\*争议[：:]?\*\*\s*/, '');
+      if (inline) debateLines.push(cleanText(inline));
+      mode = 'debate';
+    } else if (s.startsWith('**为什么选这个议题：**') || s.startsWith('**为什么选这个议题？**') || s.startsWith('**为什么选这个议题**') || s.startsWith('**为什么选**')) {
+      const inline = s.replace(/\*\*为什么选这个议题[：:？?]?\*\*\s*/, '').replace(/\*\*为什么选[：:]?\*\*\s*/, '');
+      if (inline) rationaleLines.push(cleanText(inline));
       mode = 'rationale';
-    } else if (s.startsWith('**常见 framing 方式：**') || s.startsWith('**常见 framing 方式**') || s.startsWith('**常见 framing**')) {
-      mode = 'framings';
+    } else if (s.startsWith('**Framing 提示：**') || s.startsWith('**Framing 提示**') || s.startsWith('**Framing**') || s.startsWith('**常见 framing') || s.startsWith('**常见 Framing')) {
+      const inline = s.replace(/\*\*(?:Framing 提示|Framing|常见 framing 方式|常见 Framing)[：:]?\*\*\s*/, '');
+      if (inline) framingLines.push(cleanText(inline));
+      mode = 'framing';
+    } else if (s.startsWith('**议题：**') || s.startsWith('**议题**')) {
+      topic = s.replace(/\*\*议题[：:]?\*\*\s*/, '');
+      mode = 'background'; // Background follows
     } else if (mode === 'intro' && s.startsWith('*') && !s.startsWith('**')) {
       // subtitle line, skip
     } else if (mode === 'intro') {
       topic = (topic ? topic + ' ' : '') + s;
     } else if (mode === 'background') {
-      background.push(cleanText(s));
+      const isBullet = s.startsWith('- ');
+      bgLines.push({ text: cleanText(s), isBullet });
+    } else if (mode === 'debate') {
+      const isBullet = s.startsWith('- ');
+      debateLines.push({ text: cleanText(s), isBullet });
     } else if (mode === 'rationale') {
-      rationaleBody.push(cleanText(s));
-    } else if (mode === 'framings') {
+      rationaleLines.push(cleanText(s));
+    } else if (mode === 'framing') {
+      const isBullet = s.startsWith('- ');
       const cleaned = cleanText(s);
-      if (cleaned) framingsBody.push(cleaned);
+      if (cleaned) framingLines.push({ text: cleaned, isBullet });
     }
   }
 
-  let bgText = background.join('\n');
-  let debateText = '';
-  const debateSplit = bgText.search(/然而[，,]/);
-  if (debateSplit > 0) {
-    debateText = bgText.slice(debateSplit);
-    bgText = bgText.slice(0, debateSplit).trim();
-  }
-  bgText = bgText.replace(/^\*|\*$/g, '').trim();
-  debateText = debateText.replace(/^\*|\*$/g, '').trim();
-
+  // Render topic
   if (topic) {
     html.push(`<div class="ctx-block"><div class="ctx-label">议题</div>` +
       `<div class="ctx-text">${mdInline(esc(cleanText(topic)))}</div></div>`);
   }
-  if (bgText) {
+
+  // Render background
+  if (bgLines.length > 0) {
     html.push(`<div class="ctx-block"><div class="ctx-label">背景</div>` +
-      `<div class="ctx-text">${mdInline(esc(bgText))}</div></div>`);
+      `<div class="ctx-text">${mdInline(esc(bgLines.map(l => l.text).join('\n')))}</div></div>`);
   }
-  if (debateText) {
-    html.push(`<div class="ctx-block"><div class="ctx-label">争议焦点</div>` +
-      `<div class="ctx-text">${mdInline(esc(debateText))}</div></div>`);
+
+  // Render debate — join lines, detect bullet items
+  if (debateLines.length > 0) {
+    const hasBullets = debateLines.some(l => l.isBullet);
+    if (hasBullets) {
+      let introParts = [];
+      let bulletParts = [];
+      for (const l of debateLines) {
+        if (l.isBullet) {
+          bulletParts.push(`<li>${mdInline(esc(l.text))}</li>`);
+        } else {
+          introParts.push(l.text);
+        }
+      }
+      const introHtml = introParts.length > 0
+        ? `<div class="ctx-text">${mdInline(esc(introParts.join(' ')))}</div>`
+        : '';
+      const listHtml = bulletParts.length > 0
+        ? `<ul class="ctx-list">${bulletParts.join('')}</ul>`
+        : '';
+      html.push(`<div class="ctx-block"><div class="ctx-label">争议焦点</div>${introHtml}${listHtml}</div>`);
+    } else {
+      html.push(`<div class="ctx-block"><div class="ctx-label">争议焦点</div>` +
+        `<div class="ctx-text">${mdInline(esc(debateLines.map(l => l.text).join('\n')))}</div></div>`);
+    }
   }
-  if (rationaleBody.length > 0) {
+
+  // Render rationale
+  if (rationaleLines.length > 0) {
     html.push(`<div class="ctx-block"><div class="ctx-label">为什么选这个议题</div>` +
-      `<div class="ctx-text">${mdInline(esc(rationaleBody.join(' ')))}</div></div>`);
+      `<div class="ctx-text">${mdInline(esc(rationaleLines.join(' ')))}</div></div>`);
   }
-  if (framingsBody.length > 0) {
-    const items = framingsBody.map(f => `<li>${mdInline(esc(f))}</li>`).join('');
-    html.push(`<div class="ctx-block"><div class="ctx-label">常见 Framing</div>` +
-      `<ul class="ctx-list">${items}</ul></div>`);
+
+  // Render framing — detect bullet items for layered rendering
+  if (framingLines.length > 0) {
+    const hasBullets = framingLines.some(l => l.isBullet);
+    if (hasBullets) {
+      let introParts = [];
+      let bulletParts = [];
+      for (const l of framingLines) {
+        if (l.isBullet) {
+          bulletParts.push(`<li>${mdInline(esc(l.text))}</li>`);
+        } else {
+          introParts.push(l.text);
+        }
+      }
+      const introHtml = introParts.length > 0
+        ? `<div class="ctx-text">${mdInline(esc(introParts.join(' ')))}</div>`
+        : '';
+      const listHtml = bulletParts.length > 0
+        ? `<ul class="ctx-list">${bulletParts.join('')}</ul>`
+        : '';
+      html.push(`<div class="ctx-block"><div class="ctx-label">Framing 提示</div>${introHtml}${listHtml}</div>`);
+    } else {
+      html.push(`<div class="ctx-block"><div class="ctx-label">Framing 提示</div>` +
+        `<div class="ctx-text">${mdInline(esc(framingLines.map(l => l.text).join(' ')))}</div></div>`);
+    }
   }
 
   return html.join('\n');

@@ -1707,6 +1707,54 @@ ISSUE_PAGE_CSS = r"""
   .section-chain .content-card.accent-left { border-left-color: var(--color-chain-border); }
   .section-output .content-card.accent-left { border-left-color: var(--color-output-border); }
 
+  /* ── Context Blocks (Pane 1 sub-sections) ── */
+  .ctx-block {
+    background: var(--surface-elevated);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px 24px;
+    margin-bottom: 18px;
+    box-shadow: var(--shadow-sm);
+  }
+  .ctx-block:last-child { margin-bottom: 0; }
+  .ctx-label {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-context);
+    margin-bottom: 10px;
+    font-family: var(--font-sans);
+  }
+  .ctx-block .ctx-text {
+    font-size: 15px;
+    color: var(--ink-dim);
+    line-height: 1.8;
+  }
+  .ctx-block .ctx-text strong { color: var(--ink); font-weight: 700; }
+  /* Framing list */
+  .ctx-block .framing-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .ctx-block .framing-list li {
+    font-size: 15px;
+    color: var(--ink-dim);
+    line-height: 1.8;
+    padding: 8px 0 8px 18px;
+    border-left: 2px solid var(--color-context-border);
+    margin-bottom: 8px;
+  }
+  .ctx-block .framing-list li:last-child { margin-bottom: 0; }
+  .ctx-block .framing-list li strong { color: var(--ink); font-weight: 700; }
+  /* Context block accent borders */
+  .ctx-block.ctx-topic { border-left: 3px solid var(--color-context); }
+  .ctx-block.ctx-bg { border-left: 3px solid var(--color-context-muted, #6a8ec2); }
+  .ctx-block.ctx-debate { border-left: 3px solid var(--color-arg-counter, #b22222); }
+  .ctx-block.ctx-rationale { border-left: 3px solid var(--color-chain, #3a7d6a); }
+  .ctx-block.ctx-framing { border-left: 3px solid var(--color-output, #9e7e3e); }
+
   /* ── Typography ── */
   p {
     margin-bottom: 16px;
@@ -3066,10 +3114,9 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
                     '<p class="source-note">{}</p>'.format(_escape_html(first_note))
                 )
 
-        # For structured sections (passage, expression, sentence, chain, output),
+        # For all sections (context, passage, expression, sentence, chain, output),
         # combine all text into one block so specialized renderers can detect the full structure.
-        # Only context (section 0) uses paragraph-by-paragraph rendering.
-        if mod in ("passage", "expression", "sentence", "chain", "output"):
+        if mod in ("passage", "expression", "sentence", "chain", "output", "context"):
             all_text = []
             for item_type, item_text in section_items:
                 if item_type == "code":
@@ -3572,10 +3619,129 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
 </html>'''
 
 
+def _render_context_block(text: str) -> str:
+    """Render a context sub-section block with a label and body.
+
+    Detects bold sub-headers (**议题：**, **背景：**, **争议：**, **为什么选**, **Framing**)
+    and renders them as structured label+body cards. For Framing blocks, the body is
+    parsed as structured bullet points with numbered layers.
+    """
+    label_map = {
+        "议题": ("议题", "ctx-block ctx-topic"),
+        "背景": ("背景", "ctx-block ctx-bg"),
+        "争议": ("争议焦点", "ctx-block ctx-debate"),
+        "为什么选这个议题": ("为什么选", "ctx-block ctx-rationale"),
+        "为什么选": ("为什么选", "ctx-block ctx-rationale"),
+        "Framing 提示": ("Framing 提示", "ctx-block ctx-framing"),
+        "Framing": ("Framing 提示", "ctx-block ctx-framing"),
+    }
+
+    text = text.strip()
+    first_line = text.split("\n")[0].strip()
+
+    # Detect which sub-header this is
+    matched_key = None
+    for key in label_map:
+        if first_line.startswith(f"**{key}：**") or first_line.startswith(f"**{key}:**") or first_line.startswith(f"**{key}**"):
+            matched_key = key
+            break
+        # Also match **Key** without colon followed by content
+        if first_line.startswith(f"**{key}** ") or first_line.startswith(f"**{key}**\n"):
+            matched_key = key
+            break
+
+    if not matched_key:
+        return ""
+
+    label, css_class = label_map[matched_key]
+
+    # Strip the bold header from the first line
+    import re
+    body_lines = text.split("\n")
+    first = body_lines[0]
+    # Remove **Key：** or **Key:** or **Key** prefix
+    first = re.sub(rf'^\*\*{re.escape(matched_key)}(?:[：:]?\*\*|\\*\\*)\s*', '', first)
+    body_lines[0] = first
+    body_text = "\n".join(body_lines).strip()
+
+    if not body_text or body_text in ("：", ":", ""):
+        return ""
+
+    # For Framing blocks, parse bullet points
+    if "framing" in css_class:
+        bullet_items = []
+        for line in body_lines:
+            line = line.strip()
+            if not line:
+                continue
+            if line.startswith("- "):
+                # Bullet item: - **（1）意图 vs 效果：** body text
+                item_html = _markdown_inline_to_html(line[2:])
+                bullet_items.append(f'<li>{item_html}</li>')
+            else:
+                # Non-bullet line — wrap as plain paragraph before list
+                pass
+        if bullet_items:
+            return (
+                f'<div class="{css_class}">'
+                f'<div class="ctx-label">{label}</div>'
+                f'<ul class="framing-list">{"".join(bullet_items)}</ul>'
+                f'</div>'
+            )
+        else:
+            # No bullets found — render as plain text card
+            return (
+                f'<div class="{css_class}">'
+                f'<div class="ctx-label">{label}</div>'
+                f'<div class="ctx-text">{_markdown_inline_to_html(body_text)}</div>'
+                f'</div>'
+            )
+
+    # Non-framing blocks: simple label + body
+    return (
+        f'<div class="{css_class}">'
+        f'<div class="ctx-label">{label}</div>'
+        f'<div class="ctx-text">{_markdown_inline_to_html(body_text)}</div>'
+        f'</div>'
+    )
+
+
+def _render_context_section(text: str) -> str:
+    """Render the full context section by splitting combined text by sub-headers.
+
+    Splits at bold sub-header boundaries (**议题：**, **背景：**, etc.),
+    renders each sub-block with _render_context_block, and joins them.
+    Continuation paragraphs without bold headers stay as cn-body.
+    """
+    if not text.strip():
+        return ""
+
+    # Split at blank-line + bold header boundaries
+    sub_pattern = r'\n(?=\*\*(?:议题|背景|争议|为什么选这个议题|为什么选|Framing 提示|Framing)[：:]\*\*)'
+
+    blocks = re.split(sub_pattern, text)
+    results = []
+
+    for block in blocks:
+        block = block.strip()
+        if not block:
+            continue
+        html = _render_context_block(block)
+        if html:
+            results.append(html)
+        else:
+            rendered = _markdown_inline_to_html(block)
+            if rendered:
+                results.append(f'<p class="cn-body ctx-continuation">{rendered}</p>')
+
+    return "\n".join(results)
+
+
 def _render_paragraph(text: str, module_type: str = "context") -> str:
     """Render a paragraph block with intelligent formatting.
 
     Detects special content types:
+    - Context sub-headers (**议题：**, **背景：**, etc) → structured ctx-blocks
     - Passage blocks with [Thesis/Premise/etc] labels → .passage-block with color tags
     - Reading guides (starts with 📖 or similar) → .guide-block
     - Expression cards (compact labels like `揭示本质 · high register`)
@@ -3592,6 +3758,10 @@ def _render_paragraph(text: str, module_type: str = "context") -> str:
 
     lines = text.split("\n")
     first_line = lines[0]
+
+    # --- Context section (combined mode): delegate to _render_context_section ---
+    if module_type == "context":
+        return _render_context_section(text)
 
     # --- Passage block: starts with [Thesis], **Thesis**, Thesis etc (with optional > blockquote prefix) ---
     if re.match(r'^(> )?(\*\*)?\[?(Thesis|Premise|Evidence|Counter-?argument|Conclusion)\]?\s*$', first_line):
