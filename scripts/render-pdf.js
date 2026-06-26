@@ -1372,11 +1372,58 @@ function renderExpressions(allText) {
         }
       }
     } else {
-      // ── Legacy Chinese format ──
+      // ── Legacy Chinese format (non-English markers) ──
+      let isNewFormat = false;
+      // Check if this is the current Format D (labeled inline fields)
+      for (const line of block.lines) {
+        if (/^\*\*英文表达[：:]/.test(line.trim())) { isNewFormat = true; break; }
+      }
+
       let mode = 'init';
       for (const line of block.lines) {
         const s = line.trim();
         if (!s) continue;
+
+        // ── Format D (current): labeled inline fields ──
+        if (isNewFormat) {
+          if (/^\*\*英文表达[：:]/.test(s)) {
+            phrase = s.replace(/\*\*英文表达[：:]\*\*\s*/, '').replace(/`/g, '');
+            continue;
+          }
+          if (/^\*\*功能标签[：:]/.test(s)) {
+            tags += (tags ? ' · ' : '') + s.replace(/\*\*功能标签[：:]\*\*\s*/, '').trim();
+            continue;
+          }
+          if (/^\*\*语域标签[：:]/.test(s)) {
+            tags += (tags ? ' | ' : '') + s.replace(/\*\*语域标签[：:]\*\*\s*/, '').trim();
+            continue;
+          }
+          if (/^\*\*中文释义[：:]/.test(s)) {
+            cn = s.replace(/\*\*中文释义[：:]\*\*\s*/, '').trim();
+            continue;
+          }
+          if (/^\*\*常见搭配[：:]/.test(s)) {
+            colloc = s.replace(/\*\*常见搭配[：:]\*\*\s*/, '').trim();
+            // If empty heading, next bullet lines are collocations
+            if (!colloc) {
+              // Content on following bullet lines
+            }
+            continue;
+          }
+          if (/^\*\*外刊例句[：:]/.test(s)) {
+            example = s.replace(/\*\*外刊例句[：:]\*\*\s*/, '').replace(/^\*|\*$/g, '');
+            continue;
+          }
+          // Bullet line with `code` → collocation (in new format)
+          if (s.startsWith('- ') && s.includes('`')) {
+            const codeText = s.replace(/^-\s*/, '').replace(/`/g, '');
+            colloc += (colloc ? '\n' : '') + codeText;
+            continue;
+          }
+          continue;
+        }
+
+        // ── Legacy formats ──
 
         if (s.includes('`') && s.includes('·') && mode === 'init') {
           const backtickMatch = s.match(/`([^`]+)`/);
@@ -1452,7 +1499,7 @@ function renderSentenceDecon(allText) {
       continue;
     }
     // Structure analysis — Chinese and English headers
-    if ((s.includes('结构拆解') || s.includes('**Structure:**') || s.includes('**Structure**')) && s.startsWith('**')) {
+    if ((s.includes('结构拆解') || s.includes('结构分析') || s.includes('**Structure:**') || s.includes('**Structure**')) && s.startsWith('**')) {
       mode = 'structure';
       continue;
     }
@@ -1461,8 +1508,8 @@ function renderSentenceDecon(allText) {
       mode = 'grammar';
       continue;
     }
-    // Template — Chinese headers (仿写模板, 模仿模板, 结构模板, 句型模板)
-    if ((s.includes('仿写模板') || s.includes('模仿模板') || s.includes('结构模板') || s.includes('句型模板')) && s.startsWith('**')) {
+    // Template — Chinese headers (仿写模板, 模仿模板, 结构模板, 句型模板, 模板句型)
+    if ((s.includes('仿写模板') || s.includes('模仿模板') || s.includes('结构模板') || s.includes('句型模板') || s.includes('模板句型')) && s.startsWith('**')) {
       mode = 'template';
       continue;
     }
@@ -1782,7 +1829,7 @@ function renderOutputTasks(allText) {
       continue;
     }
     // Structure Guide — Chinese and English (do NOT flush task, just switch mode)
-    if (s.startsWith('**结构引导') || s.startsWith('**结构指引') || s.startsWith('**Structure Guide')) {
+    if (s.startsWith('**结构引导') || s.startsWith('**结构指引') || s.startsWith('**Structure Guide') || s.startsWith('**结构指南') || s.startsWith('**思维拓展')) {
       mode = 'guide';
       continue;
     }
@@ -1792,7 +1839,7 @@ function renderOutputTasks(allText) {
       continue;
     }
     // Self-Check — Chinese and English (do NOT flush task)
-    if (s.startsWith('**Self-Check') || s.startsWith('**Self-check') || s.startsWith('**自我检查') || s.startsWith('**Self-check 清单')) {
+    if (s.startsWith('**Self-Check') || s.startsWith('**Self-check') || s.startsWith('**自我检查') || s.startsWith('**Self-check 清单') || s.startsWith('**自测清单')) {
       mode = 'check';
       continue;
     }

@@ -4149,7 +4149,18 @@ def _render_expression_card(text: str) -> str:
 
     Supports multiple briefing formats (tried in order):
 
-    Format C (current — blockquote + bullet metadata):
+    Format D (current — labeled inline fields):
+    ### 表达 N — Title
+    **英文表达：** `phrase`
+    **功能标签：** function description
+    **语域标签：** register label
+    **中文释义：** CN explanation
+    **常见搭配：**
+    - `collocation 1`
+    - `collocation 2`
+    **外刊例句：** example sentence
+
+    Format C (legacy — blockquote + bullet metadata):
     ### Expression N — Title
     > **"phrase text"**
     - **功能：** function description
@@ -4200,6 +4211,73 @@ def _render_expression_card(text: str) -> str:
         if not s:
             i += 1
             continue
+
+        # ═══════════════════════════════════════════════
+        # Format D (current): labeled inline fields
+        # ═══════════════════════════════════════════════
+
+        # ── **英文表达：** `phrase` ──
+        if re.match(r'\*\*英文表达[：:]\*\*', s):
+            phrase = re.sub(r'\*\*英文表达[：:]\*\*\s*', '', s)
+            phrase = phrase.strip('`')
+            phrase_found = True
+            current_field = None
+            i += 1
+            continue
+
+        # ── **功能标签：** text ──
+        if re.match(r'\*\*功能标签[：:]\*\*', s):
+            func_text = re.sub(r'\*\*功能标签[：:]\*\*\s*', '', s)
+            tags = (tags + " · " + func_text) if tags else func_text
+            current_field = None
+            i += 1
+            continue
+
+        # ── **语域标签：** text ──
+        if re.match(r'\*\*语域标签[：:]\*\*', s):
+            reg_text = re.sub(r'\*\*语域标签[：:]\*\*\s*', '', s)
+            tags = (tags + " | " + reg_text) if tags else reg_text
+            current_field = None
+            i += 1
+            continue
+
+        # ── **中文释义：** text ──
+        if re.match(r'\*\*中文释义[：:]\*\*', s):
+            cn_explanation = re.sub(r'\*\*中文释义[：:]\*\*\s*', '', s)
+            current_field = "cn"
+            i += 1
+            continue
+
+        # ── **常见搭配：** (heading, content on bullet lines) ──
+        if re.match(r'\*\*常见搭配[：:]\*\*', s):
+            # Check if inline content after the heading
+            inline = re.sub(r'\*\*常见搭配[：:]\*\*\s*', '', s)
+            if inline and not inline.startswith('-'):
+                collocations = inline
+            current_field = "colloc"
+            i += 1
+            continue
+
+        # ── **外刊例句：** text ──
+        if re.match(r'\*\*外刊例句[：:]\*\*', s):
+            example = re.sub(r'\*\*外刊例句[：:]\*\*\s*', '', s)
+            current_field = "example"
+            i += 1
+            continue
+
+        # ── Format D bullet: - `text` in colloc mode → collocation ──
+        if s.startswith("- ") and current_field == "colloc":
+            content = s[2:].strip().strip('`')
+            if collocations:
+                collocations += "\n" + content
+            else:
+                collocations = content
+            i += 1
+            continue
+
+        # ═══════════════════════════════════════════════
+        # Legacy format detection
+        # ═══════════════════════════════════════════════
 
         # ── Phrase: **"text"** or **`text`** ──
         if not phrase_found and not phrase:
@@ -4403,12 +4481,12 @@ def _render_sentence_decon(text: str) -> str:
                     break
             continue
 
-        if s.startswith("**结构拆解：**") or s.startswith("**结构拆解**") or s.startswith("**Structure:**") or s.startswith("**Structure**"):
+        if s.startswith("**结构拆解：**") or s.startswith("**结构拆解**") or s.startswith("**结构分析：**") or s.startswith("**结构分析**") or s.startswith("**Structure:**") or s.startswith("**Structure**"):
             if current_mode == "grammar" and current_grammar_title:
                 grammar_points.append((current_grammar_title, " ".join(current_grammar_body)))
                 current_grammar_body = []
             # Handle both "**结构拆解：** text" and "**结构拆解**" (bare header, content on next line)
-            structure_analysis = re.sub(r'\*\*(?:结构拆解|Structure)[：:]?\*\*\s*', '', s)
+            structure_analysis = re.sub(r'\*\*(?:结构拆解|结构分析|Structure)[：:]?\*\*\s*', '', s)
             if not structure_analysis.strip():
                 # Content is on next lines
                 current_mode = "structure"
@@ -4437,12 +4515,12 @@ def _render_sentence_decon(text: str) -> str:
                 i = j
             continue
 
-        if s.startswith("**结构模板**") or s.startswith("**结构模板：**") or s.startswith("**句型模板"):
+        if s.startswith("**结构模板**") or s.startswith("**结构模板：**") or s.startswith("**句型模板") or s.startswith("**模板句型"):
             if current_mode == "grammar" and current_grammar_title:
                 grammar_points.append((current_grammar_title, " ".join(current_grammar_body)))
                 current_grammar_body = []
             current_mode = "template"
-            template_text = re.sub(r'\*\*(?:结构模板|句型模板)[^：:]*[：:]?\*\*\s*', '', s)
+            template_text = re.sub(r'\*\*(?:结构模板|句型模板|模板句型)[^：:]*[：:]?\*\*\s*', '', s)
             if not template_text.strip():
                 # Template is on next lines (code block or blockquote)
                 j = i + 1
@@ -4975,12 +5053,12 @@ def _render_output_tasks(text: str) -> str:
             i += 1
             continue
 
-        if s.startswith("**结构引导：**") or s.startswith("**结构引导**") or s.startswith("**结构指引") or s.startswith("**Structure Guide") or s.startswith("**Speaking Guide"):
+        if s.startswith("**结构引导：**") or s.startswith("**结构引导**") or s.startswith("**结构指引") or s.startswith("**Structure Guide") or s.startswith("**Speaking Guide") or s.startswith("**结构指南") or s.startswith("**思维拓展"):
             current_mode = "guide"
             i += 1
             continue
 
-        if s.startswith("**Self-Check") or s.startswith("**Self-check") or s.startswith("**自我检查"):
+        if s.startswith("**Self-Check") or s.startswith("**Self-check") or s.startswith("**自我检查") or s.startswith("**自测清单"):
             current_mode = "check"
             i += 1
             continue
