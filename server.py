@@ -1748,6 +1748,22 @@ ISSUE_PAGE_CSS = r"""
   }
   .ctx-block .framing-list li:last-child { margin-bottom: 0; }
   .ctx-block .framing-list li strong { color: var(--ink); font-weight: 700; }
+  /* Context block bullet lists (debate, etc.) */
+  .ctx-block .ctx-list {
+    margin: 12px 0 12px 0;
+    padding: 0;
+    list-style: none;
+  }
+  .ctx-block .ctx-list li {
+    font-size: 15px;
+    color: var(--ink-dim);
+    line-height: 1.8;
+    padding: 8px 0 8px 18px;
+    border-left: 2px solid var(--color-context-border);
+    margin-bottom: 8px;
+  }
+  .ctx-block .ctx-list li:last-child { margin-bottom: 0; }
+  .ctx-block .ctx-list li strong { color: var(--ink); font-weight: 700; }
   /* Context block accent borders */
   .ctx-block.ctx-topic { border-left: 3px solid var(--color-context); }
   .ctx-block.ctx-bg { border-left: 3px solid var(--color-context-muted, #6a8ec2); }
@@ -3630,8 +3646,8 @@ def _render_context_block(text: str) -> str:
         "议题": ("议题", "ctx-block ctx-topic"),
         "背景": ("背景", "ctx-block ctx-bg"),
         "争议": ("争议焦点", "ctx-block ctx-debate"),
-        "为什么选这个议题": ("为什么选", "ctx-block ctx-rationale"),
-        "为什么选": ("为什么选", "ctx-block ctx-rationale"),
+        "为什么选这个议题": ("为什么选这个议题", "ctx-block ctx-rationale"),
+        "为什么选": ("为什么选这个议题", "ctx-block ctx-rationale"),
         "Framing 提示": ("Framing 提示", "ctx-block ctx-framing"),
         "Framing": ("Framing 提示", "ctx-block ctx-framing"),
     }
@@ -3697,7 +3713,25 @@ def _render_context_block(text: str) -> str:
                 f'</div>'
             )
 
-    # Non-framing blocks: simple label + body
+    # Non-framing blocks: parse bullet points if present
+    has_bullets = any(line.strip().startswith("- ") for line in body_lines)
+    if has_bullets:
+        bullet_items = []
+        for line in body_lines:
+            line = line.strip()
+            if not line:
+                continue
+            if line.startswith("- "):
+                item_html = _markdown_inline_to_html(line[2:])
+                bullet_items.append(f'<li>{item_html}</li>')
+        if bullet_items:
+            return (
+                f'<div class="{css_class}">'
+                f'<div class="ctx-label">{label}</div>'
+                f'<ul class="ctx-list">{"".join(bullet_items)}</ul>'
+                f'</div>'
+            )
+    # No bullets — render as plain text card
     return (
         f'<div class="{css_class}">'
         f'<div class="ctx-label">{label}</div>'
@@ -3716,8 +3750,8 @@ def _render_context_section(text: str) -> str:
     if not text.strip():
         return ""
 
-    # Split at blank-line + bold header boundaries
-    sub_pattern = r'\n(?=\*\*(?:议题|背景|争议|为什么选这个议题|为什么选|Framing 提示|Framing)[：:]\*\*)'
+    # Split at bold sub-header boundaries (**议题：**, **背景：**, etc.)
+    sub_pattern = r'\n(?=\*\*(?:议题|背景|争议|为什么选这个议题|为什么选|Framing 提示|Framing)[：:]\*\*\s)'
 
     blocks = re.split(sub_pattern, text)
     results = []
