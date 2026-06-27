@@ -1798,7 +1798,7 @@ function renderOutputTasks(allText) {
       let task = s;
       task = task.replace(/\*\*口语任务[（(][^)）]*[)）]\*\*\s*/, '');
       task = task.replace(/\*\*口语任务[：:]\*\*\s*/, '');
-      task = task.replace(/\*\*口语任务[^*]*\*\*\s*/, '');
+      task = task.replace(/\*\*口语(?:任务|训练|表达)[^*]*\*\*\s*/, '');
       task = task.replace(/\*\*IELTS[^*]*\*\*\s*/, '');
       const metaMatch = task.match(/[（(]建议\s*.+[）)]/);
       if (metaMatch) { currentTask.meta = metaMatch[0]; task = task.replace(metaMatch[0], '').trim(); }

@@ -3801,7 +3801,7 @@ def _render_paragraph(text: str, module_type: str = "context") -> str:
     if re.match(r'^(> )?(\*\*)?\[?(Thesis|Premise|Evidence|Counter-?argument|Conclusion)\]?\s*$', first_line):
         return _render_passage_block(text)
     # Handle combined passage section text that may contain multiple blocks
-    if module_type == "passage" and re.search(r'(?:^|\n)(?:> )?(?:\*\*)?\[?(Thesis|Premise|Evidence|Counter-?argument|Conclusion)\]?(?:\*\*)?\s*\n', text):
+    if module_type == "passage" and re.search(r'(?:^|\n)(?:> )?(?:\*\*)?\[?(Thesis|Premise|Evidence|Counter-?argument|Conclusion)', text):
         return _render_passage_section(text)
 
     # --- Reading guide ---
@@ -3996,7 +3996,7 @@ def _render_passage_section(text: str) -> str:
         # Passage block: starts with > **[Thesis or > [Thesis or [Thesis (after strip)
         # Also supports **Thesis** (bold) and plain Thesis formats
         clean = s.lstrip("> ").strip("*")
-        if re.match(r'^(?:\[)?(Thesis|Premise|Evidence|Counter-?argument|Conclusion)(?:\])?\s*$', clean):
+        if re.match(r'^(?:\[)?(Thesis|Premise|Evidence|Counter-?argument|Conclusion)', clean):
             # Collect all passage lines until empty line or next section marker
             passage_lines = []
             j = i
@@ -5013,8 +5013,8 @@ def _render_output_tasks(text: str) -> str:
             i += 1
             continue
 
-        # Legacy format: **口语任务...**
-        if s.startswith("**口语任务") and not any(t["type"] == "Speaking Task" for t in tasks):
+        # Legacy format: **口语任务...** or **口语训练...** or **口语表达...**
+        if (s.startswith("**口语任务") or s.startswith("**口语训练") or s.startswith("**口语表达")) and not any(t["type"] == "Speaking Task" for t in tasks):
             # Flush the current (writing) task before creating the speaking task
             if current_task:
                 tasks.append(current_task)
