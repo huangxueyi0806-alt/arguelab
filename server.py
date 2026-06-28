@@ -601,41 +601,119 @@ def build_email_html(md_text: str, issue_number: int = 1, read_url: str = "", pd
     topic_line = ""
     training_focus = ""
     practice_items = []
-    date_str = datetime.now().strftime("%B %d, %Y")
+    date_str = ""
+    briefing_date = ""
 
-    for line in md_text.split("\n"):
+    lines = md_text.split("\n")
+    in_expressions = False
+
+    for i, line in enumerate(lines):
         stripped = line.strip()
 
-        m = re.match(r'>\s*\*\*今日议题：\*\*\s*(.+)', stripped)
+        # ── Date from title: `# ArgueLab Training Briefing — YYYY-MM-DD` ──
+        m = re.match(r'^#\s+ArgueLab.*[—–-]\s*(\d{4}-\d{2}-\d{2})', stripped)
+        if m:
+            briefing_date = m.group(1)
+            # Format as "June 28, 2026"
+            try:
+                dt = datetime.strptime(briefing_date, "%Y-%m-%d")
+                date_str = dt.strftime("%B %d, %Y")
+            except ValueError:
+                date_str = briefing_date
+            # Also set issue_number from date
+            if issue_number == 1:
+                issue_number = int(briefing_date.replace("-", ""))
+            continue
+
+        # ── Topic: `**议题：** ...` or `**今日议题：** ...` (with optional `>` prefix) ──
+        m = re.match(r'>?\s*\*\*(?:今日)?议题：?\*\*\s*(.+)', stripped)
         if m:
             topic_line = m.group(1).strip()
             continue
 
-        m = re.match(r'>\s*\*\*训练重点：\*\*\s*(.+)', stripped)
+        # ── Training focus: from `**为什么选这个议题：** ...训练的是...` ──
+        m = re.match(r'>?\s*\*\*为什么选这个议题：?\*\*\s*(.+)', stripped)
         if m:
-            training_focus = m.group(1).strip()
+            why_text = m.group(1).strip()
+            # Extract the part after "训练的是"
+            fm = re.search(r'训练的是(.+?)[。.]?\s*$', why_text)
+            if fm:
+                training_focus = fm.group(1).strip()
+            else:
+                # Fallback: use first 60 chars
+                training_focus = why_text[:80]
             continue
 
-        m = re.match(r'^#\s+ArgueLab.*\|\s*(.+)$', stripped)
-        if m:
-            date_str = m.group(1).strip()
-            continue
-
-        if len(practice_items) < 4:
-            m = re.match(r'^-\s+\*([^*]+)\*[（(](.+)[）)]', stripped)
+        # ── Training focus fallback: `**Framing 提示：**` ──
+        if not training_focus:
+            m = re.match(r'>?\s*\*\*训练重点：?\*\*\s*(.+)', stripped)
             if m:
-                practice_items.append(f"如何理解 {m.group(1).strip()} — {m.group(2).strip()}")
+                training_focus = m.group(1).strip()
                 continue
 
+        # ── Practice items: from expression cards ──
+        if re.match(r'^##\s*(?:\d+\.?\s*)?(?:5个|5\s*个)?可迁移表达', stripped) or re.match(r'^##\s*(?:\d+\.?\s*)?5\s*[个項]?\s*Express', stripped, re.IGNORECASE):
+            in_expressions = True
+            continue
+        if in_expressions and re.match(r'^##\s', stripped):
+            in_expressions = False
+            continue
+        if in_expressions and len(practice_items) < 5:
+            # New format: `### N. phrase`
+            m = re.match(r'^###\s*\d+\.\s*(.+)', stripped)
+            if m:
+                phrase = m.group(1).strip()
+                cn_label = ""
+                for j in range(i+1, min(i+8, len(lines))):
+                    next_line = lines[j].strip()
+                    cm = re.match(r'\*\*(?:功能|语域|语义|标签|适用)[^*]*\*\*\s*[：:]\s*(.+?)(?:\s*\|\s*.+)?$', next_line)
+                    if cm:
+                        cn_label = cm.group(1).strip()
+                        break
+                    # Old format: `**英文表达：**` ... `**功能标签：**` ...
+                    cm2 = re.match(r'\*\*(?:功能标签|中文释义)[：:]\*\*\s*(.+)', next_line)
+                    if cm2:
+                        cn_label = cm2.group(1).strip()
+                        break
+                if cn_label:
+                    practice_items.append(f"{phrase} — {cn_label}")
+                else:
+                    practice_items.append(phrase)
+                continue
+            # Old format: `### 表达 N` → phrase is in next `**英文表达：**`
+            m_old = re.match(r'^###\s*表达\s*\d+', stripped)
+            if m_old:
+                phrase = ""
+                cn_label = ""
+                for j in range(i+1, min(i+15, len(lines))):
+                    next_line = lines[j].strip()
+                    if next_line.startswith('---') or next_line.startswith('## ') or re.match(r'^###\s*表达\s*\d+', next_line):
+                        break
+                    pm = re.match(r'\*\*英文表达：?\*\*\s*`?(.+?)`?\s*$', next_line)
+                    if pm:
+                        phrase = pm.group(1).strip().strip('`')
+                    cm = re.match(r'\*\*(?:功能标签|中文释义)[：:]\*\*\s*(.+)', next_line)
+                    if cm and not cn_label:
+                        cn_label = cm.group(1).strip()
+                if phrase:
+                    if cn_label:
+                        practice_items.append(f"{phrase} — {cn_label}")
+                    else:
+                        practice_items.append(phrase)
+                continue
+
+    # ── Fallback: practice items from Framing or expression list ──
     if not practice_items:
-        for line in md_text.split("\n"):
+        for line in lines:
             stripped = line.strip()
-            if 'Step' in stripped and ('Thesis' in stripped or 'Causal' in stripped):
-                item = re.sub(r'\*\*|Step \d+\s*[—–-]\s*', '', stripped).strip()
-                if item and len(item) > 5:
-                    practice_items.append(item)
-                if len(practice_items) >= 3:
-                    break
+            # Match expression card headers
+            m = re.match(r'^###\s*\d+\.\s*(.+)', stripped)
+            if m and len(practice_items) < 5:
+                practice_items.append(m.group(1).strip())
+                continue
+
+    if not date_str:
+        date_str = datetime.now().strftime("%B %d, %Y")
 
     # ── Subject & greeting ──
     issue_title_short = topic_line if topic_line else f"Issue #{issue_number:03d}"
@@ -1317,6 +1395,55 @@ ISSUE_PAGE_CSS = r"""
     .theme-toggle-wrapper { top: 12px; right: 12px; }
     .theme-toggle { padding: 6px 12px; }
     .theme-toggle .toggle-label { display: none; }
+  }
+
+  /* ── PDF Download Button ── */
+  .pdf-download-wrapper {
+    position: fixed;
+    top: 20px;
+    right: 130px;
+    z-index: 1000;
+  }
+  .pdf-download-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 24px;
+    border: 1px solid var(--border-strong);
+    background: var(--card-bg);
+    color: var(--ink-dim);
+    font-size: 12px;
+    font-family: var(--font-sans);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow-sm);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    text-decoration: none;
+  }
+  .pdf-download-btn:hover {
+    border-color: var(--accent);
+    color: var(--ink);
+  }
+  .pdf-download-btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .pdf-download-btn .dl-icon {
+    width: 16px; height: 16px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ink-dim);
+  }
+  .pdf-download-btn .dl-icon svg {
+    width: 16px; height: 16px;
+  }
+  @media (max-width: 640px) {
+    .pdf-download-wrapper { top: 12px; right: 72px; }
+    .pdf-download-btn { padding: 6px 12px; }
+    .pdf-download-btn .dl-label { display: none; }
   }
 
   /* ── Reset & Base ── */
@@ -2632,7 +2759,7 @@ ISSUE_PAGE_CSS = r"""
     }
     body { font-size: 11pt; }
     .issue-shell { display: block; max-width: 100%; padding: 0; }
-    .issue-toc, .toc-mobile, .theme-toggle-wrapper { display: none !important; }
+    .issue-toc, .toc-mobile, .theme-toggle-wrapper, .pdf-download-wrapper { display: none !important; }
     .issue-main { max-width: 100%; padding: 0; }
     .issue-hero { padding: 20px 0 16px; }
     .issue-hero h1 { font-size: 18pt; }
@@ -3613,6 +3740,14 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
 </head>
 <body>
 <!-- Theme Toggle -->
+<div class="pdf-download-wrapper">
+  <a href="/issues/{issue_date}/download" class="pdf-download-btn" title="Download PDF" download>
+    <span class="dl-icon">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    </span>
+    <span class="dl-label">PDF</span>
+  </a>
+</div>
 <div class="theme-toggle-wrapper">
   <button class="theme-toggle" id="theme-toggle-btn" aria-label="Toggle reading mode" title="Switch between Reading Mode and Dark Mode">
     <span class="toggle-icon" id="toggle-icon">
@@ -5420,6 +5555,23 @@ class APIHandler(BaseHTTPRequestHandler):
             else:
                 node_exe = "node"  # hope it's in PATH
 
+        # Find Chromium/Chrome executable
+        chromium_path = os.environ.get("CHROMIUM_PATH", "")
+        if not chromium_path or not Path(chromium_path).exists():
+            for candidate in [
+                "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+                "/Applications/Chromium.app/Contents/MacOS/Chromium",
+                "/usr/bin/chromium-browser",
+                "/usr/bin/chromium",
+                "/usr/bin/google-chrome",
+                "/usr/bin/google-chrome-stable",
+            ]:
+                if Path(candidate).exists():
+                    chromium_path = candidate
+                    break
+            else:
+                chromium_path = "/usr/bin/chromium"  # fallback, render-pdf.js has its own default too
+
         script_path = BASE_DIR / "scripts" / "render-pdf.js"
         if not script_path.exists():
             self.send_response(500)
@@ -5427,11 +5579,15 @@ class APIHandler(BaseHTTPRequestHandler):
             self.wfile.write(b"PDF renderer script not found. Install Node + Puppeteer.")
             return
 
+        # Build env with CHROMIUM_PATH
+        render_env = os.environ.copy()
+        render_env["CHROMIUM_PATH"] = chromium_path
+
         # Generate PDF
         try:
             result = subprocess.run(
                 [node_exe, str(script_path), str(briefing_file), str(pdf_path)],
-                capture_output=True, text=True, timeout=60
+                capture_output=True, text=True, timeout=60, env=render_env
             )
             if result.returncode != 0:
                 self.send_response(500)
