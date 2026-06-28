@@ -3816,9 +3816,11 @@ def _render_paragraph(text: str, module_type: str = "context") -> str:
     # When module_type is "expression", always use the section renderer
     # which handles multiple cards. Only use single-card renderer for
     # non-expression modules that happen to contain an expression card.
-    if module_type == "expression" and re.search(r'^###\s*(?:表达|Expression)\s*\d+', text, re.MULTILINE):
-        return _render_expression_section(text)
-    if re.match(r'^###\s*(?:表达|Expression)\s*\d+', first_line):
+    if module_type == "expression":
+        # Match both: ### 表达 1  and  ### 1. phrase text
+        if re.search(r'^###\s*(?:(?:表达|Expression)\s*\d+|\d+\.)', text, re.MULTILINE):
+            return _render_expression_section(text)
+    if re.match(r'^###\s*(?:(?:表达|Expression)\s*\d+|\d+\.)', first_line):
         return _render_expression_card(text)
 
     # --- Sentence deconstruction: 目标句/Target Sentence / 结构拆解/Structure / 语法点/Grammar Points ---
@@ -3834,6 +3836,7 @@ def _render_paragraph(text: str, module_type: str = "context") -> str:
     # --- Output tasks: 写作任务/Task/口语任务/Topic/Question/结构引导/自我检查 ---
     # NOTE: must check BEFORE argument chain, since output text may contain "Weighing" etc.
     if ("**写作任务" in text or "**口语任务" in text or
+        "### 写作" in text or "### 口语" in text or
         "**结构指引" in text or "**结构引导" in text or
         "**Self-check" in text or "**Self-Check" in text or "**自我检查" in text or
         "### Task A" in text or "### Task B" in text or "### Task 1" in text or "### Task 2" in text or
@@ -4101,7 +4104,7 @@ def _render_expression_section(text: str) -> str:
         s = lines[i].strip()
 
         # Detect expression card header
-        if re.match(r'^###\s*(?:表达|Expression)\s*\d+', s):
+        if re.match(r'^###\s*(?:(?:表达|Expression)\s*\d+|\d+\.)', s):
             # Flush previous card
             if in_card and current_card_lines:
                 card_text = "\n".join(current_card_lines)
@@ -4201,9 +4204,9 @@ def _render_expression_card(text: str) -> str:
 
         # Extract card number from ### header
         if s.startswith("###"):
-            m = re.match(r'^###\s*(?:表达|Expression)\s*(\d+)', s)
+            m = re.match(r'^###\s*(?:(?:表达|Expression)\s*(\d+)|(\d+))', s)
             if m:
-                card_num = m.group(1)
+                card_num = m.group(1) or m.group(2)
             i += 1
             continue
 
@@ -4211,6 +4214,51 @@ def _render_expression_card(text: str) -> str:
         if not s:
             i += 1
             continue
+
+        # ═══════════════════════════════════════════════
+        # Format E (briefing current): ### N. phrase + compact inline fields
+        # ### 1. phrase text
+        # **功能**：desc | **语域**：label | **适用**：desc
+        # **常见搭配：** collocations
+        # **例句：** example
+        # ═══════════════════════════════════════════════
+        if re.match(r'\*\*功能[：:]', s) and not phrase:
+            # This is the inline metadata line — extract phrase from the ### header
+            # The phrase was stored in the card header line; extract it now
+            if not phrase:
+                # Phrase comes from the ### header line (stored in lines[0])
+                first_content = lines[0].strip() if lines else ""
+                pm = re.match(r'^###\s*\d+\.\s*(.+)', first_content)
+                if pm:
+                    phrase = pm.group(1).strip()
+            # Parse inline tags: **功能**：desc | **语域**：label | **适用**：desc
+            func_match = re.search(r'\*\*功能[：:]\*\*\s*(.+?)(?:\s*\|\s*\*\*|$)', s)
+            reg_match = re.search(r'\*\*语域[：:]\*\*\s*(.+?)(?:\s*\|\s*\*\*|$)', s)
+            usage_match = re.search(r'\*\*适用[：:]\*\*\s*(.+?)$', s)
+            tag_parts = []
+            if func_match:
+                tag_parts.append(func_match.group(1).strip())
+            if reg_match:
+                tag_parts.append(reg_match.group(1).strip())
+            if usage_match:
+                tag_parts.append(usage_match.group(1).strip())
+            tags = " · ".join(tag_parts) if tag_parts else ""
+            current_field = "format_e"
+            i += 1
+            continue
+
+        # Format E continuation: **常见搭配：** / **例句：**
+        if current_field == "format_e":
+            if re.match(r'\*\*常见搭配[：:]', s):
+                collocations = re.sub(r'\*\*常见搭配[：:]\*\*\s*', '', s)
+                current_field = "colloc"
+                i += 1
+                continue
+            if re.match(r'\*\*例句[：:]', s):
+                example = re.sub(r'\*\*例句[：:]\*\*\s*', '', s)
+                current_field = "example"
+                i += 1
+                continue
 
         # ═══════════════════════════════════════════════
         # Format D (current): labeled inline fields
@@ -4546,7 +4594,20 @@ def _render_sentence_decon(text: str) -> str:
             continue
 
         if s.startswith("**语法点") or s.startswith("**语法要点") or s.startswith("**Grammar Points"):
-            current_mode = "grammar"
+            # Check for inline title format: **语法点 N — title：** body
+            # or: **语法点 N：** body
+            gm = re.match(r'\*\*(?:语法点|语法要点|Grammar Points)\s*\d*\s*(?:[—–-]?\s*(.+?))[：:]?\*\*\s*(.*)', s)
+            if gm and gm.group(1) and gm.group(1).strip():
+                # Inline format: title and body on same line
+                title = gm.group(1).strip()
+                body = gm.group(2).strip()
+                grammar_points.append((title, body))
+                current_mode = "grammar"
+                current_grammar_title = ""
+                current_grammar_body = []
+            else:
+                # Bare header: **语法点** or **语法点 1**, content on next lines
+                current_mode = "grammar"
             i += 1
             continue
 
@@ -4598,7 +4659,7 @@ def _render_sentence_decon(text: str) -> str:
             i = j
             continue
 
-        if s.startswith("**仿写场景：**") or s.startswith("**仿写场景**") or s.startswith("**适用场景：**") or s.startswith("**适用场景**"):
+        if s.startswith("**仿写场景：**") or s.startswith("**仿写场景**") or s.startswith("**适用场景：**") or s.startswith("**适用场景**") or s.startswith("**场景适用：**") or s.startswith("**场景适用**"):
             if current_mode == "grammar" and current_grammar_title:
                 grammar_points.append((current_grammar_title, " ".join(current_grammar_body)))
                 current_grammar_body = []
@@ -4796,7 +4857,7 @@ def _render_argument_chain(text: str) -> str:
             i = j
             continue
 
-        if ("核心概念" in s[:30] and "**" in s[:30]) or s.startswith("🏗️") or "English Core Concept" in s or ("Core Concept" in s and "**" in s[:5]) or s.startswith("**EN Core**") or s.startswith("**EN Core：**"):
+        if ("核心概念" in s[:30] and "**" in s[:30]) or s.startswith("🏗️") or "English Core Concept" in s or ("Core Concept" in s and "**" in s[:5]) or s.startswith("**EN Core**") or s.startswith("**EN Core：**") or s.startswith("**英文核心") or ("英文核心" in s[:30] and "**" in s[:30]):
             core_concept = s
             core_concept = re.sub(r'\*\*.*?核心概念.*?\*\*\s*', '', core_concept)
             core_concept = re.sub(r'\*\*.*?(?:Core Concept|English Core Concept|EN Core).*?\*\*\s*', '', core_concept)
@@ -4859,7 +4920,7 @@ def _render_argument_chain(text: str) -> str:
             para = []
             while j < len(lines):
                 ls = lines[j].strip()
-                if ls.startswith("**示范段落：**") or ls.startswith("**示范段落**") or ls.startswith("✍️") or ls.startswith("**✍️") or "Sample Argument Paragraph" in ls or "Sample Paragraph" in ls[:40] or ls.startswith("📌") or ls.startswith("*ArgueLab") or ls == "---":
+                if ls.startswith("**示范段落：**") or ls.startswith("**示范段落**") or ls.startswith("**参考段落：**") or ls.startswith("**参考段落**") or ls.startswith("✍️") or ls.startswith("**✍️") or "Sample Argument Paragraph" in ls or "Sample Paragraph" in ls[:40] or "参考段落" in ls[:30] or ls.startswith("📌") or ls.startswith("*ArgueLab") or ls == "---":
                     break
                 if ls == "" and para:
                     weighing_texts.append(" ".join(para))
@@ -4872,7 +4933,7 @@ def _render_argument_chain(text: str) -> str:
             i = j
             continue
 
-        if s.startswith("**示范段落：**") or s.startswith("**示范段落**") or s.startswith("✍️") or s.startswith("**✍️") or "Sample Argument Paragraph" in s or "Sample Paragraph" in s[:40]:
+        if s.startswith("**示范段落：**") or s.startswith("**示范段落**") or s.startswith("**参考段落：**") or s.startswith("**参考段落**") or s.startswith("✍️") or s.startswith("**✍️") or "Sample Argument Paragraph" in s or "Sample Paragraph" in s[:40] or "参考段落" in s[:30]:
             current_mode = "sample"
             i += 1
             j = i
@@ -4981,14 +5042,16 @@ def _render_output_tasks(text: str) -> str:
             continue
 
         # Detect task headers: ### Task 1: ... / ### Task 2: ... / ### Task A: ... / ### Task B: ...
-        if s.startswith("### Task 1") or s.startswith("### Task 2") or s.startswith("### Task A") or s.startswith("### Task B"):
+        # Also: ### 写作任务..., ### 口语训练... (current briefing format)
+        if (s.startswith("### Task 1") or s.startswith("### Task 2") or s.startswith("### Task A") or s.startswith("### Task B") or
+            s.startswith("### 写作") or s.startswith("### 口语")):
             if current_task:
                 tasks.append(current_task)
             # Determine task type from header
             task_type = "Writing Task" if ("写作" in s or "Writing" in s) else "Speaking Task"
             current_task = {"type": task_type, "prompt": "", "guide": [], "check": [], "meta": ""}
-            current_section = "task1"
-            current_mode = None
+            current_section = "task1" if "写作" in s or "Writing" in s else "task2"
+            current_mode = "prompt"  # Default: next content is prompt
             # Check for meta in header (e.g. "（IELTS Task 2 / TEM-8 写作）")
             m = re.search(r'[（(]([^)）]+)[)）]', s)
             if m:
