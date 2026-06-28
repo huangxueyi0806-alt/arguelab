@@ -1034,11 +1034,55 @@ def send_briefing_to_all(md_path: str, issue_number: int = 1, read_url: str = ""
     return {"status": "ok", "sent": len(sent), "failed": failed}
 
 
+def _customize_email_html(html: str, recipient_name: str = "", unsubscribe_url: str = "") -> str:
+    """Customize email HTML per-recipient: inject name + unique unsubscribe link.
+
+    Replaces ``{greeting}`` and ``{unsub_link}`` placeholders if present.
+    Falls back to regex replacement of common greeting patterns and the
+    unsubscribe anchor tag.
+    """
+    # ── Greeting ──
+    if "{greeting}" in html:
+        if recipient_name:
+            greeting = f"{recipient_name}，今天的训练卡已经生成。"
+        else:
+            greeting = "今天的训练卡已经生成。"
+        html = html.replace("{greeting}", greeting)
+    else:
+        # Best-effort: replace the default greeting text
+        if recipient_name:
+            html = re.sub(
+                r'(<p class="greeting"[^>]*>)[^<]+(，今天的训练卡已经生成。)</p>',
+                lambda m: m.group(1) + recipient_name + "，今天的训练卡已经生成。" + "</p>",
+                html,
+                count=1
+            )
+
+    # ── Unsubscribe link ──
+    if "{unsub_link}" in html:
+        html = html.replace("{unsub_link}", unsubscribe_url or "#")
+    elif unsubscribe_url:
+        # Replace the first unsubscribe anchor's href
+        html = re.sub(
+            r'href="[^"]*unsubscribe[^"]*"',
+            f'href="{unsubscribe_url}"',
+            html,
+            count=1
+        )
+
+    return html
+
+
 def send_email_from_html(html_path: str) -> dict:
-    """Send a pre-written HTML email file to all subscribers.
-    
-    The subject is extracted from the <title> tag in the HTML.
-    The file should be a complete HTML document (DOCTYPE, html, head, body).
+    """Send email to all subscribers, re-generating per-recipient from briefing markdown.
+
+    The HTML file path is used to derive the corresponding briefing markdown
+    (same directory, ``YYYY-MM-DD-email.html`` → ``YYYY-MM-DD-briefing.md``).
+    For each subscriber, :func:`build_email_html` is called with their name
+    and a unique unsubscribe link, so every recipient gets a personalized email.
+
+    If the briefing markdown cannot be found, falls back to sending the
+    HTML file as-is (with a warning printed).
     """
     if not SMTP_HOST:
         return {"status": "error", "message": "SMTP not configured. Set SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS environment variables."}
@@ -1047,15 +1091,31 @@ def send_email_from_html(html_path: str) -> dict:
     if not html_path.exists():
         return {"status": "error", "message": f"File not found: {html_path}"}
 
-    html_body = html_path.read_text(encoding="utf-8")
+    # ── Derive briefing markdown path ──
+    briefing_path = None
+    m = re.match(r'^(\d{4}-\d{2}-\d{2})-email\.html$', html_path.name)
+    date_str = m.group(1) if m else ""
+    if date_str:
+        for candidate_dir in [
+            html_path.parent,
+            html_path.parent.parent / "guardian-agent" / "briefings",
+            html_path.parent / "briefings",
+        ]:
+            candidate = candidate_dir / f"{date_str}-briefing.md"
+            if candidate.exists():
+                briefing_path = candidate
+                break
 
-    # Extract subject from <title> tag
+    # ── Extract subject from HTML file (for fallback) ──
+    html_template = html_path.read_text(encoding="utf-8")
     subject = "ArgueLab Daily Briefing"
-    title_match = re.search(r'<title>(.+?)</title>', html_body, re.IGNORECASE)
+    title_match = re.search(r'<title>(.+?)</title>', html_template, re.IGNORECASE)
     if title_match:
         subject = title_match.group(1).strip()
 
-    # Sync subscribers (same as send_briefing_to_all)
+    base = os.environ.get("BASE_URL", f"http://localhost:{SERVER_PORT}")
+
+    # Sync subscribers
     local_subs = load_subscribers()
     remote_subs = fetch_remote_subscribers()
     subs = merge_subscribers(local_subs, remote_subs)
@@ -1065,14 +1125,38 @@ def send_email_from_html(html_path: str) -> dict:
         return {"status": "error", "message": "No subscribers found."}
 
     sent, failed = [], []
-    for sub in subs:
-        try:
-            send_email(sub["email"], subject, html_body)
-            sent.append(sub["email"])
-            print(f"  ✓ {sub['email']}")
-        except Exception as e:
-            failed.append({"email": sub["email"], "error": str(e)})
-            print(f"  ✗ {sub['email']}: {e}")
+    if briefing_path:
+        print(f"  (re-generating per-recipient from {briefing_path.name})")
+        md_text = briefing_path.read_text(encoding="utf-8")
+        read_url  = f"{base}/issues/{date_str}"
+        pdf_url   = f"{base}/issues/{date_str}/download"
+        for sub in subs:
+            try:
+                unsub = f"{base}/unsubscribe?token={sub.get('token', '')}"
+                _, html_body, _ = build_email_html(
+                    md_text,
+                    issue_number=int(date_str.replace("-", "")),
+                    read_url=read_url,
+                    pdf_url=pdf_url,
+                    recipient_name=sub.get("name", ""),
+                    unsubscribe_url=unsub,
+                )
+                send_email(sub["email"], subject, html_body)
+                sent.append(sub["email"])
+                print(f"  ✓ {sub['email']}")
+            except Exception as e:
+                failed.append({"email": sub["email"], "error": str(e)})
+                print(f"  ✗ {sub['email']}: {e}")
+    else:
+        print(f"  ⚠ Briefing markdown not found for {html_path.name}; sending as-is")
+        for sub in subs:
+            try:
+                send_email(sub["email"], subject, html_template)
+                sent.append(sub["email"])
+                print(f"  ✓ {sub['email']}")
+            except Exception as e:
+                failed.append({"email": sub["email"], "error": str(e)})
+                print(f"  ✗ {sub['email']}: {e}")
 
     # Save merged subscribers
     if len(subs) > len(local_subs):
@@ -1085,6 +1169,7 @@ def send_email_from_html(html_path: str) -> dict:
             print(f"  (⚠ Railway unreachable)")
 
     return {"status": "ok", "sent": len(sent), "failed": failed}
+
 
 
 def build_and_save_email(md_path: str, output_path: str = "",
