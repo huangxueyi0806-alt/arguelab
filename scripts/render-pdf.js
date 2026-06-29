@@ -1814,6 +1814,28 @@ function renderOutputTasks(allText) {
       continue;
     }
 
+    // Modern: ### IELTS Writing Task 2 / ### Speaking / ### Writing / ### 写作 / ### 口语
+    if (/^###\s*(?:IELTS\s|Writing|Speaking|口语|写作)/.test(s)) {
+      if (currentTask) tasks.push(currentTask);
+      const taskType = (s.includes('写作') || s.includes('Writing')) ? 'Writing Task' : 'Speaking Task';
+      const metaMatch = s.match(/[（(]([^)）]+)[)）]/);
+      currentTask = { type: taskType, prompt: '', guide: [], check: [], meta: metaMatch ? metaMatch[1] : '' };
+      mode = 'init';
+      inPremium = false;
+      continue;
+    }
+
+    // Shared guide: ### 结构指引 / ### 结构引导 / ### Structure Guide
+    if (/^###\s*(?:结构指引|结构引导|结构指南|Structure Guide|Speaking Guide|思维拓展)/.test(s)) {
+      mode = 'guide';
+      continue;
+    }
+    // Shared check: ### 自检清单 / ### Self-Check
+    if (/^###\s*(?:自检清单|Self[- ]?[Cc]heck)/.test(s)) {
+      mode = 'check';
+      continue;
+    }
+
     // Legacy: **写作任务...**
     if ((s.startsWith('**写作任务') || s.startsWith('**IELTS Task') || s.startsWith('**写作任务')) && !s.includes('Speaking')) {
       if (currentTask) tasks.push(currentTask);
@@ -1904,6 +1926,17 @@ function renderOutputTasks(allText) {
   }
 
   if (currentTask) tasks.push(currentTask);
+
+  // Post-processing: if multiple tasks exist and later tasks captured
+  // guide/check items (shared sections like ### 结构指引 / ### 自检清单),
+  // propagate to earlier tasks that are missing them.
+  if (tasks.length > 1) {
+    const last = tasks[tasks.length - 1];
+    for (const t of tasks.slice(0, -1)) {
+      if (!hasContent(t.guide) && hasContent(last.guide)) t.guide = [...last.guide];
+      if (!hasContent(t.check) && hasContent(last.check)) t.check = [...last.check];
+    }
+  }
 
   // ── Render task blocks with per-task guide and check ──
   for (const task of tasks) {

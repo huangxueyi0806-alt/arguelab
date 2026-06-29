@@ -4063,8 +4063,11 @@ def _render_paragraph(text: str, module_type: str = "context") -> str:
     # NOTE: must check BEFORE argument chain, since output text may contain "Weighing" etc.
     if ("**写作任务" in text or "**口语任务" in text or
         "### 写作" in text or "### 口语" in text or
+        "### IELTS" in text or "### Writing" in text or "### Speaking" in text or
         "**结构指引" in text or "**结构引导" in text or
+        "### 结构指引" in text or "### 结构引导" in text or "### Structure Guide" in text or
         "**Self-check" in text or "**Self-Check" in text or "**自我检查" in text or
+        "### 自检" in text or "### Self-Check" in text or "### Self-check" in text or
         "### Task A" in text or "### Task B" in text or "### Task 1" in text or "### Task 2" in text or
         "**Topic:**" in text or "**Question:**" in text or
         "**Structure Guide:" in text or "**Speaking Guide:" in text or
@@ -5349,8 +5352,18 @@ def _render_output_tasks(text: str) -> str:
             current_mode = "guide"
             i += 1
             continue
+        # Shared guide via ### header (e.g. ### 结构指引, ### Structure Guide)
+        if s.startswith("### 结构引导") or s.startswith("### 结构指引") or s.startswith("### 结构指南") or s.startswith("### Structure Guide") or s.startswith("### Speaking Guide") or s.startswith("### 思维拓展"):
+            current_mode = "guide"
+            i += 1
+            continue
 
         if s.startswith("**Self-Check") or s.startswith("**Self-check") or s.startswith("**自我检查") or s.startswith("**自测清单"):
+            current_mode = "check"
+            i += 1
+            continue
+        # Shared check via ### header (e.g. ### 自检清单, ### Self-Check)
+        if s.startswith("### 自检") or s.startswith("### Self-Check") or s.startswith("### Self-check") or s.startswith("### 自我检查") or s.startswith("### 自测"):
             current_mode = "check"
             i += 1
             continue
