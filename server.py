@@ -611,7 +611,7 @@ def build_email_html(md_text: str, issue_number: int = 1, read_url: str = "", pd
         stripped = line.strip()
 
         # ── Date from title: `# ArgueLab Training Briefing — YYYY-MM-DD` ──
-        m = re.match(r'^#\s+ArgueLab.*[—–-]\s*(\d{4}-\d{2}-\d{2})', stripped)
+        m = re.match(r'^#\s+ArgueLab.*[—–·-]\s*(\d{4}-\d{2}-\d{2})', stripped)
         if m:
             briefing_date = m.group(1)
             # Format as "June 28, 2026"
@@ -714,6 +714,12 @@ def build_email_html(md_text: str, issue_number: int = 1, read_url: str = "", pd
 
     if not date_str:
         date_str = datetime.now().strftime("%B %d, %Y")
+
+    # Auto-generate read_url and pdf_url from briefing date if not provided
+    if (not read_url or read_url == "#") and briefing_date:
+        base = os.environ.get("BASE_URL", f"http://localhost:{SERVER_PORT}")
+        read_url = f"{base}/issues/{briefing_date}"
+        pdf_url = f"{base}/issues/{briefing_date}/download"
 
     # ── Subject & greeting ──
     issue_title_short = topic_line if topic_line else f"Issue #{issue_number:03d}"
@@ -5263,8 +5269,11 @@ def _render_output_tasks(text: str) -> str:
 
         # Detect task headers: ### Task 1: ... / ### Task 2: ... / ### Task A: ... / ### Task B: ...
         # Also: ### 写作任务..., ### 口语训练... (current briefing format)
+        # Also: ### IELTS Writing Task 2, ### IELTS Speaking Part 3, ### Writing, ### Speaking
         if (s.startswith("### Task 1") or s.startswith("### Task 2") or s.startswith("### Task A") or s.startswith("### Task B") or
-            s.startswith("### 写作") or s.startswith("### 口语")):
+            s.startswith("### 写作") or s.startswith("### 口语") or
+            s.startswith("### IELTS") or s.startswith("### Writing") or s.startswith("### Speaking") or
+            re.match(r'###\s*(?:Writing|Speaking|Task|口语|写作)', s)):
             if current_task:
                 tasks.append(current_task)
             # Determine task type from header
@@ -5455,8 +5464,13 @@ def _render_output_tasks(text: str) -> str:
         )
 
     if not html:
-        # Fallback: render as plain paragraphs
-        return _render_paragraph(text, "output")
+        # Fallback: render as plain paragraphs (no recursion)
+        paras = []
+        for line in text.split('\n'):
+            line = line.strip()
+            if line:
+                paras.append(f'<p>{_markdown_inline_to_html(line)}</p>')
+        return '\n'.join(paras)
 
     return "\n".join(html)
 
