@@ -41,16 +41,55 @@ if (!puppeteer) {
 // PRINT CSS — Academic Briefing Handout Style
 // White background, Songti/Georgia, muted functional colors, printable
 // ═══════════════════════════════════════════════════════════════════════
+
+// ── Find Chrome/Chromium executable ──
+function findChromium() {
+  if (process.env.CHROMIUM_PATH) return process.env.CHROMIUM_PATH;
+  if (process.env.CHROME_PATH)   return process.env.CHROME_PATH;
+  const fs = require('fs');
+  const macPaths = [
+    '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+    '/Applications/Chromium.app/Contents/MacOS/Chromium',
+  ];
+  for (const p of macPaths) { if (fs.existsSync(p)) return p; }
+  const linuxPaths = [
+    '/usr/bin/chromium', '/usr/bin/chromium-browser',
+    '/usr/bin/google-chrome', '/usr/bin/google-chrome-stable',
+    '/snap/bin/chromium',
+  ];
+  for (const p of linuxPaths) { if (fs.existsSync(p)) return p; }
+  return undefined;
+}
+
 const PRINT_CSS = `
   /* ── CJK Font Face ── */
-  /* WQY Zen Hei (sans-serif, reliable on Debian) */
+  /* Mac: Songti SC (serif), PingFang SC (sans); Linux: WenQuanYi; Fallback: Noto Sans CJK */
   @font-face {
-    font-family: 'WenQuanYi Zen Hei';
-    src: local('WenQuanYi Zen Hei'),
+    font-family: 'ArgueLab CJK';
+    src: local('Songti SC'),
+         local('Songti TC'),
+         local('STSong'),
+         local('SimSun'),
+         local('PingFang SC'),
+         local('PingFang TC'),
+         local('Heiti SC'),
+         local('WenQuanYi Zen Hei'),
          local('WenQuanYiZhenHei'),
          local('Noto Sans CJK SC'),
-         local('NotoSansCJK-Regular');
+         local('Noto Serif CJK SC'),
+         local('Microsoft YaHei');
     font-weight: normal;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'ArgueLab CJK';
+    src: local('Songti SC'),
+         local('STSong'),
+         local('PingFang SC'),
+         local('WenQuanYi Zen Hei'),
+         local('Noto Serif CJK SC');
+    font-weight: bold;
     font-style: normal;
   }
 
@@ -100,7 +139,7 @@ const PRINT_CSS = `
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    font-family: Georgia, 'Times New Roman', 'WenQuanYi Zen Hei', 'Noto Serif CJK SC', 'Charter',
+    font-family: Georgia, 'Times New Roman', 'ArgueLab CJK', 'Songti SC', 'Noto Serif CJK SC', 'Charter',
                  'Songti SC', 'SimSun', 'Source Han Serif SC', serif;
     font-size: 11pt;
     line-height: 1.65;
@@ -176,7 +215,7 @@ const PRINT_CSS = `
   .pdf-header .meta-line {
     font-size: 9.5pt;
     color: var(--ink-dim);
-    font-family: system-ui, -apple-system, 'PingFang SC', sans-serif;
+    font-family: system-ui, -apple-system, 'PingFang SC', 'ArgueLab CJK', sans-serif;
   }
   .pdf-header .meta-line .meta-sep { color: var(--ink-faint); margin: 0 6px; }
   .pdf-header .slug {
@@ -185,7 +224,7 @@ const PRINT_CSS = `
     color: var(--clr-passage);
     text-transform: uppercase;
     margin-bottom: 8px;
-    font-family: system-ui, -apple-system, 'PingFang SC', sans-serif;
+    font-family: system-ui, -apple-system, 'PingFang SC', 'ArgueLab CJK', sans-serif;
   }
 
   /* ═══════════════════════════════════════════════════════════════════
@@ -206,7 +245,7 @@ const PRINT_CSS = `
     font-size: 10pt;
     font-weight: 600;
     margin-right: 8px;
-    font-family: system-ui, -apple-system, 'PingFang SC', sans-serif;
+    font-family: system-ui, -apple-system, 'PingFang SC', 'ArgueLab CJK', sans-serif;
     letter-spacing: 0.5px;
   }
   .section-title .sec-num-context { color: var(--clr-context); }
@@ -239,7 +278,7 @@ const PRINT_CSS = `
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.8px;
-    font-family: system-ui, -apple-system, 'PingFang SC', sans-serif;
+    font-family: system-ui, -apple-system, 'PingFang SC', 'ArgueLab CJK', sans-serif;
   }
   .label-tag-context { color: var(--clr-context); }
   .label-tag-passage { color: var(--clr-passage); }
@@ -262,7 +301,7 @@ const PRINT_CSS = `
     margin-bottom: 3pt;
     text-transform: uppercase;
     letter-spacing: 0.8px;
-    font-family: system-ui, -apple-system, 'PingFang SC', sans-serif;
+    font-family: system-ui, -apple-system, 'PingFang SC', 'ArgueLab CJK', sans-serif;
   }
   .ctx-text, .ctx-text-en { margin-bottom: 6pt; }
   .ctx-list {
@@ -319,7 +358,7 @@ const PRINT_CSS = `
     padding: 1px 5px;
     border-radius: 2px;
     margin-right: 2px;
-    font-family: system-ui, -apple-system, 'PingFang SC', sans-serif;
+    font-family: system-ui, -apple-system, 'PingFang SC', 'ArgueLab CJK', sans-serif;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     vertical-align: middle;
@@ -356,7 +395,7 @@ const PRINT_CSS = `
     font-weight: 700;
     color: var(--clr-expression);
     margin-bottom: 2pt;
-    font-family: system-ui, -apple-system, 'PingFang SC', sans-serif;
+    font-family: system-ui, -apple-system, 'PingFang SC', 'ArgueLab CJK', sans-serif;
   }
   .expr-phrase {
     font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
@@ -369,7 +408,7 @@ const PRINT_CSS = `
     font-size: 8.5pt;
     color: var(--clr-expression);
     margin-bottom: 6pt;
-    font-family: system-ui, -apple-system, 'PingFang SC', sans-serif;
+    font-family: system-ui, -apple-system, 'PingFang SC', 'ArgueLab CJK', sans-serif;
     letter-spacing: 0.3px;
   }
   .expr-cn {
@@ -384,7 +423,7 @@ const PRINT_CSS = `
   .expr-colloc strong {
     color: var(--ink);
     font-size: 9pt;
-    font-family: system-ui, -apple-system, 'PingFang SC', sans-serif;
+    font-family: system-ui, -apple-system, 'PingFang SC', 'ArgueLab CJK', sans-serif;
     font-weight: 600;
   }
   .expr-example {
@@ -415,7 +454,7 @@ const PRINT_CSS = `
     text-transform: uppercase;
     letter-spacing: 0.8px;
     margin-bottom: 6pt;
-    font-family: system-ui, -apple-system, 'PingFang SC', sans-serif;
+    font-family: system-ui, -apple-system, 'PingFang SC', 'ArgueLab CJK', sans-serif;
   }
   .ts-text {
     font-style: italic;
@@ -432,7 +471,7 @@ const PRINT_CSS = `
     text-transform: uppercase;
     letter-spacing: 0.8px;
     margin-bottom: 4pt;
-    font-family: system-ui, -apple-system, 'PingFang SC', sans-serif;
+    font-family: system-ui, -apple-system, 'PingFang SC', 'ArgueLab CJK', sans-serif;
   }
   .why-text { font-size: 10.5pt; color: var(--ink-dim); line-height: 1.65; }
 
@@ -444,7 +483,7 @@ const PRINT_CSS = `
     text-transform: uppercase;
     letter-spacing: 0.8px;
     margin-bottom: 6pt;
-    font-family: system-ui, -apple-system, 'PingFang SC', sans-serif;
+    font-family: system-ui, -apple-system, 'PingFang SC', 'ArgueLab CJK', sans-serif;
   }
   .grammar-mini-card {
     border-left: 2px solid rgba(158,86,112,0.3);
@@ -474,7 +513,7 @@ const PRINT_CSS = `
     text-transform: uppercase;
     letter-spacing: 0.8px;
     margin-bottom: 6pt;
-    font-family: system-ui, -apple-system, 'PingFang SC', sans-serif;
+    font-family: system-ui, -apple-system, 'PingFang SC', 'ArgueLab CJK', sans-serif;
   }
 
   .imitation-block {
@@ -490,7 +529,7 @@ const PRINT_CSS = `
     text-transform: uppercase;
     letter-spacing: 0.8px;
     margin-bottom: 4pt;
-    font-family: system-ui, -apple-system, 'PingFang SC', sans-serif;
+    font-family: system-ui, -apple-system, 'PingFang SC', 'ArgueLab CJK', sans-serif;
   }
   .imit-text { font-size: 10pt; font-style: italic; color: var(--ink-dim); line-height: 1.55; }
 
@@ -501,7 +540,7 @@ const PRINT_CSS = `
     background: rgba(158,86,112,0.06);
     padding: 3pt 8pt;
     border-radius: 3px;
-    font-family: system-ui, -apple-system, 'PingFang SC', sans-serif;
+    font-family: system-ui, -apple-system, 'PingFang SC', 'ArgueLab CJK', sans-serif;
     margin-top: 4pt;
   }
 
@@ -522,7 +561,7 @@ const PRINT_CSS = `
     text-transform: uppercase;
     letter-spacing: 0.8px;
     margin-bottom: 4pt;
-    font-family: system-ui, -apple-system, 'PingFang SC', sans-serif;
+    font-family: system-ui, -apple-system, 'PingFang SC', 'ArgueLab CJK', sans-serif;
   }
   .step-en { font-size: 11pt; font-weight: 600; color: var(--ink); line-height: 1.55; }
   .step-cn { font-size: 10pt; margin-top: 3pt; }
@@ -539,7 +578,7 @@ const PRINT_CSS = `
     text-transform: uppercase;
     letter-spacing: 0.8px;
     margin-bottom: 6pt;
-    font-family: system-ui, -apple-system, 'PingFang SC', sans-serif;
+    font-family: system-ui, -apple-system, 'PingFang SC', 'ArgueLab CJK', sans-serif;
   }
   .weigh-text { font-size: 10.5pt; line-height: 1.75; }
   .weigh-text p { margin-bottom: 8pt; }
@@ -559,7 +598,7 @@ const PRINT_CSS = `
     text-transform: uppercase;
     letter-spacing: 0.8px;
     margin-bottom: 6pt;
-    font-family: system-ui, -apple-system, 'PingFang SC', sans-serif;
+    font-family: system-ui, -apple-system, 'PingFang SC', 'ArgueLab CJK', sans-serif;
   }
   .sp-note {
     font-size: 9pt;
@@ -592,7 +631,7 @@ const PRINT_CSS = `
     text-transform: uppercase;
     letter-spacing: 0.8px;
     margin-bottom: 6pt;
-    font-family: system-ui, -apple-system, 'PingFang SC', sans-serif;
+    font-family: system-ui, -apple-system, 'PingFang SC', 'ArgueLab CJK', sans-serif;
   }
   .task-prompt { font-size: 10.5pt; line-height: 1.6; }
   .task-meta {
@@ -616,7 +655,7 @@ const PRINT_CSS = `
     text-transform: uppercase;
     letter-spacing: 0.8px;
     margin-bottom: 8pt;
-    font-family: system-ui, -apple-system, 'PingFang SC', sans-serif;
+    font-family: system-ui, -apple-system, 'PingFang SC', 'ArgueLab CJK', sans-serif;
   }
   .structure-guide {
     margin-bottom: 10pt;
@@ -642,7 +681,7 @@ const PRINT_CSS = `
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-family: system-ui, -apple-system, 'PingFang SC', sans-serif;
+    font-family: system-ui, -apple-system, 'PingFang SC', 'ArgueLab CJK', sans-serif;
   }
   .step-content {
     font-size: 10pt;
@@ -664,7 +703,7 @@ const PRINT_CSS = `
     text-transform: uppercase;
     letter-spacing: 0.8px;
     margin-bottom: 8pt;
-    font-family: system-ui, -apple-system, 'PingFang SC', sans-serif;
+    font-family: system-ui, -apple-system, 'PingFang SC', 'ArgueLab CJK', sans-serif;
   }
   .self-check-list {
     margin-top: 8pt;
@@ -783,7 +822,7 @@ const PRINT_CSS = `
     padding: 6pt 10pt;
     border-bottom: 1px solid rgba(0,0,0,0.06);
     font-size: 8.5pt;
-    font-family: system-ui, -apple-system, 'PingFang SC', sans-serif;
+    font-family: system-ui, -apple-system, 'PingFang SC', 'ArgueLab CJK', sans-serif;
   }
   .notes-header .notes-title {
     font-weight: 600;
@@ -817,7 +856,7 @@ const PRINT_CSS = `
     padding: 6pt 10pt;
     border-bottom: 1px solid rgba(0,0,0,0.06);
     font-size: 8.5pt;
-    font-family: system-ui, -apple-system, 'PingFang SC', sans-serif;
+    font-family: system-ui, -apple-system, 'PingFang SC', 'ArgueLab CJK', sans-serif;
   }
   .cornell-header .cornell-title {
     font-weight: 600;
@@ -848,7 +887,7 @@ const PRINT_CSS = `
     color: var(--ink-faint);
     text-transform: uppercase;
     letter-spacing: 0.6px;
-    font-family: system-ui, -apple-system, 'PingFang SC', sans-serif;
+    font-family: system-ui, -apple-system, 'PingFang SC', 'ArgueLab CJK', sans-serif;
     margin-bottom: 6pt;
   }
   .cornell-summary {
@@ -873,7 +912,7 @@ const PRINT_CSS = `
     color: var(--clr-output);
     text-transform: uppercase;
     letter-spacing: 0.8px;
-    font-family: system-ui, -apple-system, 'PingFang SC', sans-serif;
+    font-family: system-ui, -apple-system, 'PingFang SC', 'ArgueLab CJK', sans-serif;
   }
   .draft-main {
     display: flex;
@@ -891,7 +930,7 @@ const PRINT_CSS = `
     text-transform: uppercase;
     letter-spacing: 0.6px;
     margin-bottom: 8pt;
-    font-family: system-ui, -apple-system, 'PingFang SC', sans-serif;
+    font-family: system-ui, -apple-system, 'PingFang SC', 'ArgueLab CJK', sans-serif;
   }
   .draft-outline .do-item {
     font-size: 9pt;
@@ -902,7 +941,7 @@ const PRINT_CSS = `
     font-size: 8pt;
     color: var(--ink-muted);
     font-weight: 600;
-    font-family: system-ui, -apple-system, 'PingFang SC', sans-serif;
+    font-family: system-ui, -apple-system, 'PingFang SC', 'ArgueLab CJK', sans-serif;
     display: block;
     margin-bottom: 1pt;
   }
@@ -916,7 +955,7 @@ const PRINT_CSS = `
     text-transform: uppercase;
     letter-spacing: 0.6px;
     margin-bottom: 6pt;
-    font-family: system-ui, -apple-system, 'PingFang SC', sans-serif;
+    font-family: system-ui, -apple-system, 'PingFang SC', 'ArgueLab CJK', sans-serif;
   }
   .draft-takeaway {
     padding: 10pt 12pt;
@@ -928,7 +967,7 @@ const PRINT_CSS = `
     text-transform: uppercase;
     letter-spacing: 0.6px;
     margin-bottom: 4pt;
-    font-family: system-ui, -apple-system, 'PingFang SC', sans-serif;
+    font-family: system-ui, -apple-system, 'PingFang SC', 'ArgueLab CJK', sans-serif;
   }
 
   /* ═══════════════════════════════════════════════════════════════════
@@ -958,7 +997,7 @@ const PRINT_CSS = `
     font-size: 8pt;
     color: var(--ink-faint);
     margin-top: 3pt;
-    font-family: system-ui, -apple-system, 'PingFang SC', sans-serif;
+    font-family: system-ui, -apple-system, 'PingFang SC', 'ArgueLab CJK', sans-serif;
   }
 
   /* ═══════════════════════════════════════════════════════════════════
@@ -2191,7 +2230,7 @@ async function main() {
   try {
     browser = await puppeteer.launch({
       headless: true,
-      executablePath: process.env.CHROMIUM_PATH || '/usr/bin/chromium',
+      executablePath: findChromium(),
       args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-gpu'],
     });
     const page = await browser.newPage();
