@@ -5601,7 +5601,22 @@ class APIHandler(BaseHTTPRequestHandler):
         briefing_dir = _get_briefing_dir()
         briefing_file = briefing_dir / f"{issue_date}-briefing.md"
         
-        if not briefing_file.exists():
+        md_text = None
+        
+        # Try loading from .md file first
+        if briefing_file.exists():
+            md_text = briefing_file.read_text(encoding="utf-8")
+        
+        # Fallback: load from issues.json (populated by ingest_briefing.py)
+        if not md_text:
+            issues = load_issues()
+            issue = next((i for i in issues if i.get("slug") == issue_date), None)
+            if issue and "content_json" in issue:
+                raw_md = issue["content_json"].get("raw_markdown", "")
+                if raw_md:
+                    md_text = raw_md
+        
+        if not md_text:
             # Try listing what's available
             available = sorted(briefing_dir.glob("*.md")) if briefing_dir.exists() else []
             available_dates = [f.stem.replace("-briefing", "") for f in available]
@@ -5610,15 +5625,21 @@ class APIHandler(BaseHTTPRequestHandler):
             msg = f"Issue not found for {issue_date}. Available: {', '.join(available_dates[:5])}"
             self.wfile.write(msg.encode("utf-8"))
             return
-        
+
+        # If we loaded from issues.json (not from .md file), write to fallback dir
+        if not briefing_file.exists():
+            fallback_dir = BASE_DIR / "briefings"
+            fallback_dir.mkdir(exist_ok=True)
+            briefing_file = fallback_dir / f"{issue_date}-briefing.md"
+            briefing_file.write_text(md_text, encoding="utf-8")
+
         # PDF download — generate PDF on the fly
         if is_pdf:
             self._serve_pdf(briefing_file, issue_date)
             return
-        
+
         # Render issue page
         try:
-            md_text = briefing_file.read_text(encoding="utf-8")
             html = _render_issue_page(md_text, issue_date)
             body = html.encode("utf-8")
             self.send_response(200)

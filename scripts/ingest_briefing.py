@@ -46,22 +46,34 @@ def parse_header(body, frontmatter):
     training_focus = ""
 
     # Line 1: "# ArgueLab — 今日训练简报 | June 18, 2026"
+    # Or:       "# ArgueLab 每日简报 · 2026-06-30"
     for line in lines[:5]:
         if line.startswith("# "):
+            # Try "| " separator first
             m = re.search(r"\|\s*(.+)$", line)
             if m:
                 date_str = m.group(1).strip()
+            else:
+                # Try " · " separator (briefing format)
+                m = re.search(r"·\s*(.+)$", line)
+                if m:
+                    date_candidate = m.group(1).strip()
+                    date_str = date_candidate
+            
+            # Try parsing various date formats
+            for fmt in ("%B %d, %Y", "%Y-%m-%d"):
                 try:
-                    dt = datetime.strptime(date_str, "%B %d, %Y")
+                    dt = datetime.strptime(date_str, fmt)
                     date_iso = dt.strftime("%Y-%m-%d")
+                    break
                 except ValueError:
-                    date_iso = datetime.now().strftime("%Y-%m-%d")
+                    continue
             break
 
-    # "> **今日议题：**..."
-    for line in lines[:10]:
-        if "今日议题" in line:
-            m = re.search(r"\*\*今日议题[：:]\s*\*\*(.+)", line)
+    # "> **今日议题：**..." or "**议题：**..."
+    for line in lines[:20]:
+        if "议题" in line:
+            m = re.search(r"\*\*(?:今日)?\s*议题[：:]\s*\*\*(.+)", line)
             if m:
                 title = m.group(1).strip()
             break
@@ -73,7 +85,7 @@ def parse_header(body, frontmatter):
         topic = title.split("—")[0].strip()
 
     # "> **训练重点：**..."
-    for line in lines[:10]:
+    for line in lines[:20]:
         if "训练重点" in line:
             m = re.search(r"\*\*训练重点[：:]\s*\*\*(.+)", line)
             if m:
@@ -99,19 +111,64 @@ def parse_header(body, frontmatter):
 
 
 def split_sections(body):
-    """Split the body into sections by ## N. headers."""
+    """Split the body into sections by ## headers.
+    
+    Supports two formats:
+    A) Numbered:   ## 1. Title / ## 2. Title
+    B) Named (CN): ## 今日议题背景 / ## 外刊核心段落 etc.
+    
+    In format B, sections are mapped to numbers by position:
+      1 → 今日议题背景, 2 → 外刊核心段落, 3 → 5个可迁移表达,
+      4 → 高级句型拆解, 5 → 中文观点, 6 → 输出任务, skip → 来源附录
+    """
     sections = {}
-    # Find all section headers
+    
+    # Try numbered format first
     pattern = r"^##\s+(\d+)\.\s+(.+)$"
     matches = list(re.finditer(pattern, body, re.MULTILINE))
-
-    for i, m in enumerate(matches):
-        section_num = int(m.group(1))
-        section_title = m.group(2).strip()
-        start = m.end()
-        end = matches[i + 1].start() if i + 1 < len(matches) else len(body)
-        content = body[start:end].strip()
-        sections[section_num] = {"title": section_title, "content": content}
+    
+    if matches:
+        # Format A: numbered sections
+        for i, m in enumerate(matches):
+            section_num = int(m.group(1))
+            section_title = m.group(2).strip()
+            start = m.end()
+            end = matches[i + 1].start() if i + 1 < len(matches) else len(body)
+            content = body[start:end].strip()
+            sections[section_num] = {"title": section_title, "content": content}
+    else:
+        # Format B: named sections by position
+        named_pattern = r"^##\s+(.+)$"
+        named_matches = list(re.finditer(named_pattern, body, re.MULTILINE))
+        
+        # Section name → number mapping
+        name_map = {
+            "今日议题背景": 1,
+            "外刊核心段落": 2,
+            "5个可迁移表达": 3,
+            "高级句型拆解": 4,
+            "中文观点": 5,
+            "输出任务": 6,
+        }
+        
+        # Also try partial match for section 5 (which has " → " in the name)
+        def resolve_section_num(title):
+            # Exact match
+            if title in name_map:
+                return name_map[title]
+            # Section 5 may contain "中文观点" with arrow
+            if "中文观点" in title:
+                return 5
+            return None
+        
+        for i, m in enumerate(named_matches):
+            title = m.group(1).strip()
+            num = resolve_section_num(title)
+            if num is not None:
+                start = m.end()
+                end = named_matches[i + 1].start() if i + 1 < len(named_matches) else len(body)
+                content = body[start:end].strip()
+                sections[num] = {"title": title, "content": content}
 
     return sections
 
@@ -807,6 +864,7 @@ def build_content_json(md_path):
             "generated": f"generated {date_str}",
             "slogan": "Read like a scholar. Argue like a native.",
         },
+        "raw_markdown": body,  # Store raw markdown for fallback rendering
     }
 
     return content
