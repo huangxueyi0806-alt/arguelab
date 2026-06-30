@@ -5794,6 +5794,22 @@ class APIHandler(BaseHTTPRequestHandler):
             result = upsert_issue(slug, issue_data)
             self._send_json(result, 201)
 
+        elif self.path == "/api/send-to":
+            to_email = data.get("to", "").strip()
+            subject = data.get("subject", "ArgueLab Briefing")
+            html_body = data.get("html", "")
+            if not to_email or "@" not in to_email:
+                self._send_json({"error": "Valid 'to' email required"}, 400)
+                return
+            if not html_body:
+                self._send_json({"error": "'html' body required"}, 400)
+                return
+            try:
+                send_email(to_email, subject, html_body)
+                self._send_json({"status": "sent", "to": to_email})
+            except Exception as e:
+                self._send_json({"error": str(e)}, 500)
+
         else:
             self._send_json({"error": "Not found"}, 404)
 
