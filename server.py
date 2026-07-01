@@ -3100,6 +3100,306 @@ ISSUE_PAGE_CSS = r"""
   /* ── Task Block Copy Button ── */
   .task-block { position: relative; }
   .task-block .copy-btn { top: 20px; right: 20px; }
+
+  /* ══════════════════════════════════════════
+     READING TIMER
+     ══════════════════════════════════════════ */
+  .reading-timer-wrap {
+    position: fixed;
+    top: 20px;
+    right: 270px;
+    z-index: 1000;
+  }
+  .reading-timer-btn {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 14px;
+    border-radius: 24px;
+    border: 1px solid var(--border-strong);
+    background: var(--card-bg);
+    color: var(--ink-muted);
+    font-size: 12px;
+    font-family: var(--font-mono);
+    font-weight: 500;
+    cursor: default;
+    box-shadow: var(--shadow-sm);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    letter-spacing: 0.03em;
+    user-select: none;
+  }
+  .reading-timer-btn .rt-icon {
+    width: 14px; height: 14px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--accent);
+  }
+  .reading-timer-btn .rt-icon svg {
+    width: 14px; height: 14px;
+    stroke: currentColor; stroke-width: 1.8;
+    fill: none; stroke-linecap: round; stroke-linejoin: round;
+  }
+  @media (max-width: 640px) {
+    .reading-timer-wrap { display: none; }
+  }
+
+  /* ══════════════════════════════════════════
+     KEYWORD TOOLBAR
+     ══════════════════════════════════════════ */
+  .keyword-toolbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 16px 20px;
+    margin-bottom: 32px;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+    position: sticky;
+    top: 12px;
+    z-index: 90;
+  }
+  .keyword-toolbar .kt-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-right: 6px;
+    flex-shrink: 0;
+    font-family: var(--font-sans);
+  }
+  .kt-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 11px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-family: var(--font-sans);
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--ink-muted);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    user-select: none;
+  }
+  .kt-chip::before {
+    content: '#';
+    font-weight: 700;
+    opacity: 0.35;
+    font-size: 11px;
+  }
+  .kt-chip:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .kt-chip.active {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--accent);
+    font-weight: 600;
+  }
+  @media (max-width: 860px) {
+    .keyword-toolbar {
+      position: static;
+      padding: 12px 14px;
+      gap: 6px;
+    }
+    .kt-chip { font-size: 11px; padding: 4px 9px; }
+  }
+
+  /* Keyword highlights */
+  .kw-highlight {
+    background: rgba(59,110,168,0.15);
+    color: inherit;
+    padding: 1px 0;
+    border-radius: 2px;
+    transition: background 0.2s ease;
+  }
+  html[data-theme="dark"] .kw-highlight {
+    background: rgba(143,167,200,0.22);
+  }
+  .kw-highlight.focus {
+    background: rgba(212,167,106,0.28);
+    outline: 1px solid rgba(212,167,106,0.4);
+    border-radius: 2px;
+  }
+  html[data-theme="dark"] .kw-highlight.focus {
+    background: rgba(212,167,106,0.3);
+  }
+
+  /* ══════════════════════════════════════════
+     IN-PAGE SEARCH
+     ══════════════════════════════════════════ */
+  .search-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.3);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 18vh;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+  .search-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  html[data-theme="dark"] .search-overlay {
+    background: rgba(0,0,0,0.55);
+  }
+  .search-dialog {
+    width: 560px;
+    max-width: 90vw;
+    background: var(--card-bg);
+    border: 1px solid var(--border-strong);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .search-input-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+  }
+  .search-input-row .si-icon {
+    width: 18px; height: 18px;
+    color: var(--ink-muted);
+    flex-shrink: 0;
+  }
+  .search-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    color: var(--ink);
+    font-size: 15px;
+    font-family: var(--font-sans);
+    outline: none;
+  }
+  .search-input::placeholder {
+    color: var(--ink-muted);
+    font-size: 14px;
+  }
+  .search-count {
+    font-size: 12px;
+    color: var(--ink-muted);
+    font-family: var(--font-mono);
+    white-space: nowrap;
+  }
+  .search-count .sc-current {
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .search-nav {
+    display: flex;
+    gap: 2px;
+  }
+  .search-nav-btn {
+    width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    border: none; background: transparent;
+    color: var(--ink-muted);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.15s ease;
+  }
+  .search-nav-btn:hover {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+  .search-nav-btn:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+  .search-hint-row {
+    display: flex; align-items: center; gap: 14px;
+    padding: 8px 18px 14px;
+    font-size: 11px;
+    color: var(--ink-muted);
+    font-family: var(--font-sans);
+  }
+  .search-hint-row kbd {
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    font-family: var(--font-mono);
+    font-size: 10px;
+  }
+
+  /* Search highlights */
+  .search-highlight {
+    background: rgba(212,167,106,0.28);
+    color: inherit;
+    padding: 1px 0;
+    border-radius: 2px;
+  }
+  html[data-theme="dark"] .search-highlight {
+    background: rgba(212,167,106,0.32);
+  }
+  .search-highlight.active {
+    background: rgba(212,167,106,0.5);
+    outline: 2px solid var(--accent-warm);
+    border-radius: 3px;
+  }
+  html[data-theme="dark"] .search-highlight.active {
+    background: rgba(212,167,106,0.45);
+  }
+
+  /* ══════════════════════════════════════════
+     KEYWORD RELATION POPOVER
+     ══════════════════════════════════════════ */
+  .kw-popover {
+    position: absolute;
+    z-index: 100;
+    background: var(--card-elevated);
+    border: 1px solid var(--border-strong);
+    border-radius: 10px;
+    padding: 14px 16px;
+    box-shadow: var(--shadow);
+    max-width: 320px;
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--ink-dim);
+    font-family: var(--font-sans);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+  .kw-popover.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .kw-popover .kwp-term {
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 6px;
+    font-size: 14px;
+  }
+  .kw-popover .kwp-def {
+    margin-bottom: 8px;
+  }
+  .kw-popover .kwp-related {
+    font-size: 12px;
+    color: var(--ink-muted);
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+  }
+  .kw-popover .kwp-related strong {
+    color: var(--accent);
+  }
 """
 
 
@@ -3223,6 +3523,60 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
         "chain": "toc-chain", "output": "toc-output",
     }
 
+    # ── Extract keywords for toolbar ──
+    # Collect expression phrases and bold terms for interactive keyword features
+    keywords = []
+    seen_kw = set()
+    for idx, (section_title, section_items) in enumerate(sections):
+        if idx >= len(MODULE_MAP):
+            break
+        mod = MODULE_MAP[idx]
+        if mod == "expression":
+            # Extract expression phrases from backtick-enclosed text (e.g., `the tyranny of merit`)
+            for item_type, item_text in section_items:
+                # Match `phrase` — the actual expression terms
+                for m in re.finditer(r'`([^`]{3,80})`', item_text):
+                    kw = m.group(1).strip()
+                    # Filter: must contain letters, not a label, and be a concise phrase (not a full sentence)
+                    if kw and re.search(r'[a-zA-Z]', kw) and kw not in seen_kw and '：' not in kw and ':' not in kw:
+                        # Skip full sentences (too long for keyword chips)
+                        if len(kw) <= 45 and kw.count(' ') <= 5:
+                            seen_kw.add(kw)
+                            keywords.append(kw)
+                # Also match **phrase** bold patterns (for rich-format briefings)
+                for m in re.finditer(r'\*\*([^*]{3,60})\*\*', item_text):
+                    kw = m.group(1).strip()
+                    if kw and not re.match(r'^(功能|语域|语义|标签|适用|常见|结构|例|注意|英文表达|中文释义|外刊例句|仿写参考|常见搭配|适用场景|论证功能|修辞功能|语法结构|仿写模板)', kw) and '：' not in kw and ':' not in kw and kw not in seen_kw:
+                        if len(kw) <= 45 and kw.count(' ') <= 5:
+                            seen_kw.add(kw)
+                            keywords.append(kw)
+        elif mod == "context":
+            # Extract bold terms from context (framing terms, key concepts)
+            for item_type, item_text in section_items:
+                # Look for terms like **tyranny of merit**
+                for m in re.finditer(r'\*\*([^*]{2,40})\*\*', item_text):
+                    kw = m.group(1).strip()
+                    if kw and len(kw) > 3 and not kw.startswith('议题') and not kw.startswith('背景') and not kw.startswith('争议') and not kw.startswith('为什么') and not kw.startswith('Framing') and kw not in seen_kw:
+                        seen_kw.add(kw)
+                        keywords.append(kw)
+
+    # Limit to ~12 keywords for toolbar
+    keywords = keywords[:12]
+
+    # Generate keyword toolbar HTML
+    keyword_chips_html = ""
+    if keywords:
+        chips = []
+        for kw in keywords:
+            safe_kw = _escape_html(kw)
+            chips.append(f'<span class="kt-chip" data-kw="{safe_kw}" role="button" tabindex="0">{safe_kw}</span>')
+        keyword_chips_html = (
+            '<div class="keyword-toolbar" id="keyword-toolbar">'
+            '<span class="kt-label">Keywords</span>'
+            + "".join(chips) +
+            '</div>'
+        )
+
     # ── Render HTML ──
     html_parts = []
 
@@ -3261,6 +3615,9 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
 
     # Mobile TOC (inside main content, sticky at top)
     html_parts.insert(0, mobile_toc)
+    # Keyword toolbar (injected between mobile TOC and hero)
+    if keyword_chips_html:
+        html_parts.append(keyword_chips_html)
     html_parts.append(f'''<div class="issue-hero">
   <div class="issue-kicker">{_escape_html(issue_number)}</div>
   <h1>{_escape_html(title)}</h1>
@@ -3802,7 +4159,386 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
   }
 
   // ══════════════════════════════════════════
-  // 7. INITIALIZE ALL
+  // 7. READING TIMER
+  // ══════════════════════════════════════════
+  var readingSeconds = 0;
+  var readingTimerInterval = null;
+  var readingStorageKey = 'arguelab-rt-' + ISSUE_DATE;
+
+  function initReadingTimer() {
+    var timerEl = document.getElementById('reading-timer-text');
+    if (!timerEl) return;
+
+    // Restore accumulated time
+    try {
+      var saved = parseInt(localStorage.getItem(readingStorageKey));
+      if (saved > 0) readingSeconds = saved;
+    } catch(e) {}
+
+    function updateDisplay() {
+      var m = Math.floor(readingSeconds / 60);
+      var s = readingSeconds % 60;
+      timerEl.textContent = (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+    }
+    updateDisplay();
+
+    // Start timer (page visibility aware)
+    readingTimerInterval = setInterval(function() {
+      if (document.hidden) return;
+      readingSeconds++;
+      updateDisplay();
+      try {
+        localStorage.setItem(readingStorageKey, readingSeconds);
+      } catch(e) {}
+    }, 1000);
+  }
+
+  // ══════════════════════════════════════════
+  // 8. KEYWORD HIGHLIGHTING
+  // ══════════════════════════════════════════
+  var currentKeyword = null;
+  var kwHighlights = [];
+
+  function clearKeywordHighlights() {
+    kwHighlights.forEach(function(el) {
+      var parent = el.parentNode;
+      parent.replaceChild(document.createTextNode(el.textContent), el);
+      if (parent.normalize) parent.normalize();
+    });
+    kwHighlights = [];
+    document.querySelectorAll('.kt-chip').forEach(function(c) { c.classList.remove('active'); });
+    currentKeyword = null;
+  }
+
+  function highlightKeyword(kw) {
+    clearKeywordHighlights();
+    if (!kw) return;
+
+    currentKeyword = kw;
+    var chips = document.querySelectorAll('.kt-chip');
+    chips.forEach(function(c) {
+      if (c.getAttribute('data-kw') === kw) c.classList.add('active');
+    });
+
+    // Find and highlight all text node occurrences
+    var main = document.querySelector('.issue-main');
+    if (!main) return;
+    var regex = new RegExp('(' + escapeRegex(kw) + ')', 'gi');
+    highlightTextNodes(main, regex, 'kw-highlight', kwHighlights);
+
+    // Scroll first highlight into view
+    if (kwHighlights.length > 0) {
+      kwHighlights[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+
+  function escapeRegex(str) {
+    return str.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&');
+  }
+
+  function highlightTextNodes(node, regex, className, resultArray) {
+    if (node.nodeType === 3) { // Text node
+      var text = node.textContent;
+      var match;
+      var lastIndex = 0;
+      var fragments = [];
+      regex.lastIndex = 0;
+      while ((match = regex.exec(text)) !== null) {
+        if (match.index > lastIndex) {
+          fragments.push(document.createTextNode(text.slice(lastIndex, match.index)));
+        }
+        var mark = document.createElement('mark');
+        mark.className = className;
+        mark.textContent = match[0];
+        fragments.push(mark);
+        resultArray.push(mark);
+        lastIndex = regex.lastIndex;
+        if (match[0].length === 0) regex.lastIndex++;
+      }
+      if (lastIndex < text.length) {
+        fragments.push(document.createTextNode(text.slice(lastIndex)));
+      }
+      if (fragments.length > 0) {
+        var parent = node.parentNode;
+        fragments.forEach(function(f) { parent.insertBefore(f, node); });
+        parent.removeChild(node);
+      }
+    } else if (node.nodeType === 1) { // Element node
+      // Skip script, style, and already highlighted elements
+      var tag = node.tagName.toLowerCase();
+      if (tag === 'script' || tag === 'style' || tag === 'mark' || tag === 'textarea' || tag === 'input') return;
+      // Process children (use a copy since we may modify)
+      Array.from(node.childNodes).forEach(function(child) {
+        highlightTextNodes(child, regex, className, resultArray);
+      });
+    }
+  }
+
+  function initKeywordToolbar() {
+    var toolbar = document.getElementById('keyword-toolbar');
+    if (!toolbar) return;
+
+    toolbar.addEventListener('click', function(e) {
+      var chip = e.target.closest('.kt-chip');
+      if (!chip) return;
+      var kw = chip.getAttribute('data-kw');
+      if (currentKeyword === kw) {
+        clearKeywordHighlights();
+      } else {
+        highlightKeyword(kw);
+      }
+    });
+
+    // Keyboard accessibility
+    toolbar.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        var chip = e.target.closest('.kt-chip');
+        if (chip) {
+          e.preventDefault();
+          chip.click();
+        }
+      }
+    });
+  }
+
+  // ══════════════════════════════════════════
+  // 9. IN-PAGE SEARCH
+  // ══════════════════════════════════════════
+  var searchMatches = [];
+  var searchMatchIdx = -1;
+
+  function initInPageSearch() {
+    var overlay = document.getElementById('search-overlay');
+    var input = document.getElementById('search-input');
+    var countEl = document.getElementById('search-count');
+    var prevBtn = document.getElementById('search-prev');
+    var nextBtn = document.getElementById('search-next');
+    var closeBtn = document.getElementById('search-close');
+    if (!overlay || !input) return;
+
+    function openSearch() {
+      overlay.classList.add('active');
+      input.focus();
+      input.select();
+    }
+
+    function closeSearch() {
+      overlay.classList.remove('active');
+      clearSearchHighlights();
+      input.value = '';
+      searchMatches = [];
+      searchMatchIdx = -1;
+      updateSearchNav();
+    }
+
+    function clearSearchHighlights() {
+      searchMatches.forEach(function(el) {
+        el.classList.remove('search-highlight', 'active');
+      });
+      searchMatches = [];
+      searchMatchIdx = -1;
+    }
+
+    function doSearch() {
+      clearSearchHighlights();
+      var query = input.value.trim();
+      if (!query) {
+        countEl.textContent = '';
+        updateSearchNav();
+        return;
+      }
+      var main = document.querySelector('.issue-main');
+      if (!main) return;
+      var regex = new RegExp('(' + escapeRegex(query) + ')', 'gi');
+      var results = [];
+      findTextMatches(main, regex, results);
+      searchMatches = results;
+
+      // Wrap matches
+      searchMatches.forEach(function(node) {
+        var mark = document.createElement('mark');
+        mark.className = 'search-highlight';
+        mark.textContent = node.textContent;
+        var parent = node.parentNode;
+        parent.insertBefore(mark, node);
+        parent.removeChild(node);
+      });
+
+      if (searchMatches.length > 0) {
+        searchMatchIdx = 0;
+        searchMatches[0].classList.add('active');
+        searchMatches[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      updateSearchNav();
+    }
+
+    function findTextMatches(node, regex, results) {
+      if (node.nodeType === 3) { // Text node
+        if (regex.test(node.textContent)) {
+          results.push(node);
+        }
+      } else if (node.nodeType === 1) {
+        var tag = node.tagName.toLowerCase();
+        if (tag === 'script' || tag === 'style' || tag === 'mark' || tag === 'textarea' || tag === 'input') return;
+        Array.from(node.childNodes).forEach(function(child) {
+          findTextMatches(child, regex, results);
+        });
+      }
+    }
+
+    function navigateSearch(dir) {
+      if (searchMatches.length === 0) return;
+      // Remove current active
+      if (searchMatchIdx >= 0 && searchMatchIdx < searchMatches.length) {
+        searchMatches[searchMatchIdx].classList.remove('active');
+      }
+      searchMatchIdx += dir;
+      if (searchMatchIdx < 0) searchMatchIdx = searchMatches.length - 1;
+      if (searchMatchIdx >= searchMatches.length) searchMatchIdx = 0;
+      searchMatches[searchMatchIdx].classList.add('active');
+      searchMatches[searchMatchIdx].scrollIntoView({ behavior: 'smooth', block: 'center' });
+      updateSearchNav();
+    }
+
+    function updateSearchNav() {
+      if (searchMatches.length > 0) {
+        countEl.innerHTML = '<span class="sc-current">' + (searchMatchIdx + 1) + '</span>/' + searchMatches.length;
+        prevBtn.disabled = false;
+        nextBtn.disabled = false;
+      } else if (input.value.trim()) {
+        countEl.textContent = '0/0';
+        prevBtn.disabled = true;
+        nextBtn.disabled = true;
+      } else {
+        countEl.textContent = '';
+        prevBtn.disabled = true;
+        nextBtn.disabled = true;
+      }
+    }
+
+    // Event listeners
+    input.addEventListener('input', doSearch);
+    input.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        navigateSearch(e.shiftKey ? -1 : 1);
+      }
+    });
+    prevBtn.addEventListener('click', function() { navigateSearch(-1); });
+    nextBtn.addEventListener('click', function() { navigateSearch(1); });
+    closeBtn.addEventListener('click', closeSearch);
+    overlay.addEventListener('click', function(e) {
+      if (e.target === overlay) closeSearch();
+    });
+
+    // Global keyboard shortcut: Cmd/Ctrl+K or /
+    document.addEventListener('keydown', function(e) {
+      // Don't capture when typing in form elements
+      var active = document.activeElement;
+      var isFormField = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable);
+      if (isFormField) return;
+
+      if ((e.key === 'k' && (e.metaKey || e.ctrlKey)) || e.key === '/' || (e.key === 'f' && (e.metaKey || e.ctrlKey))) {
+        e.preventDefault();
+        if (overlay.classList.contains('active')) {
+          closeSearch();
+        } else {
+          clearKeywordHighlights();
+          openSearch();
+        }
+      }
+      if (e.key === 'Escape' && overlay.classList.contains('active')) {
+        closeSearch();
+      }
+    });
+  }
+
+  // ══════════════════════════════════════════
+  // 10. KEYWORD RELATION POPOVER
+  // ══════════════════════════════════════════
+  var kwPopover = null;
+
+  function initKeywordPopover() {
+    // Build keyword data: map expression terms to their CN definitions and related expressions
+    var kwData = {};
+    document.querySelectorAll('.expr-card').forEach(function(card) {
+      var phraseEl = card.querySelector('.expr-phrase');
+      var cnEl = card.querySelector('.expr-cn');
+      var tagsEl = card.querySelector('.expr-tags');
+      if (phraseEl) {
+        var phrase = phraseEl.textContent.trim();
+        var cn = cnEl ? cnEl.textContent.trim() : '';
+        var tags = tagsEl ? tagsEl.textContent.trim() : '';
+        kwData[phrase] = { cn: cn, tags: tags, phrase: phrase };
+      }
+    });
+
+    // Collect all related phrases for cross-referencing
+    var allPhrases = Object.keys(kwData);
+
+    // Create popover element
+    kwPopover = document.createElement('div');
+    kwPopover.className = 'kw-popover';
+    document.body.appendChild(kwPopover);
+
+    // Show popover on keyword chip hover
+    document.querySelectorAll('.kt-chip').forEach(function(chip) {
+      var kw = chip.getAttribute('data-kw');
+      var data = kwData[kw];
+      if (!data) {
+        // Try partial matching
+        for (var i = 0; i < allPhrases.length; i++) {
+          if (allPhrases[i].indexOf(kw) >= 0 || kw.indexOf(allPhrases[i]) >= 0) {
+            data = kwData[allPhrases[i]];
+            break;
+          }
+        }
+      }
+
+      chip.addEventListener('mouseenter', function(e) {
+        if (!data) return;
+        var rect = chip.getBoundingClientRect();
+        var relatedPhrases = allPhrases.filter(function(p) {
+          return p !== data.phrase && (p.indexOf(data.phrase.split(' ')[0]) >= 0 || data.phrase.indexOf(p.split(' ')[0]) >= 0);
+        });
+
+        var html = '<div class="kwp-term">' + escHtml(data.phrase) + '</div>';
+        if (data.cn) {
+          html += '<div class="kwp-def">' + escHtml(data.cn.substring(0, 200)) + '</div>';
+        }
+        if (data.tags) {
+          html += '<div style="font-size:11px;color:var(--color-expression);margin-bottom:4px;">' + escHtml(data.tags) + '</div>';
+        }
+        if (relatedPhrases.length > 0) {
+          html += '<div class="kwp-related"><strong>Related in this issue:</strong><br>' +
+            relatedPhrases.slice(0, 3).map(function(p) { return escHtml(p); }).join('<br>') + '</div>';
+        }
+
+        kwPopover.innerHTML = html;
+        kwPopover.style.left = Math.min(rect.left, window.innerWidth - 340) + 'px';
+        kwPopover.style.top = (rect.bottom + 8) + 'px';
+        kwPopover.classList.add('show');
+      });
+
+      chip.addEventListener('mouseleave', function() {
+        kwPopover.classList.remove('show');
+      });
+    });
+
+    // Hide popover when clicking elsewhere
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.kt-chip')) {
+        if (kwPopover) kwPopover.classList.remove('show');
+      }
+    });
+  }
+
+  function escHtml(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  // ══════════════════════════════════════════
+  // 11. INITIALIZE ALL
   // ══════════════════════════════════════════
   function init() {
     injectCopyButtons();
@@ -3810,6 +4546,10 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
     initGrammarToggle();
     initSectionTracking();
     initArgTooltips();
+    initReadingTimer();
+    initKeywordToolbar();
+    initInPageSearch();
+    initKeywordPopover();
   }
 
   if (document.readyState === 'loading') {
@@ -3848,12 +4588,45 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
     <span class="toggle-label" id="toggle-label">Reading Mode</span>
   </button>
 </div>
+<!-- Reading Timer -->
+<div class="reading-timer-wrap">
+  <div class="reading-timer-btn" id="reading-timer" title="Time spent reading">
+    <span class="rt-icon">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    </span>
+    <span id="reading-timer-text">00:00</span>
+  </div>
+</div>
+
 <div class="issue-shell">
 {toc_desktop}
 <main class="issue-main">
 {body}
 </main>
 </div>
+
+<!-- Search Overlay -->
+<div class="search-overlay" id="search-overlay">
+  <div class="search-dialog">
+    <div class="search-input-row">
+      <span class="si-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </span>
+      <input type="text" class="search-input" id="search-input" placeholder="Search within this issue…" autocomplete="off">
+      <span class="search-count" id="search-count"></span>
+      <div class="search-nav">
+        <button class="search-nav-btn" id="search-prev" title="Previous match" disabled>&uarr;</button>
+        <button class="search-nav-btn" id="search-next" title="Next match" disabled>&darr;</button>
+      </div>
+      <button class="search-nav-btn" id="search-close" title="Close search" style="font-size:20px;line-height:1;">&times;</button>
+    </div>
+    <div class="search-hint-row">
+      <span><kbd>Esc</kbd> to close</span>
+      <span><kbd>&uarr;</kbd><kbd>&darr;</kbd> to navigate</span>
+    </div>
+  </div>
+</div>
+
 {toc_js}
 {theme_js}
 {interaction_js}

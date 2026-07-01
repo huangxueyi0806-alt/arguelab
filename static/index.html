@@ -681,6 +681,449 @@
     html { transition: none; }
     *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
   }
+
+  /* ══════════════════════════════════════════
+     AI TRAINING ENGINE
+     ══════════════════════════════════════════ */
+  .engine { padding: 96px 0; background: var(--bg); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .engine-flow { margin-top: 48px; }
+
+  .engine-nodes {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+    position: relative;
+  }
+
+  .engine-node {
+    position: relative;
+    padding: 40px 24px 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: transform 0.3s ease;
+  }
+  .engine-node:hover { transform: translateY(-3px); }
+
+  /* Connector arrow between nodes */
+  .engine-node:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: -12px;
+    top: 56px;
+    width: 24px;
+    height: 24px;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5 12h14M14 5l7 7-7 7' stroke='%238A8F98' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.35;
+    pointer-events: none;
+    z-index: 1;
+  }
+  html[data-theme="dark"] .engine-node:not(:last-child)::after {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5 12h14M14 5l7 7-7 7' stroke='%236a7285' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  }
+
+  .engine-index {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+
+  .engine-icon-wrap {
+    width: 52px; height: 52px;
+    border-radius: 14px;
+    background: var(--accent-bg);
+    border: 1px solid var(--accent-subtle);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 18px;
+    color: var(--accent);
+    transition: all 0.3s ease;
+  }
+  .engine-node:hover .engine-icon-wrap {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-subtle);
+  }
+  .engine-icon-wrap svg {
+    width: 24px; height: 24px;
+    stroke: currentColor; stroke-width: 1.6;
+    fill: none; stroke-linecap: round; stroke-linejoin: round;
+  }
+
+  .engine-node h3 {
+    font-family: var(--font-sans);
+    font-size: 15.5px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: var(--ink);
+    line-height: 1.3;
+  }
+  .engine-sub {
+    font-family: var(--font-serif);
+    font-size: 12px;
+    color: var(--muted);
+    font-style: italic;
+    margin-bottom: 14px;
+    letter-spacing: 0.03em;
+  }
+  .engine-node p {
+    font-size: 13.5px;
+    color: var(--slate);
+    line-height: 1.65;
+    flex: 1;
+    font-family: var(--font-sans);
+  }
+
+  /* Source badges */
+  .source-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    font-family: var(--font-sans);
+  }
+  .source-badge.sb-source {
+    background: rgba(59,110,168,0.06);
+    color: #3B6EA8;
+    border: 1px solid rgba(59,110,168,0.12);
+  }
+  .source-badge.sb-training {
+    background: rgba(166,124,46,0.08);
+    color: #A67C2E;
+    border: 1px solid rgba(166,124,46,0.14);
+  }
+  .source-badge.sb-ai {
+    background: rgba(110,168,120,0.08);
+    color: #3a7d6a;
+    border: 1px solid rgba(110,168,120,0.14);
+  }
+  .source-badge.sb-user {
+    background: rgba(158,86,112,0.08);
+    color: #9e5670;
+    border: 1px solid rgba(158,86,112,0.14);
+  }
+  html[data-theme="dark"] .source-badge.sb-source {
+    background: rgba(136,157,196,0.10);
+    color: #889dc4;
+    border-color: rgba(136,157,196,0.16);
+  }
+  html[data-theme="dark"] .source-badge.sb-training {
+    background: rgba(196,149,74,0.12);
+    color: #c4954a;
+    border-color: rgba(196,149,74,0.18);
+  }
+  html[data-theme="dark"] .source-badge.sb-ai {
+    background: rgba(110,168,120,0.12);
+    color: #6ea878;
+    border-color: rgba(110,168,120,0.18);
+  }
+  html[data-theme="dark"] .source-badge.sb-user {
+    background: rgba(196,114,135,0.12);
+    color: #c47287;
+    border-color: rgba(196,114,135,0.18);
+  }
+  .source-badge::before {
+    content: ''; width: 4px; height: 4px; border-radius: 50%;
+    background: currentColor; opacity: 0.6; flex-shrink: 0;
+  }
+
+  /* Engine design note */
+  .engine-design-note {
+    margin-top: 48px;
+    padding: 18px 24px;
+    background: var(--accent-bg);
+    border: 1px solid var(--accent-subtle);
+    border-radius: 10px;
+    font-size: 13px;
+    color: var(--slate);
+    line-height: 1.7;
+    text-align: center;
+    font-family: var(--font-sans);
+  }
+  .engine-design-note strong { color: var(--accent); font-weight: 600; }
+  .engine-design-note em { font-family: var(--font-serif); color: var(--ink); font-style: italic; }
+
+  @media (max-width: 900px) {
+    .engine-nodes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .engine-node:nth-child(2)::after { display: none; }
+    .engine-node:nth-child(3)::after { right: -12px; top: 56px; display: block; }
+    .engine-node:last-child::after { display: none; }
+  }
+  @media (max-width: 600px) {
+    .engine-nodes { grid-template-columns: 1fr; }
+    .engine-node::after { display: none !important; }
+    .engine-node { padding: 28px 20px 24px; }
+  }
+
+  /* ══════════════════════════════════════════
+     ARGUMENT CHAIN DEMO
+     ══════════════════════════════════════════ */
+  .arg-demo { padding: 96px 0; background: var(--bg-elevated); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .arg-demo-layout {
+    display: grid;
+    grid-template-columns: 1fr 1.25fr;
+    gap: 44px;
+    margin-top: 44px;
+    align-items: start;
+  }
+
+  /* ── Left panel: Input ── */
+  .arg-demo-input {
+    background: var(--surface-elevated);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 32px;
+    box-shadow: var(--shadow-soft);
+    position: sticky; top: 90px;
+  }
+  .arg-demo-input h3 {
+    font-family: var(--font-sans);
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .arg-demo-input .input-sub {
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-bottom: 22px;
+    font-family: var(--font-sans);
+  }
+  .arg-demo-textarea {
+    width: 100%;
+    min-height: 140px;
+    padding: 16px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 14.5px;
+    line-height: 1.75;
+    resize: vertical;
+    font-family: var(--font-sans);
+    outline: none;
+    transition: border-color 0.25s, box-shadow 0.25s;
+    margin-bottom: 18px;
+  }
+  .arg-demo-textarea::placeholder { color: var(--muted); font-size: 13.5px; }
+  .arg-demo-textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-subtle);
+  }
+  .arg-demo-actions { display: flex; gap: 10px; align-items: center; }
+  .arg-demo-btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 12px 24px; border-radius: 8px;
+    font-size: 14px; font-weight: 600; cursor: pointer;
+    border: none; transition: all 0.25s;
+    font-family: var(--font-sans); letter-spacing: 0.04em;
+  }
+  .arg-demo-btn.primary {
+    background: var(--accent); color: var(--on-accent);
+  }
+  .arg-demo-btn.primary:hover {
+    background: var(--accent-hover);
+  }
+  .arg-demo-btn.secondary {
+    background: transparent; color: var(--slate);
+    border: 1px solid var(--border);
+  }
+  .arg-demo-btn.secondary:hover {
+    border-color: var(--accent); color: var(--accent);
+  }
+  .arg-demo-btn:disabled {
+    opacity: 0.5; cursor: not-allowed;
+  }
+  .arg-demo-hint {
+    font-size: 11.5px;
+    color: var(--muted);
+    margin-top: 14px;
+    font-family: var(--font-sans);
+    line-height: 1.6;
+  }
+  .arg-demo-hint code {
+    background: var(--accent-subtle);
+    color: var(--accent);
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-family: var(--font-mono);
+  }
+
+  /* ── Right panel: Output ── */
+  .arg-demo-output {
+    display: flex; flex-direction: column; gap: 18px;
+  }
+  .arg-demo-card {
+    background: var(--surface-elevated);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px 26px;
+    box-shadow: var(--shadow-soft);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .arg-demo-card::before {
+    content: '';
+    position: absolute; left: 0; top: 0; bottom: 0;
+    width: 3px;
+    border-radius: 0 2px 2px 0;
+  }
+  .arg-demo-card.card-concepts::before { background: #4a6fa5; }
+  .arg-demo-card.card-chain::before { background: #3a7d6a; }
+  .arg-demo-card.card-weighing::before { background: #a67c2e; }
+  .arg-demo-card.card-paragraph::before { background: #9e5670; }
+
+  html[data-theme="dark"] .arg-demo-card.card-concepts::before { background: #6b8fc0; }
+  html[data-theme="dark"] .arg-demo-card.card-chain::before { background: #5ea88a; }
+  html[data-theme="dark"] .arg-demo-card.card-weighing::before { background: #d4a85a; }
+  html[data-theme="dark"] .arg-demo-card.card-paragraph::before { background: #cc7a90; }
+
+  .arg-demo-card .card-step {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin: 0 0 4px 8px;
+  }
+  .arg-demo-card.card-concepts .card-step { color: #4a6fa5; }
+  .arg-demo-card.card-chain .card-step { color: #3a7d6a; }
+  .arg-demo-card.card-weighing .card-step { color: #a67c2e; }
+  .arg-demo-card.card-paragraph .card-step { color: #9e5670; }
+  html[data-theme="dark"] .arg-demo-card.card-concepts .card-step { color: #6b8fc0; }
+  html[data-theme="dark"] .arg-demo-card.card-chain .card-step { color: #5ea88a; }
+  html[data-theme="dark"] .arg-demo-card.card-weighing .card-step { color: #d4a85a; }
+  html[data-theme="dark"] .arg-demo-card.card-paragraph .card-step { color: #cc7a90; }
+
+  .arg-demo-card h4 {
+    font-family: var(--font-sans);
+    font-size: 14.5px;
+    font-weight: 700;
+    margin: 0 0 10px 8px;
+    color: var(--ink);
+  }
+
+  /* Concepts */
+  .concept-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-left: 8px; }
+  .concept-chip {
+    padding: 7px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: var(--font-sans);
+    background: var(--accent-bg);
+    color: var(--accent);
+    border: 1px solid var(--accent-subtle);
+    letter-spacing: 0.02em;
+  }
+
+  /* Causal Chain */
+  .chain-flow {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
+    margin-left: 8px;
+  }
+  .chain-node-item {
+    padding: 7px 13px;
+    border-radius: 6px;
+    font-size: 12.5px;
+    font-family: var(--font-sans);
+    background: var(--green-tint);
+    color: var(--slate);
+    border: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  .chain-arrow {
+    font-size: 14px;
+    color: var(--muted);
+    font-family: var(--font-sans);
+    flex-shrink: 0;
+  }
+
+  /* Weighing */
+  .weighing-text {
+    font-size: 14px;
+    color: var(--slate);
+    line-height: 1.7;
+    margin-left: 8px;
+    font-family: var(--font-sans);
+  }
+  .weighing-text strong { color: var(--warm); font-weight: 600; }
+
+  /* Paragraph */
+  .paragraph-en {
+    font-family: var(--font-serif);
+    font-size: 14.5px;
+    line-height: 1.85;
+    color: var(--ink);
+    background: var(--bg);
+    padding: 16px 18px;
+    border-radius: 8px;
+    border-left: 3px solid var(--accent-subtle);
+    margin-left: 8px;
+  }
+  .paragraph-en em { font-style: italic; color: var(--accent); }
+
+  /* Output placeholder */
+  .arg-demo-placeholder {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 60px 24px;
+    text-align: center;
+    color: var(--muted);
+    border: 1px dashed var(--border);
+    border-radius: 18px;
+    background: var(--bg);
+  }
+  .arg-demo-placeholder svg {
+    width: 40px; height: 40px;
+    stroke: var(--muted); stroke-width: 1.2;
+    margin-bottom: 14px; opacity: 0.4;
+  }
+  .arg-demo-placeholder p {
+    font-size: 14px; font-family: var(--font-sans);
+  }
+  .arg-demo-placeholder .hint {
+    font-size: 12px; margin-top: 6px;
+    color: var(--muted); opacity: 0.7;
+    font-family: var(--font-sans);
+  }
+
+  /* Loading pulse */
+  .arg-demo-loading {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 60px 24px; gap: 16px;
+  }
+  .arg-demo-loading .pulse {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: 3px solid var(--accent-subtle);
+    border-top-color: var(--accent);
+    animation: argDemoSpin 0.8s linear infinite;
+  }
+  .arg-demo-loading p {
+    font-size: 13.5px; color: var(--slate);
+    font-family: var(--font-sans);
+  }
+  @keyframes argDemoSpin { to { transform: rotate(360deg); } }
+
+  @media (max-width: 860px) {
+    .arg-demo-layout { grid-template-columns: 1fr; }
+    .arg-demo-input { position: static; top: auto; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .arg-demo-loading .pulse { animation: none; }
+  }
 </style>
 </head>
 <body>
@@ -704,7 +1147,9 @@
     <div class="nav-links">
       <a href="#why" data-section="why">为什么做这个</a>
       <a href="#receive" data-section="receive">每期内容</a>
+      <a href="#engine" data-section="engine">AI 引擎</a>
       <a href="#sample" data-section="sample">内容样例</a>
+      <a href="#demo" data-section="demo">论证演示</a>
       <a href="#how" data-section="how">怎么用</a>
       <a href="#pricing" data-section="pricing">加入内测</a>
     </div>
@@ -886,6 +1331,124 @@
       </article>
 
     </div>
+  </div>
+</section>
+
+<!-- ═══ 4. AI Training Engine ═══ -->
+<section class="engine" id="engine">
+  <div class="section-inner wide">
+    <div class="section-heading centered">
+      <span class="eyebrow fade-in">AI Training Engine</span>
+      <h2 class="section-title fade-in">Not a Generator. <span style="color:var(--muted);font-weight:400;">A Trainer.</span></h2>
+      <p class="section-desc fade-in">ArgueLab 不是让 AI 替你写文章，而是设计一个 multi-step 分析引擎：每封邮件背后，AI 完成了从源头归纳到评分反馈的完整训练流程。</p>
+    </div>
+
+    <div class="engine-flow">
+      <div class="engine-nodes">
+
+        <!-- Node 01: Source-Aware Context Summary -->
+        <div class="engine-node fade-in">
+          <span class="source-badge sb-source">SOURCE-BASED</span>
+          <div class="engine-index">ENGINE 01</div>
+          <div class="engine-icon-wrap" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/><line x1="8" y1="2" x2="8" y2="5"/><line x1="16" y1="2" x2="16" y2="5"/><line x1="12" y1="2" x2="12" y2="5"/></svg>
+          </div>
+          <h3>Source-Aware<br>Context Summary</h3>
+          <div class="engine-sub">→ 议题背景</div>
+          <p>抓取 Guardian / BBC 等真实外刊的当日议题，提炼背景与争议焦点，标注来源——不是泛化摘要，是<strong>可溯源的内容 synthesis</strong>。</p>
+        </div>
+
+        <!-- Node 02: Sentence Anatomy & Expression Transfer -->
+        <div class="engine-node fade-in">
+          <span class="source-badge sb-training">TRAINING PASSAGE</span>
+          <div class="engine-index">ENGINE 02</div>
+          <div class="engine-icon-wrap" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h12M4 17h16"/><line x1="16" y1="9" x2="16" y2="15"/><line x1="13" y1="12" x2="19" y2="12"/></svg>
+          </div>
+          <h3>Sentence Anatomy<br>&amp; Expression Transfer</h3>
+          <div class="engine-sub">→ 句型拆解 · 表达迁移</div>
+          <p>定位论证段落中的 Thesis→Conclusion 结构，拆解高级句式的语法与修辞功能，按<strong>论证功能</strong>（因果/让步/反事实）分类提取可迁移表达。</p>
+        </div>
+
+        <!-- Node 03: Argument Chain Mapping -->
+        <div class="engine-node fade-in">
+          <span class="source-badge sb-ai">AI-ASSISTED ANALYSIS</span>
+          <div class="engine-index">ENGINE 03</div>
+          <div class="engine-icon-wrap" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="5" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/><line x1="10.5" y1="6.5" x2="6.5" y2="10.5"/><line x1="13.5" y1="6.5" x2="17.5" y2="10.5"/><line x1="10.5" y1="17.5" x2="6.5" y2="13.5"/><line x1="13.5" y1="17.5" x2="17.5" y2="13.5"/></svg>
+          </div>
+          <h3>Argument Chain<br>Mapping</h3>
+          <div class="engine-sub">→ 论证链构建</div>
+          <p>将中文观点转化为英文 structured argument：core concepts → causal chain → impact weighing → academic paragraph——<strong>不是翻译，是论证思维的映射</strong>。</p>
+        </div>
+
+        <!-- Node 04: Rubric-Based Feedback -->
+        <div class="engine-node fade-in">
+          <span class="source-badge sb-user">USER PRACTICE</span>
+          <div class="engine-index">ENGINE 04</div>
+          <div class="engine-icon-wrap" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          </div>
+          <h3>Rubric-Based<br>Feedback</h3>
+          <div class="engine-sub">→ 输出任务 · 评分反馈</div>
+          <p>输出任务基于 TEM-4/8 和雅思 rubric 设计，提供结构化 self-check 清单——你的练习不是「做完了」，而是<strong>可对照评分标准自我评估的</strong>。</p>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="engine-design-note fade-in">
+      <strong>设计原则</strong> — 每一个 AI 节点都是「训练辅助」，不是「答案替代」：<em>AI doesn't write for the learner — it structures the path, highlights the patterns, and lets the learner do the work.</em>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══ 5. Argument Chain Demo ═══ -->
+<section class="arg-demo" id="demo">
+  <div class="section-inner wide">
+    <div class="section-heading centered">
+      <span class="eyebrow fade-in">Interactive Demo</span>
+      <h2 class="section-title fade-in">中文观点 → 英文论证链</h2>
+      <p class="section-desc fade-in">输入一个中文观点，看看 ArgueLab 如何将它拆解为 core concepts、causal chain、impact weighing 和 academic paragraph。当前使用示例输出——后续将对接 <code>/api/argument-chain</code> 实时生成。</p>
+    </div>
+
+    <div class="arg-demo-layout">
+      <!-- LEFT: Input -->
+      <div class="arg-demo-input fade-in">
+        <span class="source-badge sb-user" style="margin-bottom:16px;">USER PRACTICE</span>
+        <h3>你的中文观点</h3>
+        <p class="input-sub">用中文写出你想论证的核心观点。越具体越好——避免笼统判断。</p>
+        <textarea
+          class="arg-demo-textarea"
+          id="arg-demo-ta"
+          placeholder="例如：社交媒体平台通过算法推荐机制，正在系统性地削弱年轻一代的深度阅读能力和批判性思维——但这种伤害不是用户自愿选择的，而是被「注意力经济」的商业逻辑强制施加的。"
+        >社交媒体平台通过算法推荐机制，正在系统性地削弱年轻一代的深度阅读能力和批判性思维——但这种伤害不是用户自愿选择的，而是被「注意力经济」的商业逻辑强制施加的。</textarea>
+
+        <div class="arg-demo-actions">
+          <button class="arg-demo-btn primary" id="arg-demo-run" onclick="runArgDemo()">
+            <svg viewBox="0 0 16 16" width="14" height="14" style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><polygon points="3,2 13,8 3,14"/></svg>
+            生成论证链
+          </button>
+          <button class="arg-demo-btn secondary" id="arg-demo-reset" onclick="resetArgDemo()">重置</button>
+        </div>
+
+        <p class="arg-demo-hint">
+          <svg viewBox="0 0 16 16" width="14" height="14" style="display:inline-block;vertical-align:-2px;fill:none;stroke:var(--accent);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;margin-right:3px;"><circle cx="8" cy="8" r="3"/><path d="M8 2V1M8 15v-1M2.5 4.5l-.7-.7M14.2 12.2l-.7-.7M1 8H0M16 8h-1M2.5 11.5l-.7.7M14.2 3.8l-.7.7"/></svg>试试改成你自己的观点，比如：<code>「学历贬值正在改变年轻人对"好工作"的定义——从追求稳定转向追求个人意义」</code>
+        </p>
+      </div>
+
+      <!-- RIGHT: Output -->
+      <div class="arg-demo-output fade-in" id="arg-demo-output">
+        <!-- Placeholder -->
+        <div class="arg-demo-placeholder" id="arg-demo-placeholder">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="12" x2="12" y2="12"/></svg>
+          <p>点击「生成论证链」查看 AI 分析结果</p>
+          <p class="hint">引擎将依次展示：Core Concepts → Causal Chain → Impact Weighing → Academic Paragraph</p>
+        </div>
+      </div>
+    </div>
+
   </div>
 </section>
 
@@ -2105,6 +2668,107 @@
       if (target) target.scrollIntoView({ behavior: 'smooth' });
     });
   });
+
+  /* ── 10. Argument Chain Demo ── */
+  var ARG_DEMO_API = null; // Future: '/api/argument-chain'
+
+  /* Mock output for default input */
+  var MOCK_ARG_OUTPUT = {
+    concepts: [
+      { en: 'Algorithmic curation', zh: '算法策展' },
+      { en: 'Attention economy', zh: '注意力经济' },
+      { en: 'Deep reading atrophy', zh: '深度阅读能力萎缩' },
+      { en: 'Involuntary cognitive cost', zh: '非自愿认知代价' },
+      { en: 'Critical thinking erosion', zh: '批判性思维侵蚀' }
+    ],
+    chain: [
+      'Engagement-driven algorithms',
+      'Fragment content exposure',
+      'Reduced sustained attention',
+      'Diminished deep reading capacity',
+      'Weakened critical thinking'
+    ],
+    weighing: 'The core issue is <strong>not technological determinism but commercial design</strong>: the harm to deep reading is a <strong>byproduct of profit-maximizing algorithms</strong>, not an inevitable consequence of digital media. Students do not &ldquo;choose&rdquo; short-form content — the platform engineers an environment where deep reading becomes increasingly effortful. The <strong>asymmetry</strong> lies in who designs the choice architecture and who bears the cognitive cost.',
+    paragraph: '<em>Social media platforms, through engagement-optimized algorithmic curation, are systematically eroding the deep-reading capacity and critical-thinking faculties of the younger generation. This is not, however, a voluntary trade-off — users do not freely exchange attention span for convenience. Rather, it is an involuntary cognitive cost imposed by the commercial logic of the attention economy, in which profit-maximizing algorithms engineer a choice architecture that makes sustained, reflective reading increasingly effortful. The result is a generation trained to scan, react, and move on — ill-equipped for the kind of deliberative reasoning that democratic citizenship and academic inquiry alike demand.</em>'
+  };
+
+  function runArgDemo() {
+    var outputEl = document.getElementById('arg-demo-output');
+    var inputText = document.getElementById('arg-demo-ta').value.trim();
+    var runBtn = document.getElementById('arg-demo-run');
+
+    if (!inputText) {
+      alert('请先输入你的中文观点。');
+      return;
+    }
+
+    // Show loading state
+    runBtn.disabled = true;
+    outputEl.innerHTML = '<div class="arg-demo-loading"><div class="pulse"></div><p>AI 引擎分析中：提取核心概念 → 构建因果链 → 评估影响 → 生成论证段落…</p></div>';
+
+    // Simulate async processing (ready for real API)
+    setTimeout(function() {
+      var data;
+
+      if (ARG_DEMO_API) {
+        // Future: real API call
+        // data = await fetch(ARG_DEMO_API, { method: 'POST', body: JSON.stringify({ viewpoint: inputText }) }).then(r => r.json());
+      }
+
+      // Use mock data for now
+      data = MOCK_ARG_OUTPUT;
+      renderArgDemoOutput(outputEl, data);
+      runBtn.disabled = false;
+    }, 1800);
+  }
+
+  function renderArgDemoOutput(container, data) {
+    var conceptsHtml = data.concepts.map(function(c) {
+      return '<span class="concept-chip" title="' + (c.zh || '') + '">' + c.en + '</span>';
+    }).join('');
+
+    var chainHtml = data.chain.map(function(node, i) {
+      var arrow = i < data.chain.length - 1 ? '<span class="chain-arrow">→</span>' : '';
+      return '<span class="chain-node-item">' + node + '</span>' + arrow;
+    }).join('');
+
+    container.innerHTML =
+      '<div class="arg-demo-card card-concepts" style="animation: sampleFadeIn 0.4s ease both;">' +
+        '<div class="card-step">Step 1</div>' +
+        '<h4>Core Concepts · 核心概念映射</h4>' +
+        '<div class="concept-chips">' + conceptsHtml + '</div>' +
+      '</div>' +
+
+      '<div class="arg-demo-card card-chain" style="animation: sampleFadeIn 0.4s 0.1s ease both;">' +
+        '<div class="card-step">Step 2</div>' +
+        '<h4>Causal Chain · 因果链构建</h4>' +
+        '<div class="chain-flow">' + chainHtml + '</div>' +
+      '</div>' +
+
+      '<div class="arg-demo-card card-weighing" style="animation: sampleFadeIn 0.4s 0.2s ease both;">' +
+        '<div class="card-step">Step 3</div>' +
+        '<h4>Impact Weighing · 影响权重评估</h4>' +
+        '<div class="weighing-text">' + data.weighing + '</div>' +
+      '</div>' +
+
+      '<div class="arg-demo-card card-paragraph" style="animation: sampleFadeIn 0.4s 0.3s ease both;">' +
+        '<div class="card-step">Step 4</div>' +
+        '<h4>Academic Paragraph · 学术段落输出</h4>' +
+        '<div class="paragraph-en">' + data.paragraph + '</div>' +
+      '</div>';
+  }
+
+  function resetArgDemo() {
+    var outputEl = document.getElementById('arg-demo-output');
+    var runBtn = document.getElementById('arg-demo-run');
+    runBtn.disabled = false;
+    outputEl.innerHTML =
+      '<div class="arg-demo-placeholder" id="arg-demo-placeholder">' +
+        '<svg viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>' +
+        '<p>点击「生成论证链」查看 AI 分析结果</p>' +
+        '<p class="hint">引擎将依次展示：Core Concepts → Causal Chain → Impact Weighing → Academic Paragraph</p>' +
+      '</div>';
+  }
 </script>
 </body>
 </html>

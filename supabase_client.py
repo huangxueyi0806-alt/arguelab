@@ -13,13 +13,18 @@ from datetime import datetime
 
 # ── Config ──
 import os as _os
-SUPABASE_URL = _os.environ.get("SUPABASE_URL") or "https://guhcfdllaxzbcvqwhzzc.supabase.co"
-SUPABASE_KEY = (
-    _os.environ.get("SUPABASE_SERVICE_KEY")
-    or "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9."
-    "eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1aGNmZGxsYXh6YmN2cXdoenpjIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MTI1ODgxOSwiZXhwIjoyMDk2ODM0ODE5fQ."
-    "ACm_S8iG0RnccwsnyavvToiwk9v3wyJwQqYRi2KGxfA"
-)
+SUPABASE_URL = _os.environ.get("SUPABASE_URL")
+SUPABASE_KEY = _os.environ.get("SUPABASE_SERVICE_KEY")
+
+# Validate credentials at module load time — if missing, raise so
+# server.py can gracefully fall back to local JSON storage.
+if not SUPABASE_URL or not SUPABASE_KEY:
+    raise RuntimeError(
+        "SUPABASE_URL and SUPABASE_SERVICE_KEY must be set in environment "
+        "or .env file. Without them, subscriber management falls back to "
+        "local data/subscribers.json."
+    )
+
 TABLE = "beta_users"
 
 # Path to local fallback JSON (same as server.py)
