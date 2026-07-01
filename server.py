@@ -58,8 +58,12 @@ except Exception as _e:
 try:
     from dotenv import load_dotenv
     load_dotenv(BASE_DIR / ".env")
-except ImportError:
+except Exception:
     pass
+
+# Feature flags from environment
+WEB_SEARCH_ENABLED = os.getenv("WEB_SEARCH_ENABLED", "true").lower() in ("true", "1", "yes")
+
 DATA_DIR = BASE_DIR / "data"
 SUBSCRIBERS_FILE = DATA_DIR / "subscribers.json"
 TEMPLATES_DIR = BASE_DIR / "templates"
@@ -1569,41 +1573,64 @@ ISSUE_PAGE_CSS = r"""
   .top-action-btn .ta-icon svg {
     width: 16px; height: 16px;
   }
-  /* ── Text Selection Popup (划词检索) ── */
+  /* ── Text Selection Popup (划词检索) ──
+     Academic paper-reading style: soft shadow, no glass blur, serif preview */
   .text-select-popup {
     position: absolute;
     z-index: 9999;
     display: flex;
-    align-items: center;
-    gap: 2px;
-    padding: 4px;
+    flex-direction: column;
     background: var(--card-bg);
-    border: 1px solid var(--border-strong);
+    border: 1px solid var(--border);
     border-radius: 10px;
-    box-shadow: 0 6px 24px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.04);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    box-shadow: var(--shadow), 0 0 0 1px rgba(0,0,0,0.03);
+    padding: 8px;
+    gap: 2px;
     opacity: 0;
     transform: translateY(4px);
-    transition: opacity 0.12s ease, transform 0.12s ease;
+    transition: opacity 0.15s ease, transform 0.15s ease;
     pointer-events: none;
     user-select: none;
+    min-width: 300px;
+    max-width: 440px;
   }
   .text-select-popup.active {
     opacity: 1;
     transform: translateY(0);
     pointer-events: auto;
   }
+  .ts-selected-preview {
+    font-family: var(--font-serif);
+    font-size: 11.5px;
+    color: var(--ink-dim);
+    line-height: 1.45;
+    padding: 6px 10px;
+    background: var(--card-elevated);
+    border-left: 2px solid var(--accent);
+    border-radius: 0 6px 6px 0;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-style: italic;
+    letter-spacing: 0.01em;
+    margin-bottom: 2px;
+  }
+  .ts-actions-row {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
   .text-select-popup .ts-btn {
     display: flex;
     align-items: center;
     gap: 5px;
-    padding: 6px 10px;
+    padding: 7px 10px;
     border: none;
     border-radius: 7px;
     background: transparent;
     color: var(--ink-dim);
-    font-size: 12px;
+    font-size: 11.5px;
     font-family: var(--font-sans);
     font-weight: 500;
     cursor: pointer;
@@ -1615,15 +1642,136 @@ ISSUE_PAGE_CSS = r"""
     background: var(--accent-soft);
     color: var(--accent);
   }
+  .text-select-popup .ts-btn.ts-btn-disabled {
+    opacity: 0.35 !important;
+    cursor: not-allowed !important;
+    pointer-events: none;
+  }
+  .text-select-popup .ts-btn.ts-btn-disabled:hover {
+    background: transparent;
+    color: var(--ink-dim);
+  }
   .text-select-popup .ts-btn svg {
     width: 13px; height: 13px;
     stroke: currentColor;
     flex-shrink: 0;
   }
+  .text-select-popup .ts-btn.ts-btn-save {
+    color: var(--accent-warm);
+  }
+  .text-select-popup .ts-btn.ts-btn-save:hover {
+    background: var(--accent-warm-soft);
+    color: var(--accent-warm);
+  }
   .text-select-popup .ts-divider {
     width: 1px; height: 18px;
     background: var(--border);
     margin: 0 1px;
+  }
+
+  /* ── Mobile Bottom Sheet (划词检索 · 移动端) ── */
+  .selection-bs-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.28);
+    z-index: 9997;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.25s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .selection-bs-overlay.active {
+    opacity: 1; pointer-events: auto;
+  }
+
+  .selection-bottom-sheet {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    z-index: 9998;
+    background: var(--card-bg);
+    border-radius: 16px 16px 0 0;
+    padding: 12px 16px max(24px, env(safe-area-inset-bottom));
+    box-shadow: 0 -4px 24px rgba(0,0,0,0.12);
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .selection-bottom-sheet.active {
+    transform: translateY(0);
+  }
+
+  .bs-drag-handle {
+    width: 36px; height: 4px;
+    background: var(--border-strong);
+    border-radius: 2px;
+    margin: 0 auto 14px;
+    opacity: 0.6;
+  }
+
+  .bs-selected-text {
+    font-family: var(--font-serif);
+    font-size: 13px; color: var(--ink-dim);
+    line-height: 1.5;
+    padding: 10px 14px;
+    background: var(--card-elevated);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 10px 10px 0;
+    margin-bottom: 14px;
+    max-height: 60px; overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    text-overflow: ellipsis;
+    font-style: italic;
+  }
+
+  .bs-actions {
+    display: flex; flex-direction: column;
+    gap: 4px;
+  }
+
+  .bs-action {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 16px;
+    border: none; border-radius: 10px;
+    background: transparent;
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 14px; font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    text-align: left; width: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .bs-action:active {
+    background: var(--accent-soft);
+  }
+  .bs-action svg {
+    width: 20px; height: 20px;
+    stroke: var(--accent);
+    flex-shrink: 0;
+  }
+  .bs-action.bs-action-save svg {
+    stroke: var(--accent-warm);
+  }
+  .bs-action.bs-action-disabled {
+    opacity: 0.4; pointer-events: none;
+  }
+
+  .bs-cancel {
+    display: block; width: 100%; margin-top: 12px;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: transparent;
+    color: var(--ink-muted);
+    font-family: var(--font-sans);
+    font-size: 13px; font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .bs-cancel:active {
+    background: var(--card-elevated);
+    color: var(--ink-dim);
   }
 
   /* ── Research Lookup Drawer ── */
@@ -1812,6 +1960,9 @@ ISSUE_PAGE_CSS = r"""
   .rd-mode-btn:hover:not(.active) {
     color: var(--ink-dim);
   }
+  .rd-mode-btn.rd-mode-disabled {
+    cursor: not-allowed !important;
+  }
   .rd-external-link {
     border-color: rgba(245,158,11,0.25) !important;
     background: rgba(245,158,11,0.04) !important;
@@ -1821,15 +1972,114 @@ ISSUE_PAGE_CSS = r"""
     box-shadow: 0 0 0 2px rgba(245,158,11,0.12) !important;
   }
 
+  /* ── Explain Card in Drawer ── */
+  .rd-explain-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 10px;
+  }
+  .rd-ex-section {
+    margin-bottom: 16px;
+  }
+  .rd-ex-section:last-child {
+    margin-bottom: 12px;
+  }
+  .rd-ex-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 6px;
+    font-family: var(--font-sans);
+  }
+  .rd-ex-text {
+    font-size: 13px;
+    color: var(--ink);
+    line-height: 1.65;
+  }
+  .rd-ex-fn {
+    font-style: italic;
+    color: var(--ink-accent, var(--ink-dim));
+  }
+  .rd-ex-example {
+    background: var(--card-bg);
+    border-left: 3px solid var(--accent);
+    padding: 10px 14px;
+    border-radius: 0 8px 8px 0;
+  }
+  .rd-ex-pattern {
+    font-size: 12.5px;
+    font-family: var(--font-mono);
+    color: var(--ink);
+    line-height: 1.7;
+    padding: 6px 8px;
+    margin-bottom: 2px;
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    position: relative;
+    border-radius: 4px;
+    transition: background 0.15s ease;
+  }
+  .rd-ex-pattern:hover {
+    background: var(--card-bg);
+  }
+  .rd-ex-bullet {
+    color: var(--accent);
+    flex-shrink: 0;
+    font-weight: 700;
+  }
+  .rd-ex-copy-btn {
+    flex-shrink: 0;
+    width: 24px; height: 24px;
+    border: none; border-radius: 4px;
+    background: transparent;
+    color: var(--ink-muted);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    margin-left: auto;
+    transition: all 0.15s ease;
+    opacity: 0;
+  }
+  .rd-ex-pattern:hover .rd-ex-copy-btn {
+    opacity: 1;
+  }
+  .rd-ex-copy-btn:hover {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+  .rd-ex-copy-btn svg {
+    width: 13px; height: 13px;
+    fill: none; stroke: currentColor;
+  }
+  .rd-ex-source-tag {
+    font-size: 10px;
+    color: var(--ink-muted);
+    font-family: var(--font-mono);
+    text-align: right;
+    margin-top: 4px;
+  }
+
   @media (max-width: 640px) {
     .research-drawer {
       width: 100vw; max-width: 100vw;
+    }
+    .text-select-popup {
+      display: none !important; /* mobile uses bottom sheet instead */
     }
     .top-bar { padding: 6px 10px; gap: 6px; }
     .tb-search { min-width: 120px; padding: 4px 10px; }
     .tb-search-input { font-size: 12px; }
     .top-action-btn { padding: 6px 10px; font-size: 11px; }
     .top-action-btn .ta-label { display: none; }
+  }
+  @media (min-width: 641px) {
+    .selection-bottom-sheet, .selection-bs-overlay {
+      display: none !important; /* desktop uses floating popup instead */
+    }
   }
 
   /* ── Reset & Base ── */
@@ -3114,6 +3364,12 @@ ISSUE_PAGE_CSS = r"""
     .cn-body, .en-body { font-size: 15px; }
     .toc-mobile { padding: 8px 12px; }
     .toc-mobile .toc-chip { padding: 5px 12px; font-size: 11px; margin-right: 6px; }
+    /* Argument Chain Demo mobile */
+    .arg-demo-issue { padding: 32px 16px 48px; margin-top: 40px; }
+    .adi-layout { grid-template-columns: 1fr; gap: 20px; }
+    .adi-input { padding: 18px; }
+    .adi-card { padding: 16px 18px; }
+    .adi-textarea { min-height: 100px; font-size: 13px; }
   }
 
   /* ── Print (PDF) ── */
@@ -3145,7 +3401,7 @@ ISSUE_PAGE_CSS = r"""
     }
     body { font-size: 11pt; }
     .issue-shell { display: block; max-width: 100%; padding: 0; }
-    .issue-toc, .toc-mobile, .top-bar, .reader-toolbar, .keywords-panel, .text-select-popup, .research-drawer, .research-drawer-overlay { display: none !important; }
+    .issue-toc, .toc-mobile, .top-bar, .reader-toolbar, .keywords-panel, .text-select-popup, .research-drawer, .research-drawer-overlay, .selection-bottom-sheet, .selection-bs-overlay, .arg-demo-issue { display: none !important; }
     .issue-main { max-width: 100%; padding: 0; }
     .issue-hero { padding: 20px 0 16px; }
     .issue-hero h1 { font-size: 18pt; }
@@ -3750,6 +4006,273 @@ ISSUE_PAGE_CSS = r"""
   }
   .kw-popover .kwp-related strong {
     color: var(--accent);
+  }
+
+  /* ══════════════════════════════════════════
+     ARGUMENT CHAIN DEMO (issue page)
+     ══════════════════════════════════════════ */
+  .arg-demo-issue {
+    margin-top: 56px;
+    padding: 40px 32px 64px;
+    border-top: 1px solid var(--border);
+    max-width: 1080px;
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box;
+  }
+  .arg-demo-issue .demo-heading {
+    margin-bottom: 24px;
+  }
+  .arg-demo-issue .demo-heading h2 {
+    font-family: var(--font-sans);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--ink);
+    margin: 0 0 6px;
+  }
+  .arg-demo-issue .demo-heading .demo-sub {
+    font-size: 13.5px;
+    color: var(--ink-dim);
+    font-family: var(--font-sans);
+    line-height: 1.6;
+  }
+  .arg-demo-issue .demo-heading .demo-sub code {
+    background: var(--accent-bg);
+    color: var(--accent);
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-family: var(--font-mono);
+  }
+  .adi-layout {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 32px;
+    align-items: start;
+  }
+  .adi-input {
+    background: var(--card-elevated);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+  }
+  .adi-input h3 {
+    font-family: var(--font-sans);
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0 0 4px;
+    color: var(--ink);
+  }
+  .adi-input .input-sub {
+    font-size: 12.5px;
+    color: var(--ink-muted);
+    margin-bottom: 16px;
+    font-family: var(--font-sans);
+  }
+  .adi-textarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 14px;
+    line-height: 1.7;
+    resize: vertical;
+    font-family: var(--font-sans);
+    outline: none;
+    transition: border-color 0.25s, box-shadow 0.25s;
+    margin-bottom: 14px;
+    box-sizing: border-box;
+  }
+  .adi-textarea::placeholder { color: var(--ink-muted); font-size: 13px; }
+  .adi-textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-subtle);
+  }
+  .adi-actions { display: flex; gap: 10px; align-items: center; }
+  .adi-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 10px 20px; border-radius: 8px;
+    font-size: 13.5px; font-weight: 600; cursor: pointer;
+    border: none; transition: all 0.25s;
+    font-family: var(--font-sans); letter-spacing: 0.03em;
+  }
+  .adi-btn.primary {
+    background: var(--accent); color: var(--on-accent);
+  }
+  .adi-btn.primary:hover { background: var(--accent-hover); }
+  .adi-btn.secondary {
+    background: transparent; color: var(--ink-dim);
+    border: 1px solid var(--border);
+  }
+  .adi-btn.secondary:hover {
+    border-color: var(--accent); color: var(--accent);
+  }
+  .adi-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .adi-hint {
+    font-size: 11.5px;
+    color: var(--ink-muted);
+    margin-top: 12px;
+    font-family: var(--font-sans);
+    line-height: 1.5;
+  }
+  .adi-hint code {
+    background: var(--accent-bg);
+    color: var(--accent);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 10.5px;
+    font-family: var(--font-mono);
+  }
+
+  /* OUTPUT */
+  .adi-output {
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .adi-card {
+    background: var(--card-elevated);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 22px;
+    box-shadow: var(--shadow-soft);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .adi-card::before {
+    content: '';
+    position: absolute; left: 0; top: 0; bottom: 0;
+    width: 3px;
+    border-radius: 0 2px 2px 0;
+  }
+  .adi-card.card-concepts::before { background: var(--func-context); }
+  .adi-card.card-chain::before { background: var(--func-chain); }
+  .adi-card.card-weighing::before { background: var(--func-expressions); }
+  .adi-card.card-paragraph::before { background: var(--func-sentence); }
+  .adi-card .card-step {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin: 0 0 3px 6px;
+  }
+  .adi-card.card-concepts .card-step { color: var(--func-context); }
+  .adi-card.card-chain .card-step { color: var(--func-chain); }
+  .adi-card.card-weighing .card-step { color: var(--func-expressions); }
+  .adi-card.card-paragraph .card-step { color: var(--func-sentence); }
+  .adi-card h4 {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 700;
+    margin: 0 0 8px 6px;
+    color: var(--ink);
+  }
+  .adi-concepts { display: flex; flex-wrap: wrap; gap: 6px; margin-left: 6px; }
+  .adi-concept-chip {
+    padding: 5px 11px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: var(--font-sans);
+    background: var(--accent-bg);
+    color: var(--accent);
+    border: 1px solid var(--accent-subtle);
+  }
+  .adi-chain-flow {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 5px;
+    margin-left: 6px;
+  }
+  .adi-chain-node {
+    padding: 5px 11px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-family: var(--font-sans);
+    background: var(--accent-bg);
+    color: var(--ink-dim);
+    border: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  .adi-chain-arrow {
+    font-size: 13px;
+    color: var(--ink-muted);
+    font-family: var(--font-sans);
+    flex-shrink: 0;
+  }
+  .adi-weighing-text {
+    font-size: 13.5px;
+    color: var(--ink-dim);
+    line-height: 1.7;
+    margin-left: 6px;
+    font-family: var(--font-sans);
+  }
+  .adi-weighing-text strong { color: var(--accent-warm); font-weight: 600; }
+  .adi-paragraph {
+    font-family: var(--font-serif);
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--ink);
+    background: var(--bg);
+    padding: 14px 16px;
+    border-radius: 6px;
+    border-left: 3px solid var(--accent-subtle);
+    margin-left: 6px;
+  }
+  .adi-paragraph em { font-style: italic; color: var(--accent); }
+
+  /* Placeholder */
+  .adi-placeholder {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 48px 24px;
+    text-align: center;
+    color: var(--ink-muted);
+    border: 1px dashed var(--border);
+    border-radius: 14px;
+    background: var(--bg);
+  }
+  .adi-placeholder svg {
+    width: 36px; height: 36px;
+    stroke: var(--ink-muted); stroke-width: 1.2;
+    margin-bottom: 12px; opacity: 0.35;
+  }
+  .adi-placeholder p {
+    font-size: 13.5px; font-family: var(--font-sans);
+  }
+  .adi-placeholder .hint {
+    font-size: 11.5px; margin-top: 5px;
+    color: var(--ink-muted); opacity: 0.65;
+    font-family: var(--font-sans);
+  }
+
+  /* Loading */
+  .adi-loading {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 48px 24px; gap: 14px;
+  }
+  .adi-loading .pulse {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: 3px solid var(--accent-subtle);
+    border-top-color: var(--accent);
+    animation: adiSpin 0.8s linear infinite;
+  }
+  .adi-loading p {
+    font-size: 13px; color: var(--ink-dim);
+    font-family: var(--font-sans);
+  }
+  @keyframes adiSpin { to { transform: rotate(360deg); } }
+
+  @media (max-width: 860px) {
+    .adi-layout { grid-template-columns: 1fr; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .adi-loading .pulse { animation: none; }
+  }
+
+  @media print {
+    .arg-demo-issue { display: none !important; }
   }
 """
 
@@ -4566,16 +5089,34 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
     }
     updateDisplay();
 
-    // Start timer (page visibility aware)
+    // Start timer — Date.now()-based to survive browser throttle
     var timerPaused = false;
-    readingTimerInterval = setInterval(function() {
-      if (timerPaused || document.hidden) return;
-      readingSeconds++;
-      updateDisplay();
-      try {
-        localStorage.setItem(readingStorageKey, readingSeconds);
-      } catch(e) {}
-    }, 1000);
+    var lastTick = Date.now();
+
+    function timerTick() {
+      if (timerPaused) { lastTick = Date.now(); return; }
+      if (document.hidden)  { lastTick = Date.now(); return; }
+
+      var now = Date.now();
+      var elapsed = Math.floor((now - lastTick) / 1000);
+      if (elapsed > 0) {
+        readingSeconds += elapsed;
+        lastTick = now;
+        updateDisplay();
+        try {
+          localStorage.setItem(readingStorageKey, readingSeconds);
+        } catch(e) {}
+      }
+    }
+
+    readingTimerInterval = setInterval(timerTick, 500);
+
+    // When the page becomes visible, reset lastTick so we don't
+    // count hidden time but the timer resumes counting immediately
+    // instead of waiting for the next setInterval slot.
+    document.addEventListener('visibilitychange', function() {
+      if (!document.hidden) { lastTick = Date.now(); }
+    });
 
     // Pause / Resume button
     var pauseBtn = document.getElementById('btn-timer-pause');
@@ -4589,11 +5130,13 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
           playIcon.style.display = 'block';
           pauseBtn.setAttribute('title', 'Resume timer');
           pauseBtn.setAttribute('aria-label', 'Resume timer');
+          lastTick = Date.now();
         } else {
           pauseIcon.style.display = 'block';
           playIcon.style.display = 'none';
           pauseBtn.setAttribute('title', 'Pause timer');
           pauseBtn.setAttribute('aria-label', 'Pause timer');
+          lastTick = Date.now();
         }
       });
     }
@@ -4962,26 +5505,67 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
   // 10. TEXT SELECTION — RESEARCH LOOKUP (划词检索)
   // ══════════════════════════════════════════
   function initTextSelectionSearch() {
-    // ── Popup (3 buttons) ──
+    // ── Desktop Popup ──
     var popup = document.createElement('div');
     popup.className = 'text-select-popup';
     popup.id = 'text-select-popup';
     popup.innerHTML =
-      '<button class="ts-btn" id="ts-internal-btn" title="在 ArgueLab 站内数据库中检索">' +
-      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>' +
-      '站内检索' +
-      '</button>' +
-      '<span class="ts-divider"></span>' +
+      '<div class="ts-selected-preview" id="ts-selected-preview"></div>' +
+      '<div class="ts-actions-row">' +
       '<button class="ts-btn" id="ts-web-btn" title="联网搜索 — 查询外部信息、定义、新闻">' +
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>' +
-      '联网搜索' +
+      'Search\u00A0Web' +
       '</button>' +
       '<span class="ts-divider"></span>' +
-      '<button class="ts-btn" id="ts-copy-btn" title="复制选中的文本">' +
-      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>' +
-      '复制' +
-      '</button>';
+      '<button class="ts-btn" id="ts-internal-btn" title="在 ArgueLab 站内数据库中检索">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>' +
+      'Search\u00A0ArgueLab' +
+      '</button>' +
+      '<span class="ts-divider"></span>' +
+      '<button class="ts-btn" id="ts-explain-btn" title="学习解释 — 修辞功能 + 可迁移句型 + 例句">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>' +
+      'Explain' +
+      '</button>' +
+      '<span class="ts-divider"></span>' +
+      '<button class="ts-btn ts-btn-save" id="ts-save-btn" title="保存选中文本到笔记">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>' +
+      'Save' +
+      '</button>' +
+      '</div>';
     document.body.appendChild(popup);
+
+    // ── Mobile Bottom Sheet ──
+    var bsOverlay = document.createElement('div');
+    bsOverlay.className = 'selection-bs-overlay';
+    bsOverlay.id = 'selection-bs-overlay';
+    document.body.appendChild(bsOverlay);
+
+    var bottomSheet = document.createElement('div');
+    bottomSheet.className = 'selection-bottom-sheet';
+    bottomSheet.id = 'selection-bottom-sheet';
+    bottomSheet.innerHTML =
+      '<div class="bs-drag-handle"></div>' +
+      '<div class="bs-selected-text" id="bs-selected-text"></div>' +
+      '<div class="bs-actions">' +
+        '<button class="bs-action" id="bs-web-btn">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>' +
+          'Search Web' +
+        '</button>' +
+        '<button class="bs-action" id="bs-internal-btn">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>' +
+          'Search ArgueLab' +
+        '</button>' +
+        '<button class="bs-action" id="bs-explain-btn">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>' +
+          'Explain' +
+        '</button>' +
+        '<button class="bs-action bs-action-save" id="bs-save-btn">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>' +
+          'Save to Notes' +
+        '</button>' +
+      '</div>' +
+      '<button class="bs-cancel" id="bs-cancel-btn">Cancel</button>';
+    document.body.appendChild(bottomSheet);
 
     // ── Drawer ──
     var overlay = document.createElement('div');
@@ -5001,8 +5585,8 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
       '</div>' +
       '<div class="rd-body" id="rd-body">' +
         '<div class="rd-empty" id="rd-empty">' +
-          '<div class="rd-empty-icon">&#x1F50D;</div>' +
-          '<div>选中文字后点击"站内检索"或"联网搜索"开始查询</div>' +
+          '<div class="rd-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:32px;height:32px;opacity:0.4"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>' +
+          '<div>Select text and click a search button to start</div>' +
         '</div>' +
       '</div>';
     document.body.appendChild(drawer);
@@ -5013,16 +5597,35 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
     var currentMode = 'internal'; // 'internal' | 'web'
 
     // ── Popup helpers ──
+    var MOBILE_BREAKPOINT = 640;
+
+    function isMobile() {
+      return window.innerWidth <= MOBILE_BREAKPOINT;
+    }
+
     function showPopup(x, y) {
+      // Update selected text preview
+      var previewEl = document.getElementById('ts-selected-preview');
+      if (previewEl) {
+        previewEl.textContent = (selectedText.length > 80 ? selectedText.substring(0, 80) + '\u2026' : selectedText);
+      }
+
+      // Mobile: show bottom sheet
+      if (isMobile()) {
+        showBottomSheet();
+        return;
+      }
+
+      // Desktop: position floating popup
       var pw = popup.offsetWidth;
       var ph = popup.offsetHeight;
       var wx = window.scrollX;
       var wy = window.scrollY;
       var ww = window.innerWidth;
-      var padding = 10;
+      var padding = 12;
       var left = Math.max(wx + padding, Math.min(x - pw / 2, wx + ww - pw - padding));
-      var top = y - ph - 14;
-      if (top < wy + 8) { top = y + 20; }
+      var top = y - ph - 16;
+      if (top < wy + 8) { top = y + 22; }
       popup.style.left = left + 'px';
       popup.style.top = top + 'px';
       popup.classList.add('active');
@@ -5034,6 +5637,28 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
       isActive = false;
       selectedText = '';
       if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
+      // Also hide bottom sheet if it's open
+      if (bsActive) hideBottomSheet();
+    }
+
+    // ── Bottom sheet helpers ──
+    var bsActive = false;
+
+    function showBottomSheet() {
+      var previewEl = document.getElementById('bs-selected-text');
+      if (previewEl) {
+        previewEl.textContent = selectedText;
+      }
+      bsOverlay.classList.add('active');
+      bottomSheet.classList.add('active');
+      bsActive = true;
+      isActive = true;
+    }
+
+    function hideBottomSheet() {
+      bsOverlay.classList.remove('active');
+      bottomSheet.classList.remove('active');
+      bsActive = false;
     }
 
     // ── Drawer helpers ──
@@ -5068,34 +5693,28 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
 
     function showEmpty(msg) {
       var body = document.getElementById('rd-body');
-      body.innerHTML = '<div class="rd-empty"><div class="rd-empty-icon">📭</div><div>' + (msg || 'No results found') + '</div></div>';
-    }
-
-    function showModeSwitch() {
-      // Create mode switch if not exists
-      var existing = document.getElementById('rd-mode-switch');
-      if (existing) return existing;
-      var sw = document.createElement('div');
-      sw.className = 'rd-mode-switch';
-      sw.id = 'rd-mode-switch';
-      sw.innerHTML =
-        '<button class="rd-mode-btn active" id="rd-mode-internal" title="ArgueLab 站内数据库检索">📚 站内</button>' +
-        '<button class="rd-mode-btn" id="rd-mode-web" title="外部网络搜索">🌐 联网</button>';
-      return sw;
+      body.innerHTML = '<div class="rd-empty"><div class="rd-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:32px;height:32px;opacity:0.4"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div><div>' + (msg || 'No results found') + '</div></div>';
     }
 
     function renderInternalResults(data) {
       var body = document.getElementById('rd-body');
       var html = '';
+      var webDisabled = (typeof ARGUELAB_WEB_ENABLED !== 'undefined' && !ARGUELAB_WEB_ENABLED);
+      var webTitle = webDisabled ? 'Web search is not configured' : '外部网络搜索';
+      var webClass = webDisabled ? ' rd-mode-disabled' : '';
 
       // Mode switch
       html += '<div class="rd-mode-switch">' +
-        '<button class="rd-mode-btn active" onclick="document.dispatchEvent(new CustomEvent(\'rd-search\', {detail: {mode: \'internal\', query: \'' + escapeHTML(selectedText) + '\'}}))">📚 站内 ' + (data.total ? '(' + data.total + ')' : '') + '</button>' +
-        '<button class="rd-mode-btn" onclick="document.dispatchEvent(new CustomEvent(\'rd-search\', {detail: {mode: \'web\', query: \'' + escapeHTML(selectedText) + '\'}}))">🌐 联网</button>' +
+        '<button class="rd-mode-btn active" onclick="document.dispatchEvent(new CustomEvent(\'rd-search\', {detail: {mode: \'internal\', query: \'' + escapeHTML(selectedText) + '\'}}))">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;vertical-align:-2px;margin-right:4px"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>' +
+        'In-site ' + (data.total ? '(' + data.total + ')' : '') + '</button>' +
+        '<button class="rd-mode-btn' + webClass + '" onclick="' + (webDisabled ? '' : 'document.dispatchEvent(new CustomEvent(\'rd-search\', {detail: {mode: \'web\', query: \'' + escapeHTML(selectedText) + '\'}}))') + '" title="' + webTitle + '"' + (webDisabled ? ' disabled style="opacity:0.4;cursor:not-allowed"' : '') + '>' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;vertical-align:-2px;margin-right:4px"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>' +
+        'Web' + (webDisabled ? ' (off)' : '') + '</button>' +
         '</div>';
 
       if (!data.results || data.results.length === 0) {
-        html += '<div class="rd-empty"><div class="rd-empty-icon">📭</div><div>站内未找到匹配内容，尝试切换至"联网搜索"</div></div>';
+        html += '<div class="rd-empty"><div class="rd-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:32px;height:32px;opacity:0.4"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div><div>No in-site matches. Try switching to Web search.</div></div>';
         body.innerHTML = html;
         return;
       }
@@ -5126,15 +5745,22 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
     function renderWebResults(data) {
       var body = document.getElementById('rd-body');
       var html = '';
+      var webDisabled = (typeof ARGUELAB_WEB_ENABLED !== 'undefined' && !ARGUELAB_WEB_ENABLED);
+      var webTitle = webDisabled ? 'Web search is not configured' : '外部网络搜索';
+      var webClass = webDisabled ? ' rd-mode-disabled' : '';
 
       // Mode switch
       html += '<div class="rd-mode-switch">' +
-        '<button class="rd-mode-btn" onclick="document.dispatchEvent(new CustomEvent(\'rd-search\', {detail: {mode: \'internal\', query: \'' + escapeHTML(selectedText) + '\'}}))">📚 站内</button>' +
-        '<button class="rd-mode-btn active" onclick="document.dispatchEvent(new CustomEvent(\'rd-search\', {detail: {mode: \'web\', query: \'' + escapeHTML(selectedText) + '\'}}))">🌐 联网</button>' +
+        '<button class="rd-mode-btn" onclick="document.dispatchEvent(new CustomEvent(\'rd-search\', {detail: {mode: \'internal\', query: \'' + escapeHTML(selectedText) + '\'}}))">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;vertical-align:-2px;margin-right:4px"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>' +
+        'In-site</button>' +
+        '<button class="rd-mode-btn active' + webClass + '" onclick="' + (webDisabled ? '' : 'document.dispatchEvent(new CustomEvent(\'rd-search\', {detail: {mode: \'web\', query: \'' + escapeHTML(selectedText) + '\'}}))') + '" title="' + webTitle + '"' + (webDisabled ? ' disabled style="opacity:0.4;cursor:not-allowed"' : '') + '>' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;vertical-align:-2px;margin-right:4px"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>' +
+        'Web' + (webDisabled ? ' (off)' : '') + '</button>' +
         '</div>';
 
       if (!data.results || data.results.length === 0) {
-        html += '<div class="rd-empty"><div class="rd-empty-icon">📭</div><div>未找到网络搜索结果</div></div>';
+        html += '<div class="rd-empty"><div class="rd-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:32px;height:32px;opacity:0.4"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div><div>No web results found</div></div>';
         body.innerHTML = html;
         return;
       }
@@ -5148,9 +5774,9 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
         var urlShow = r.url ? r.url.replace(/^https?:\\/\\//, '').replace(/\\/$/, '').substring(0, 60) : '';
 
         var tagHtml = isExternal
-          ? '<span class="rd-section-tag tag-web" style="background:rgba(245,158,11,0.12);color:#f59e0b">🔗 OPEN IN DDG</span>'
+          ? '<span class="rd-section-tag tag-web" style="background:rgba(245,158,11,0.12);color:#f59e0b">OPEN IN DDG</span>'
           : isAbstract
-            ? '<span class="rd-section-tag tag-web">📖 DEFINITION</span>'
+            ? '<span class="rd-section-tag tag-web">DEFINITION</span>'
             : '<span class="rd-section-tag tag-web">WEB</span>';
 
         var target = isExternal ? '_blank' : '_blank';
@@ -5166,6 +5792,109 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
       }
 
       body.innerHTML = html;
+    }
+
+    function renderExplainResults(data) {
+      var body = document.getElementById('rd-body');
+      var query = escapeHTML(data.selectedText || selectedText);
+      var html = '';
+      var webDisabled = (typeof ARGUELAB_WEB_ENABLED !== 'undefined' && !ARGUELAB_WEB_ENABLED);
+      var webClass = webDisabled ? ' rd-mode-disabled' : '';
+      var webOnclick = webDisabled ? '' : 'document.dispatchEvent(new CustomEvent(\'rd-search\', {detail: {mode: \'web\', query: \'' + escapeHTML(selectedText) + '\'}}))';
+
+      // Mode switch with explain tab active
+      html += '<div class="rd-mode-switch">' +
+        '<button class="rd-mode-btn" onclick="document.dispatchEvent(new CustomEvent(\'rd-search\', {detail: {mode: \'internal\', query: \'' + escapeHTML(selectedText) + '\'}}))">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;vertical-align:-2px;margin-right:3px"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>' +
+        'In-site</button>' +
+        '<button class="rd-mode-btn' + webClass + '" onclick="' + webOnclick + '"' + (webDisabled ? ' disabled style="opacity:0.4;cursor:not-allowed"' : '') + ' title="' + (webDisabled ? 'Web search is not configured' : 'Web search') + '">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;vertical-align:-2px;margin-right:3px"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>' +
+        'Web' + (webDisabled ? ' (off)' : '') + '</button>' +
+        '<button class="rd-mode-btn active">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;vertical-align:-2px;margin-right:3px"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>' +
+        'Explain</button>' +
+        '</div>';
+
+      // Explain card
+      html += '<div class="rd-explain-card">';
+
+      // Plain meaning
+      html += '<div class="rd-ex-section">';
+      html += '<div class="rd-ex-label">中文释义</div>';
+      html += '<div class="rd-ex-text">' + escapeHTML(data.plainMeaning || '') + '</div>';
+      html += '</div>';
+
+      // Argument function
+      html += '<div class="rd-ex-section">';
+      html += '<div class="rd-ex-label">Argument Function</div>';
+      html += '<div class="rd-ex-text rd-ex-fn">' + escapeHTML(data.argumentFunction || '') + '</div>';
+      html += '</div>';
+
+      // Chinese explanation
+      html += '<div class="rd-ex-section">';
+      html += '<div class="rd-ex-label">中文解析</div>';
+      html += '<div class="rd-ex-text">' + escapeHTML(data.chineseExplanation || '') + '</div>';
+      html += '</div>';
+
+      // Reusable patterns
+      if (data.reusablePatterns && data.reusablePatterns.length > 0) {
+        html += '<div class="rd-ex-section">';
+        html += '<div class="rd-ex-label">可迁移句型 (' + data.reusablePatterns.length + ')</div>';
+        for (var i = 0; i < data.reusablePatterns.length; i++) {
+          html += '<div class="rd-ex-pattern"><span class="rd-ex-bullet">▸</span> ' + escapeHTML(data.reusablePatterns[i]) +
+            '<button class="rd-ex-copy-btn" onclick="var t=this.parentElement;navigator.clipboard.writeText(t.textContent.replace(\'▸ \',\'\').trim())" title="复制此句型"><svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><rect x=\'9\' y=\'9\' width=\'13\' height=\'13\' rx=\'2\' ry=\'2\'/><path d=\'M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1\'/></svg></button>' +
+            '</div>';
+        }
+        html += '</div>';
+      }
+
+      // Example
+      if (data.example) {
+        html += '<div class="rd-ex-section">';
+        html += '<div class="rd-ex-label">示例</div>';
+        html += '<div class="rd-ex-text rd-ex-example"><em>' + escapeHTML(data.example) + '</em></div>';
+        html += '</div>';
+      }
+
+      // Source badge
+      var sourceLabel = data.source === 'built-in' ? 'Built-in Dictionary' : data.source === 'fuzzy-match' ? 'Fuzzy Match' : 'Template';
+      html += '<div class="rd-ex-source-tag">Source: ' + sourceLabel + '</div>';
+
+      html += '</div>'; // close rd-explain-card
+
+      body.innerHTML = html;
+    }
+
+    // ── Explain lookup ──
+    function doExplainLookup(text) {
+      if (!text) return;
+      selectedText = text;
+      var titleEl = document.getElementById('rd-title');
+      if (titleEl) {
+        titleEl.innerHTML = '学习解释: <span style="color:var(--accent);font-weight:600">' + escapeHTML(text) + '</span>';
+      }
+      document.getElementById('research-drawer').classList.add('active');
+      document.getElementById('research-overlay').classList.add('active');
+      document.body.style.overflow = 'hidden';
+
+      var body = document.getElementById('rd-body');
+      body.innerHTML = '<div class="rd-loading"><div class="rd-spinner"></div><span>Fetching explanation…</span></div>';
+
+      fetch('/api/lookup/explain', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ selectedText: text, context: { issueId: window.location.pathname.split('/').pop() || '' } })
+      })
+        .then(function(resp) {
+          if (!resp.ok) throw new Error('Explain lookup failed');
+          return resp.json();
+        })
+        .then(function(data) {
+          renderExplainResults(data);
+        })
+        .catch(function(err) {
+          showEmpty('解释请求失败，请检查网络后重试');
+        });
     }
 
     // ── Search dispatch ──
@@ -5201,83 +5930,247 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
       doResearchLookup(e.detail.query, e.detail.mode);
     });
 
-    // ── Selection detection ──
+    // ── Shared selection helpers ──
+    var SEL_MIN_LEN = 2;
+    var SEL_MAX_LEN = 120;
+
+    function _shouldExcludeSelection(el) {
+      if (!el) return false;
+      return !!(el.closest('#text-select-popup') ||
+                el.closest('#selection-bottom-sheet') ||
+                el.closest('#selection-bs-overlay') ||
+                el.closest('#top-search-input') ||
+                el.closest('#search-input') ||
+                el.closest('#research-drawer') ||
+                el.closest('#research-overlay') ||
+                el.closest('input') ||
+                el.closest('textarea'));
+    }
+
+    function _extractAndValidate() {
+      var sel = window.getSelection();
+      if (!sel || sel.isCollapsed) return null;
+      var text = sel.toString().trim();
+      if (!text || text.length < SEL_MIN_LEN || text.length > SEL_MAX_LEN) return null;
+      if (/^[\\s]+$/.test(text)) return null;
+      return { text: text, sel: sel };
+    }
+
+    // ── Selection detection: mouseup (primary, quick response) ──
     document.addEventListener('mouseup', function(e) {
       if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
       setTimeout(function() {
-        var sel = window.getSelection();
-        var text = sel ? sel.toString().trim() : '';
-
-        if (e.target.closest('#text-select-popup') ||
-            e.target.closest('#top-search-input') ||
-            e.target.closest('#search-input') ||
-            e.target.closest('#research-drawer') ||
-            e.target.closest('#research-overlay') ||
-            e.target.closest('input') ||
-            e.target.closest('textarea')) {
-          return;
-        }
-
-        if (!text || text.length < 2 || text.length > 150) {
-          hidePopup();
-          return;
-        }
-
-        if (/^[\\s]+$/.test(text)) { hidePopup(); return; }
+        if (_shouldExcludeSelection(e.target)) return;
+        var extracted = _extractAndValidate();
+        if (!extracted) { hidePopup(); return; }
 
         var range;
-        try { range = sel.getRangeAt(0); } catch(err) { return; }
+        try { range = extracted.sel.getRangeAt(0); } catch(err) { return; }
         var rect = range.getBoundingClientRect();
         var cx = rect.left + rect.width / 2 + window.scrollX;
         var cy = rect.top + window.scrollY;
 
-        selectedText = text;
+        selectedText = extracted.text;
         showPopup(cx, cy);
       }, 15);
     });
 
-    // ── Button handlers ──
+    // ── Selection detection: selectionchange (debounced, catches keyboard selection) ──
+    var _selChangeTimer = null;
+    document.addEventListener('selectionchange', function() {
+      if (_selChangeTimer) { clearTimeout(_selChangeTimer); }
+      _selChangeTimer = setTimeout(function() {
+        var sel = window.getSelection();
+        // If selection is inside an excluded zone, hide and bail
+        if (sel && sel.rangeCount > 0) {
+          var range = sel.getRangeAt(0);
+          var container = range.commonAncestorContainer;
+          var el = container.nodeType === 3 ? container.parentElement : container;
+          if (_shouldExcludeSelection(el)) { hidePopup(); return; }
+        }
+
+        var extracted = _extractAndValidate();
+        if (!extracted) {
+          // Only hide if currently active (don't hide drawer on every click)
+          if (isActive && !document.getElementById('research-drawer').classList.contains('active')) {
+            hidePopup();
+          }
+          return;
+        }
+
+        // Don't re-show if already active with the same text (avoids flicker)
+        if (isActive && selectedText === extracted.text) return;
+
+        var range2;
+        try { range2 = extracted.sel.getRangeAt(0); } catch(err) { return; }
+        var rect = range2.getBoundingClientRect();
+        var cx = rect.left + rect.width / 2 + window.scrollX;
+        var cy = rect.top + window.scrollY;
+
+        selectedText = extracted.text;
+        showPopup(cx, cy);
+      }, 200);
+    });
+
+    // ── Save to Notes ──
+    function saveToNotes(text) {
+      if (!text || !text.trim()) return;
+      try {
+        var notes = [];
+        var stored = localStorage.getItem('arguelab-saved-notes');
+        if (stored) {
+          notes = JSON.parse(stored);
+        }
+        // Detect which section the selection is in
+        var sectionHeading = '';
+        var sel = window.getSelection();
+        if (sel && sel.rangeCount > 0) {
+          var node = sel.getRangeAt(0).commonAncestorContainer;
+          var section = node.nodeType === 3 ? node.parentElement.closest('.issue-section') : node.closest('.issue-section');
+          if (section) {
+            var h2 = section.querySelector('.section-heading h2');
+            if (h2) sectionHeading = h2.textContent.trim();
+          }
+        }
+        notes.push({
+          id: Date.now(),
+          text: text.trim(),
+          issueDate: typeof ISSUE_DATE !== 'undefined' ? ISSUE_DATE : '',
+          sectionHeading: sectionHeading,
+          savedAt: new Date().toISOString()
+        });
+        localStorage.setItem('arguelab-saved-notes', JSON.stringify(notes));
+        if (typeof showToast === 'function') {
+          showToast('Saved to notes \u2713');
+        }
+      } catch(e) {
+        if (typeof showToast === 'function') {
+          showToast('Save failed');
+        }
+      }
+    }
+
+    // ── Desktop Button handlers ──
+    // Reordered: Web Search → Search ArgueLab → Explain → Save
+    document.getElementById('ts-web-btn').addEventListener('mousedown', function(e) {
+      e.preventDefault();
+      if (!ARGUELAB_WEB_ENABLED) {
+        if (typeof showToast === 'function') {
+          showToast('Web search is not configured. Use In-site or Explain instead.');
+        }
+        hidePopup();
+        return;
+      }
+      if (selectedText) { doResearchLookup(selectedText, 'web'); }
+      hidePopup();
+    });
+
     document.getElementById('ts-internal-btn').addEventListener('mousedown', function(e) {
       e.preventDefault();
       if (selectedText) { doResearchLookup(selectedText, 'internal'); }
       hidePopup();
     });
 
-    document.getElementById('ts-web-btn').addEventListener('mousedown', function(e) {
+    document.getElementById('ts-explain-btn').addEventListener('mousedown', function(e) {
       e.preventDefault();
-      if (selectedText) { doResearchLookup(selectedText, 'web'); }
+      if (selectedText) { doExplainLookup(selectedText); }
       hidePopup();
     });
 
-    document.getElementById('ts-copy-btn').addEventListener('mousedown', function(e) {
+    document.getElementById('ts-save-btn').addEventListener('mousedown', function(e) {
       e.preventDefault();
       if (selectedText) {
-        navigator.clipboard.writeText(selectedText).then(function() {
-          var btn = document.getElementById('ts-copy-btn');
-          if (btn) {
-            btn.innerHTML =
-              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' +
-              '已复制';
-            setTimeout(function() {
-              btn.innerHTML =
-                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>' +
-                '复制';
-            }, 1200);
-          }
-        }).catch(function() {});
+        saveToNotes(selectedText);
+        var btn = document.getElementById('ts-save-btn');
+        if (btn) {
+          var origHTML = btn.innerHTML;
+          btn.innerHTML =
+            '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none" style="width:13px;height:13px;flex-shrink:0"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>' +
+            'Saved';
+          setTimeout(function() {
+            btn.innerHTML = origHTML;
+          }, 1200);
+        }
       }
       hidePopup();
+    });
+
+    // ── Mobile Bottom Sheet Button handlers ──
+    document.getElementById('bs-web-btn').addEventListener('click', function(e) {
+      e.preventDefault();
+      if (!ARGUELAB_WEB_ENABLED) {
+        if (typeof showToast === 'function') {
+          showToast('Web search is not configured.');
+        }
+        hideBottomSheet();
+        hidePopup();
+        return;
+      }
+      if (selectedText) { doResearchLookup(selectedText, 'web'); }
+      hideBottomSheet();
+      hidePopup();
+    });
+
+    document.getElementById('bs-internal-btn').addEventListener('click', function(e) {
+      e.preventDefault();
+      if (selectedText) { doResearchLookup(selectedText, 'internal'); }
+      hideBottomSheet();
+      hidePopup();
+    });
+
+    document.getElementById('bs-explain-btn').addEventListener('click', function(e) {
+      e.preventDefault();
+      if (selectedText) { doExplainLookup(selectedText); }
+      hideBottomSheet();
+      hidePopup();
+    });
+
+    document.getElementById('bs-save-btn').addEventListener('click', function(e) {
+      e.preventDefault();
+      if (selectedText) { saveToNotes(selectedText); }
+      hideBottomSheet();
+      hidePopup();
+    });
+
+    document.getElementById('bs-cancel-btn').addEventListener('click', function(e) {
+      e.preventDefault();
+      hideBottomSheet();
+      hidePopup();
+    });
+
+    // Bottom sheet overlay click to dismiss
+    bsOverlay.addEventListener('click', function(e) {
+      if (e.target === bsOverlay) {
+        hideBottomSheet();
+        hidePopup();
+      }
     });
 
     // ── Drawer close ──
     document.getElementById('rd-close').addEventListener('click', closeDrawer);
     document.getElementById('research-overlay').addEventListener('click', closeDrawer);
 
-    // ── Dismiss popup ──
+    // ── Dismiss popup (desktop + mobile) ──
     document.addEventListener('mousedown', function(e) {
-      if (isActive && !e.target.closest('#text-select-popup') && !e.target.closest('#research-drawer')) {
+      if (isActive && !e.target.closest('#text-select-popup') &&
+          !e.target.closest('#selection-bottom-sheet') &&
+          !e.target.closest('#selection-bs-overlay') &&
+          !e.target.closest('#research-drawer')) {
         hideTimer = setTimeout(hidePopup, 50);
       }
+    });
+
+    // Touch-based selection for mobile
+    document.addEventListener('touchend', function(e) {
+      // Don't trigger if popup/sheet is already active or user is interacting with it
+      if (isActive) return;
+      if (_shouldExcludeSelection(e.target)) return;
+      setTimeout(function() {
+        var extracted = _extractAndValidate();
+        if (!extracted) { hidePopup(); return; }
+        selectedText = extracted.text;
+        showPopup(0, 0); // position doesn't matter on mobile — bottom sheet handles it
+      }, 300); // longer delay to let selection stabilize on mobile
     });
 
     document.addEventListener('keydown', function(e) {
@@ -5417,9 +6310,35 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
   }
 
   // ══════════════════════════════════════════
-  // 12. INITIALIZE ALL
+  // 12. APP CONFIG (fetched from backend)
+  // ══════════════════════════════════════════
+  var ARGUELAB_WEB_ENABLED = true; // default, updated by fetch
+
+  function fetchAppConfig() {
+    fetch('/api/config')
+      .then(function(r) { if (r.ok) return r.json(); throw new Error('Config unavailable'); })
+      .then(function(cfg) {
+        ARGUELAB_WEB_ENABLED = !!cfg.web_search_enabled;
+        // Update web search popup button state
+        var webBtn = document.getElementById('ts-web-btn');
+        if (webBtn && !ARGUELAB_WEB_ENABLED) {
+          webBtn.classList.add('ts-btn-disabled');
+          webBtn.title = 'Web search is not configured — contact admin to enable';
+          webBtn.style.opacity = '0.4';
+          webBtn.style.cursor = 'not-allowed';
+        }
+      })
+      .catch(function() {
+        // If config fetch fails, leave web search enabled by default
+        ARGUELAB_WEB_ENABLED = true;
+      });
+  }
+
+  // ══════════════════════════════════════════
+  // 13. INITIALIZE ALL
   // ══════════════════════════════════════════
   function init() {
+    fetchAppConfig();
     injectCopyButtons();
     initChecklist();
     initGrammarToggle();
@@ -5441,6 +6360,139 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
 })();
 </script>
 """
+
+    # ── Argument Chain Demo HTML ──
+    arg_demo_html = f"""
+    <section class="arg-demo-issue" id="arg-demo-issue">
+      <div class="demo-heading">
+        <span class="source-badge sb-user" style="display:inline-block;margin-bottom:10px;">USER PRACTICE</span>
+        <h2>中文观点 → 英文论证链</h2>
+        <p class="demo-sub">输入一个与本期议题相关的中文观点，查看 AI 拆解为 core concepts、causal chain、impact weighing 和 academic paragraph 的过程。当前使用示例输出——后续将对接 <code>/api/argument-chain</code> 实时生成。</p>
+      </div>
+
+      <div class="adi-layout">
+        <div class="adi-input">
+          <h3>你的中文观点</h3>
+          <p class="input-sub">用中文写出你想论证的核心观点。越具体越好——建议关联本期议题。</p>
+          <textarea class="adi-textarea" id="adi-ta" rows="4"
+            placeholder="例如：本期的议题让我想到……我同意/不同意文中的某个观点，因为……"
+          ></textarea>
+          <div class="adi-actions">
+            <button class="adi-btn primary" id="adi-run" onclick="runArgDemoIssue()">
+              <svg viewBox="0 0 16 16" width="13" height="13" style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><polygon points="3,2 13,8 3,14"/></svg>
+              生成论证链
+            </button>
+            <button class="adi-btn secondary" id="adi-reset" onclick="resetArgDemoIssue()">重置</button>
+          </div>
+          <p class="adi-hint">
+            <svg viewBox="0 0 16 16" width="12" height="12" style="display:inline-block;vertical-align:-2px;fill:none;stroke:var(--accent);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;margin-right:3px;"><circle cx="8" cy="8" r="3"/><path d="M8 2V1M8 15v-1M2.5 4.5l-.7-.7M14.2 12.2l-.7-.7M1 8H0M16 8h-1M2.5 11.5l-.7.7M14.2 3.8l-.7.7"/></svg>
+            提示：也可以在页面中选中任意英文表达，使用右上角搜索框查找解释
+          </p>
+        </div>
+
+        <div class="adi-output" id="adi-output">
+          <div class="adi-placeholder" id="adi-placeholder">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <p>点击「生成论证链」查看 AI 分析结果</p>
+            <p class="hint">引擎将依次展示：Core Concepts → Causal Chain → Impact Weighing → Academic Paragraph</p>
+          </div>
+        </div>
+      </div>
+    </section>"""
+
+    # ── Argument Chain Demo JS ──
+    arg_demo_js = f"""
+<script>
+var ARG_DEMO_API_ISSUE = null; // Future: '/api/argument-chain'
+
+var MOCK_ARG_OUTPUT_ISSUE = {{
+  concepts: [
+    {{ en: 'Algorithmic curation', zh: '算法策展' }},
+    {{ en: 'Attention economy', zh: '注意力经济' }},
+    {{ en: 'Deep reading atrophy', zh: '深度阅读能力萎缩' }},
+    {{ en: 'Involuntary cognitive cost', zh: '非自愿认知代价' }},
+    {{ en: 'Critical thinking erosion', zh: '批判性思维侵蚀' }}
+  ],
+  chain: [
+    'Engagement-driven algorithms',
+    'Fragment content exposure',
+    'Reduced sustained attention',
+    'Diminished deep reading capacity',
+    'Weakened critical thinking'
+  ],
+  weighing: 'The core issue is <strong>not technological determinism but commercial design</strong>: the harm to deep reading is a <strong>byproduct of profit-maximizing algorithms</strong>, not an inevitable consequence of digital media. Students do not &ldquo;choose&rdquo; short-form content — the platform engineers an environment where deep reading becomes increasingly effortful. The <strong>asymmetry</strong> lies in who designs the choice architecture and who bears the cognitive cost.',
+  paragraph: '<em>Social media platforms, through engagement-optimized algorithmic curation, are systematically eroding the deep-reading capacity and critical-thinking faculties of the younger generation. This is not, however, a voluntary trade-off — users do not freely exchange attention span for convenience. Rather, it is an involuntary cognitive cost imposed by the commercial logic of the attention economy, in which profit-maximizing algorithms engineer a choice architecture that makes sustained, reflective reading increasingly effortful. The result is a generation trained to scan, react, and move on — ill-equipped for the kind of deliberative reasoning that democratic citizenship and academic inquiry alike demand.</em>'
+}};
+
+function runArgDemoIssue() {{
+  var outputEl = document.getElementById('adi-output');
+  var inputText = document.getElementById('adi-ta').value.trim();
+  var runBtn = document.getElementById('adi-run');
+
+  if (!inputText) {{
+    alert('Please enter your viewpoint first. / 请先输入你的中文观点。');
+    return;
+  }}
+
+  runBtn.disabled = true;
+  outputEl.innerHTML = '<div class="adi-loading"><div class="pulse"></div><p>AI engine analyzing: extracting core concepts → building causal chain → weighing impacts → generating paragraph…</p></div>';
+
+  setTimeout(function() {{
+    var data;
+    if (ARG_DEMO_API_ISSUE) {{
+      // Future: real API call
+    }}
+    data = MOCK_ARG_OUTPUT_ISSUE;
+    renderArgDemoOutputIssue(outputEl, data);
+    runBtn.disabled = false;
+  }}, 1800);
+}}
+
+function renderArgDemoOutputIssue(container, data) {{
+  var conceptsHtml = data.concepts.map(function(c) {{
+    return '<span class="adi-concept-chip" title="' + (c.zh || '') + '">' + c.en + '</span>';
+  }}).join('');
+
+  var chainHtml = data.chain.map(function(node, i) {{
+    var arrow = i < data.chain.length - 1 ? '<span class="adi-chain-arrow">→</span>' : '';
+    return '<span class="adi-chain-node">' + node + '</span>' + arrow;
+  }}).join('');
+
+  var html = '';
+  html += '<div class="adi-card card-concepts" style="animation: sampleFadeIn 0.4s ease both;">';
+  html += '<div class="card-step">Step 1</div>';
+  html += '<h4>Core Concepts · 核心概念映射</h4>';
+  html += '<div class="adi-concepts">' + conceptsHtml + '</div>';
+  html += '</div>';
+
+  html += '<div class="adi-card card-chain" style="animation: sampleFadeIn 0.4s 0.1s ease both;">';
+  html += '<div class="card-step">Step 2</div>';
+  html += '<h4>Causal Chain · 因果链构建</h4>';
+  html += '<div class="adi-chain-flow">' + chainHtml + '</div>';
+  html += '</div>';
+
+  html += '<div class="adi-card card-weighing" style="animation: sampleFadeIn 0.4s 0.2s ease both;">';
+  html += '<div class="card-step">Step 3</div>';
+  html += '<h4>Impact Weighing · 影响权重评估</h4>';
+  html += '<div class="adi-weighing-text">' + data.weighing + '</div>';
+  html += '</div>';
+
+  html += '<div class="adi-card card-paragraph" style="animation: sampleFadeIn 0.4s 0.3s ease both;">';
+  html += '<div class="card-step">Step 4</div>';
+  html += '<h4>Academic Paragraph · 学术段落输出</h4>';
+  html += '<div class="adi-paragraph">' + data.paragraph + '</div>';
+  html += '</div>';
+
+  container.innerHTML = html;
+}}
+
+function resetArgDemoIssue() {{
+  var outputEl = document.getElementById('adi-output');
+  var runBtn = document.getElementById('adi-run');
+  runBtn.disabled = false;
+  outputEl.innerHTML = '<div class="adi-placeholder" id="adi-placeholder"><svg viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><p>Click \\u300cGenerate Argument Chain\\u300d to see AI analysis</p><p class="hint">The engine will show: Core Concepts → Causal Chain → Impact Weighing → Academic Paragraph</p></div>';
+}}
+</script>"""
 
     return f'''<!DOCTYPE html>
 <html lang="zh-CN" data-theme="light">
@@ -5485,6 +6537,8 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
 </main>
 </div>
 
+{arg_demo_html}
+
 <!-- Search Overlay -->
 <div class="search-overlay" id="search-overlay">
   <div class="search-dialog">
@@ -5510,6 +6564,7 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
 {toc_js}
 {theme_js}
 {interaction_js}
+{arg_demo_js}
 </body>
 </html>'''
 
@@ -7322,13 +8377,602 @@ class BriefingSearchEngine:
             "total_sections": sum(len(d["sections"]) for d in self.docs)
         }
 
-# (initialized lazily)
-_search_engine: BriefingSearchEngine | None = None
 
-def _get_search_engine() -> BriefingSearchEngine:
+# ============================================================
+#  InternalSearchEngine — Two-tier search for ArgueLab
+#  Phase 1: Full-text search (implemented)
+#  Phase 2: Semantic / embedding search (reserved stub)
+# ============================================================
+
+class InternalSearchEngine:
+    """Two-tier internal knowledge search for ArgueLab.
+    
+    Phase 1 (implemented):
+        Full-text / LIKE search across knowledge units extracted from
+        briefing files: keywords, expressions, sentence patterns,
+        argument chains, issue/section titles, and full section content.
+
+    Phase 2 (reserved):
+        Semantic search via embeddings (cosine similarity).
+        Embedding generation / storage stubbed out.
+    
+    searchMode: "text" | "semantic" | "hybrid"  (default "text")
+    """
+    
+    # ── Section-to-type map (identical to BriefingSearchEngine) ──
+    SECTION_KEYWORDS = {
+        "今日议题背景": "context",
+        "外刊核心段落": "passage",
+        "5个可迁移表达": "expressions",
+        "高级句型拆解": "sentence",
+        "中文观点": "argument_chain",
+        "输出任务": "output",
+        "来源附录": "source_notes",
+    }
+
+    # ── Field-level search weights (higher = more relevant) ──
+    WEIGHTS = {
+        "issue_title":   10.0,   # Exact match on issue topic is top-relevance
+        "keyword":        5.0,   # Backtick expression keywords
+        "expression":     4.0,   # Named expression patterns
+        "collocation":    3.5,   # Common collocations
+        "sentence_pattern": 3.5, # Template / target sentence patterns
+        "argument_chain": 3.0,   # Causal chain / core argument
+        "section_heading": 2.0,  # Section heading text
+        "section_content": 1.0,  # Raw section body (with type boost below)
+    }
+
+    # ── Per-section-type boost multiplier for raw content hits ──
+    SECTION_BOOST = {
+        "expressions": 1.5,
+        "sentence":    1.3,
+        "passage":     1.2,
+        "argument_chain": 1.1,
+    }
+
+    # ── Supported search modes ──
+    VALID_MODES = {"text", "semantic", "hybrid"}
+
+    # ============================================================
+    #  Constructor & Index Builder
+    # ============================================================
+
+    def __init__(self, briefing_dir: Path):
+        self.briefing_dir = briefing_dir
+        # docs: original parsed documents (backward compat format)
+        self.docs: list[dict] = []
+        # knowledge_units: typed, weightable index entries
+        # Each entry: {type, date, topic, text, heading, context_snippet, source_issue}
+        self.knowledge_units: list[dict] = []
+        # Phase 2 (reserved): embedding cache
+        self._embeddings_loaded = False
+        self._embedding_cache: dict = {}  # unit_hash → embedding vector
+        self._build()
+
+    # ============================================================
+    #  Phase 1: Knowledge Extraction from .md files
+    # ============================================================
+
+    @staticmethod
+    def _extract_keywords(expression_content: str) -> list[str]:
+        """Extract backtick-coded expression keywords from expression sections.
+        
+        Example input:  "**英文表达：** `would not have [past participle] had it not been for`"
+        Example output: ["would not have [past participle] had it not been for"]
+        """
+        cats = []
+        for match in re.finditer(r'`([^`]+)`', expression_content):
+            phrase = match.group(1).strip()
+            # Skip template markers like [past participle] in the key, but keep
+            # the phrase; if it's very short or entirely a placeholder, skip
+            if len(phrase) >= 3 and not re.match(r'^\[.+\]$', phrase):
+                cats.append(phrase)
+        return cats
+
+    @staticmethod
+    def _extract_expressions(section_content: str) -> list[dict]:
+        """Extract structured expression entries from expressions sections.
+        
+        Returns list of {phrase, cn_meaning, collocations, example, function_tag}.
+        Handles the  ### 表达 N — <title>  sub-section format.
+        """
+        results = []
+        # Split by ### 表达 N — blocks
+        blocks = re.split(r'\n###\s*表达\s*\d+', section_content)
+        # blocks[0] is text before first expression sub-header — skip
+        for block in blocks[1:]:
+            entry = {}
+            # 英文表达
+            m = re.search(r'\*\*英文表达[：:]\*\*\s*`([^`]+)`', block)
+            if not m:
+                m = re.search(r'\*\*英文表达[：:]\*\*\s*(.+?)(?:\n|$)', block)
+            if m:
+                entry["phrase"] = m.group(1).strip().strip('`')
+            # 中文释义
+            m = re.search(r'\*\*中文释义[：:]\*\*\s*(.+?)(?:\n|$)', block)
+            if m:
+                entry["cn_meaning"] = m.group(1).strip()
+            # 功能标签
+            m = re.search(r'\*\*功能标签[：:]\*\*\s*(.+?)(?:\n|$)', block)
+            if m:
+                entry["function_tag"] = m.group(1).strip()
+            # 常见搭配
+            collocs = []
+            for cm in re.finditer(r'`([^`]+)`', block):
+                c = cm.group(1).strip()
+                if len(c) >= 5:
+                    collocs.append(c)
+            entry["collocations"] = collocs
+            # 外刊例句
+            m = re.search(r'\*\*外刊例句[：:]\*\*\s*\*?(.+?)(?:\n|$)', block)
+            if m:
+                entry["example"] = m.group(1).strip().strip('*')
+            if entry.get("phrase"):
+                results.append(entry)
+        return results
+
+    @staticmethod
+    def _extract_sentence_patterns(section_content: str) -> list[dict]:
+        """Extract sentence anatomy entries from sentence sections.
+        
+        Returns list of {target, pattern, structure}.
+        """
+        results = []
+        entry = {}
+        # 目标句
+        m = re.search(r'\*\*目标句[：:]\*\*\s*\n?\s*>\s*\*?(.+?)(?:\n\s*\n|\n\*\*)', section_content, re.DOTALL)
+        if m:
+            entry["target"] = m.group(1).strip().strip('*')
+        # 模板句型
+        m = re.search(r'\*\*模板句型[：:]\*\*\s*\n?\s*```\s*(.+?)```', section_content, re.DOTALL)
+        if not m:
+            m = re.search(r'\*\*模板句型[：:]\*\*\s*\n?(.+?)(?:\n\*\*|\n\n)', section_content, re.DOTALL)
+        if m:
+            entry["pattern"] = m.group(1).strip()
+        # 结构分析 (first sentence)
+        m = re.search(r'\*\*结构分析[：:]\*\*\s*\n?(.+?)(?:\n|。)', section_content)
+        if m:
+            entry["structure"] = m.group(1).strip()
+        if entry:
+            results.append(entry)
+        return results
+
+    @staticmethod
+    def _extract_argument_chain(section_content: str) -> list[dict]:
+        """Extract argument chain entries.
+        
+        Returns list of {cn_viewpoint, en_core, chain_steps}.
+        """
+        results = []
+        entry = {}
+        # 中文观点
+        m = re.search(r'\*\*中文观点[：:]\*\*\s*(.+?)(?:\n\n|\n\*\*)', section_content, re.DOTALL)
+        if m:
+            entry["cn_viewpoint"] = m.group(1).strip()
+        # 英文核心句
+        m = re.search(r'\*\*英文核心句[：:]\*\*\s*(.+?)(?:\n\n|\n\*\*)', section_content, re.DOTALL)
+        if m:
+            entry["en_core"] = m.group(1).strip()
+        # 因果链
+        m = re.search(r'\*\*因果链展开[：:]\*\*\s*\n(.+?)(?:\n\n|\n\*\*)', section_content, re.DOTALL)
+        if m:
+            steps = []
+            for line in m.group(1).strip().split('\n'):
+                line = re.sub(r'^\d+\.\s*', '', line).strip()
+                if line:
+                    steps.append(line)
+            entry["chain_steps"] = steps
+        if entry:
+            results.append(entry)
+        return results
+
+    # ============================================================
+    #  Index Builder
+    # ============================================================
+
+    _EMBEDDING_DIR_NAME = ".search_embeddings"
+
+    def _build(self):
+        """Parse all briefing .md files and build knowledge-unit index."""
+        self.docs = []
+        self.knowledge_units = []
+
+        if not self.briefing_dir.exists():
+            return
+
+        for mdfile in sorted(self.briefing_dir.glob("*.md")):
+            from datetime import datetime as _dt
+            text = mdfile.read_text(encoding="utf-8")
+            lines = text.split("\n")
+
+            # ── Parse frontmatter ──
+            date, topic, source, url = "", "", "", ""
+            in_fm = False
+            has_fm = False
+            for line in lines:
+                if line.strip() == "---":
+                    if not in_fm:
+                        in_fm = True; has_fm = True; continue
+                    else:
+                        break
+                if in_fm:
+                    if line.startswith("date:"):
+                        date = line.split(":", 1)[1].strip()
+                    elif line.startswith("topic:"):
+                        topic = line.split(":", 1)[1].strip().strip('"')
+                    elif line.startswith("source:"):
+                        source = line.split(":", 1)[1].strip().strip('"')
+                    elif line.startswith("url:"):
+                        url = line.split(":", 1)[1].strip().strip('"')
+
+            if not date:
+                continue
+
+            # ── Parse sections ──
+            current_type = None
+            current_heading = ""
+            current_lines = []
+            sections = []
+
+            for line in lines:
+                if line.startswith("## "):
+                    if current_type and current_lines:
+                        content = "\n".join(current_lines).strip()
+                        if content:
+                            sections.append({
+                                "type": current_type,
+                                "heading": current_heading,
+                                "content": content,
+                            })
+                    heading = line[3:].strip()
+                    current_type = "other"
+                    for kw, t in self.SECTION_KEYWORDS.items():
+                        if kw in heading:
+                            current_type = t; break
+                    current_heading = heading
+                    current_lines = []
+                elif current_type:
+                    current_lines.append(line)
+
+            if current_type and current_lines:
+                content = "\n".join(current_lines).strip()
+                if content:
+                    sections.append({
+                        "type": current_type,
+                        "heading": current_heading,
+                        "content": content,
+                    })
+
+            doc = {"date": date, "topic": topic, "source": source, "url": url, "sections": sections}
+            self.docs.append(doc)
+
+            # ── Build knowledge units ──
+
+            # 1) Issue title
+            if topic:
+                self.knowledge_units.append({
+                    "type": "issue_title", "date": date, "topic": topic,
+                    "text": topic, "heading": "议题",
+                    "context_snippet": topic,
+                    "source_issue": date,
+                })
+
+            for sec in sections:
+                stype = sec["type"]
+                content = sec["content"]
+
+                # 2) Section heading
+                self.knowledge_units.append({
+                    "type": "section_heading", "date": date, "topic": topic,
+                    "text": sec["heading"], "heading": sec["heading"],
+                    "context_snippet": sec["heading"],
+                    "source_issue": date,
+                })
+
+                # 3) Keywords (backtick phrases from expression sections)
+                if stype == "expressions":
+                    for kw in self._extract_keywords(content):
+                        self.knowledge_units.append({
+                            "type": "keyword", "date": date, "topic": topic,
+                            "text": kw, "heading": sec["heading"],
+                            "context_snippet": f"Expression keyword: {kw}",
+                            "source_issue": date,
+                        })
+
+                # 4) Structured expressions
+                if stype == "expressions":
+                    for expr in self._extract_expressions(content):
+                        phrase = expr.get("phrase", "")
+                        if phrase:
+                            self.knowledge_units.append({
+                                "type": "expression", "date": date, "topic": topic,
+                                "text": phrase, "heading": sec["heading"],
+                                "context_snippet": f"{phrase} — {expr.get('cn_meaning', '')}",
+                                "source_issue": date,
+                                "_extra": {
+                                    "cn_meaning": expr.get("cn_meaning", ""),
+                                    "function_tag": expr.get("function_tag", ""),
+                                }
+                            })
+                        for coll in expr.get("collocations", []):
+                            self.knowledge_units.append({
+                                "type": "collocation", "date": date, "topic": topic,
+                                "text": coll, "heading": sec["heading"],
+                                "context_snippet": f"Collocation: {coll} (from {phrase})",
+                                "source_issue": date,
+                            })
+
+                # 5) Sentence patterns (from sentence anatomy)
+                if stype == "sentence":
+                    for pat in self._extract_sentence_patterns(content):
+                        for key in ("target", "pattern"):
+                            text = pat.get(key, "")
+                            if text:
+                                self.knowledge_units.append({
+                                    "type": "sentence_pattern", "date": date,
+                                    "topic": topic, "text": text,
+                                    "heading": sec["heading"],
+                                    "context_snippet": text[:150] + ("…" if len(text) > 150 else ""),
+                                    "source_issue": date,
+                                })
+
+                # 6) Argument chains
+                if stype == "argument_chain":
+                    for chain in self._extract_argument_chain(content):
+                        for field, label in [("cn_viewpoint", "CN"), ("en_core", "EN")]:
+                            text = chain.get(field, "")
+                            if text:
+                                self.knowledge_units.append({
+                                    "type": "argument_chain", "date": date,
+                                    "topic": topic, "text": text,
+                                    "heading": f"{label}核心：{text[:30]}…",
+                                    "context_snippet": text[:150] + ("…" if len(text) > 150 else ""),
+                                    "source_issue": date,
+                                })
+
+                # 7) Section content (raw — fallback for broad queries)
+                # Strip markdown formatting for cleaner snippets
+                clean_content = re.sub(r'\*{1,3}', '', content)
+                clean_content = re.sub(r'`', '', clean_content)
+                clean_content = re.sub(r'>\s*', '', clean_content)
+                self.knowledge_units.append({
+                    "type": "section_content", "date": date, "topic": topic,
+                    "text": clean_content, "heading": sec["heading"],
+                    "context_snippet": clean_content[:200] + ("…" if len(clean_content) > 200 else ""),
+                    "source_issue": date,
+                    "_section_type": stype,  # for type-specific boosting
+                })
+
+        # ── Phase 2: try loading persisted embeddings (non-blocking) ──
+        self._load_embeddings()
+
+    # ============================================================
+    #  Phase 1: Full-text Search (searchMode="text")
+    # ============================================================
+
+    def _search_text(self, query: str, limit: int = 15) -> list[dict]:
+        """Full-text / LIKE search across all knowledge unit fields.
+        
+        Scoring:
+            For each knowledge unit, compute:
+              score = weight × term_frequency × (1 + partial_bonus)
+            where partial_bonus = 0.5 if the full query appears
+            anywhere in the unit but NOT as a standalone term.
+            
+        Multi-term queries: individual term scores are summed.
+        Results are deduplicated by (date, text) and sorted descending.
+        """
+        q = query.strip().lower()
+        if not q:
+            return []
+
+        terms = q.split()
+        scored = []  # list of (dedup_key, score_sum, hit_dict)
+
+        for unit in self.knowledge_units:
+            text_lower = unit["text"].lower()
+            heading_lower = unit.get("heading", "").lower()
+            snippet_lower = unit.get("context_snippet", "").lower()
+            combined = text_lower + " " + heading_lower + " " + snippet_lower
+
+            score = 0.0
+
+            # --- Exact query match bonus ---
+            if q in combined:
+                score += 1.0
+
+            # --- Per-term matching ---
+            for t in terms:
+                count = text_lower.count(t)
+                if count > 0:
+                    score += count
+
+            if score == 0.0:
+                continue
+
+            # --- Apply field weight ---
+            weight = self.WEIGHTS.get(unit["type"], 1.0)
+            score *= weight
+
+            # --- Section-type boost for raw content ---
+            if unit["type"] == "section_content":
+                st = unit.get("_section_type", "other")
+                boost = self.SECTION_BOOST.get(st, 1.0)
+                score *= boost
+
+            # --- Dedup key: (date, text) ---
+            dedup_key = (unit["date"], unit["text"][:80])
+
+            # --- Build snippet ---
+            snippet = unit.get("context_snippet", unit["text"][:200])
+            # Highlight query in snippet
+            q_lower = q
+            idx = snippet.lower().find(q_lower)
+            if idx >= 0:
+                start = max(0, idx - 30)
+                end = min(len(snippet), idx + len(q) + 100)
+                snippet = snippet[start:end]
+                if start > 0:
+                    snippet = "…" + snippet
+                if end < len(unit.get("context_snippet", "")):
+                    snippet += "…"
+
+            hit = {
+                "date": unit["date"],
+                "topic": unit.get("topic", ""),
+                "section_type": unit["type"],
+                "section_heading": unit.get("heading", ""),
+                "snippet": snippet,
+                "score": round(score, 2),
+                "url": f"/issues/{unit['date']}",
+            }
+
+            scored.append((dedup_key, score, hit))
+
+        # --- Deduplicate: keep highest score per (date, text) ---
+        seen = {}
+        for key, s, hit in scored:
+            if key not in seen or s > seen[key][0]:
+                seen[key] = (s, hit)
+
+        hits = [v[1] for v in seen.values()]
+        hits.sort(key=lambda r: r["score"], reverse=True)
+        return hits[:limit]
+
+    # ============================================================
+    #  Phase 2: Semantic Search (reserved stub)
+    # ============================================================
+
+    def _embedding_dir(self) -> Path:
+        """Persistent directory for embedding cache files."""
+        d = self.briefing_dir.parent / self._EMBEDDING_DIR_NAME
+        d.mkdir(parents=True, exist_ok=True)
+        return d
+
+    def _load_embeddings(self):
+        """Load persisted embeddings from disk (stub — no-op in Phase 1)."""
+        # Reserved for Phase 2: load .npy or .json embedding cache
+        edir = self._embedding_dir()
+        cache_file = edir / "embeddings.json"
+        if cache_file.exists():
+            try:
+                with open(cache_file, "r", encoding="utf-8") as f:
+                    self._embedding_cache = json.load(f)
+                self._embeddings_loaded = True
+            except Exception:
+                self._embedding_cache = {}
+
+    def _save_embeddings(self):
+        """Persist embedding cache to disk (stub — no-op in Phase 1)."""
+        edir = self._embedding_dir()
+        cache_file = edir / "embeddings.json"
+        try:
+            with open(cache_file, "w", encoding="utf-8") as f:
+                json.dump(self._embedding_cache, f, ensure_ascii=False)
+        except Exception:
+            pass  # non-critical
+
+    def _build_embeddings(self, force: bool = False):
+        """Generate embeddings for all knowledge units (reserved stub).
+        
+        Phase 2 implementation plan:
+          1. For each knowledge unit, call embedding model (e.g. text2vec / OpenAI)
+          2. Store {unit_hash: embedding_vector} in self._embedding_cache
+          3. Persist to .search_embeddings/embeddings.json
+        """
+        if self._embeddings_loaded and not force:
+            return
+        # TODO — Phase 2: implement actual embedding generation
+        # Pseudocode:
+        #   from sentence_transformers import SentenceTransformer
+        #   model = SentenceTransformer('all-MiniLM-L6-v2')
+        #   for unit in self.knowledge_units:
+        #       key = hashlib.md5(unit["text"].encode()).hexdigest()
+        #       if key not in self._embedding_cache:
+        #           self._embedding_cache[key] = model.encode(unit["text"]).tolist()
+        #   self._save_embeddings()
+        self._embeddings_loaded = True
+
+    def _search_semantic(self, query: str, limit: int = 15) -> list[dict]:
+        """Semantic / embedding similarity search (reserved stub).
+        
+        Phase 2 implementation plan:
+          1. Encode query → embedding vector
+          2. Compute cosine similarity against all cached unit embeddings
+          3. Return top-k results sorted by similarity
+        """
+        # Stub: return empty with a notice
+        return [{
+            "date": "",
+            "topic": "",
+            "section_type": "notice",
+            "section_heading": "语义检索尚未开放",
+            "snippet": (
+                "Semantic (embedding-based) search is planned for Phase 2. "
+                "Currently only full-text search (searchMode=text) is available. "
+                "Switch to text mode to get results."
+            ),
+            "score": 0.0,
+            "url": "",
+        }]
+
+    def _search_hybrid(self, query: str, limit: int = 15) -> list[dict]:
+        """Hybrid search combining text + semantic (reserved stub).
+        
+        Phase 2 implementation plan:
+          1. Run _search_text() and _search_semantic() in parallel
+          2. Normalize scores from each to [0, 1]
+          3. Combine with configurable weight: 0.7 * text + 0.3 * semantic (default)
+          4. Re-rank and return top-k
+        """
+        # Fallback: text-only until semantic is implemented
+        return self._search_text(query, limit=limit)
+
+    # ============================================================
+    #  Public API
+    # ============================================================
+
+    def search(self, query: str, limit: int = 15,
+               search_mode: str = "text") -> list[dict]:
+        """Main search entry point. Dispatch by searchMode.
+        
+        Args:
+            query: Search query string.
+            limit: Max results to return.
+            search_mode: "text" | "semantic" | "hybrid"
+        
+        Returns:
+            List of hit dicts with keys:
+            {date, topic, section_type, section_heading, snippet, score, url}
+        """
+        mode = search_mode.strip().lower()
+        if mode not in self.VALID_MODES:
+            mode = "text"
+
+        if mode == "semantic":
+            return self._search_semantic(query, limit=limit)
+        elif mode == "hybrid":
+            return self._search_hybrid(query, limit=limit)
+        else:
+            return self._search_text(query, limit=limit)
+
+    def stats(self) -> dict:
+        return {
+            "total_docs": len(self.docs),
+            "total_sections": sum(len(d["sections"]) for d in self.docs),
+            "knowledge_units": len(self.knowledge_units),
+            "embeddings_loaded": self._embeddings_loaded,
+            "embedding_cache_size": len(self._embedding_cache),
+            "available_modes": ["text", "semantic (stub)", "hybrid (stub → text)"],
+        }
+
+# (initialized lazily — uses InternalSearchEngine for rich two-tier search)
+_search_engine: InternalSearchEngine | None = None
+
+def _get_search_engine() -> InternalSearchEngine:
     global _search_engine
     if _search_engine is None:
-        _search_engine = BriefingSearchEngine(_get_briefing_dir())
+        _search_engine = InternalSearchEngine(_get_briefing_dir())
     return _search_engine
 
 
@@ -7389,7 +9033,361 @@ def _web_search(query: str, limit: int = 10) -> list:
     return results[:limit]
 
 
+def _web_search_post(query: str, context: dict | None = None, limit: int = 10) -> dict:
+    """POST /api/search/web — richer response with source labels, summary, disclaimer.
+
+    Returns {query, results, summary, disclaimer}.
+    Gracefully degrades when web search is unavailable.
+    """
+    disclaimer = "Web results are retrieved from public sources and should be independently verified before citation."
+
+    if not WEB_SEARCH_ENABLED:
+        return {
+            "query": query,
+            "results": [],
+            "summary": "Web search is not currently configured on this server. Use in-site search or Explain instead.",
+            "disclaimer": disclaimer
+        }
+
+    raw_results = _web_search(query, limit=limit)
+
+    # Map result types to human-readable source labels
+    _SOURCE_MAP = {
+        "abstract": "DuckDuckGo Abstract",
+        "related": "DuckDuckGo Related",
+        "external_link": "DuckDuckGo Search",
+    }
+
+    results = []
+    for r in raw_results:
+        results.append({
+            "title": r.get("title", ""),
+            "url": r.get("url", ""),
+            "source": _SOURCE_MAP.get(r.get("type", ""), "Web Search"),
+            "snippet": r.get("snippet", ""),
+            "publishedAt": None,  # DDG free API doesn't provide publish dates
+        })
+
+    # Generate a brief neutral summary
+    def _generate_summary(results: list, query: str) -> str:
+        count = len(results)
+        if count == 0:
+            return f"No publicly searchable results found for \"{query}\"."
+        # Count by type for a more informative summary
+        n_abstracts = sum(1 for r in results if r["source"] == "DuckDuckGo Abstract")
+        n_related = sum(1 for r in results if r["source"] == "DuckDuckGo Related")
+        n_external = sum(1 for r in results if r["source"] == "DuckDuckGo Search")
+        parts = []
+        if n_abstracts:
+            parts.append(f"{n_abstracts} definitional/abstract result{'s' if n_abstracts > 1 else ''}")
+        if n_related:
+            parts.append(f"{n_related} related topic{'s' if n_related > 1 else ''}")
+        if n_external:
+            parts.append("an external search link")
+        joined = ", ".join(parts)
+        last_result = results[0]
+        return f"Found {count} result{'s' if count > 1 else ''} for \"{query}\" from public web sources ({joined}). The top result is \"{last_result['title'][:80]}\". These results are aggregated from the DuckDuckGo API and should not be treated as authoritative — always verify with primary sources."
+
+    summary = _generate_summary(results, query)
+
+    return {
+        "query": query,
+        "results": results,
+        "summary": summary,
+        "disclaimer": disclaimer
+    }
+
+
+# ── Expression Lookup / Explain Engine ──
+
+# Built-in phrase dictionary for common academic / argument expressions
+_EXPLAIN_DB = {
+    # ── Cause & effect ──
+    "treat symptoms rather than causes": {
+        "plainMeaning": "只处理表面问题，而没有解决根本原因。",
+        "argumentFunction": "Used to criticize a policy or approach as superficial — addressing visible outcomes without tackling root causes.",
+        "chineseExplanation": "这个表达适合用来批评某个政策或措施看似有所反应，但实际上没有触及问题的根源。在议论文中，它可以用来指出某项政策是 'short-term fix' 而非 'structural solution'。",
+        "reusablePatterns": [
+            "This policy treats symptoms rather than causes.",
+            "The proposal may address the visible problem, but it leaves the underlying cause untouched.",
+            "Focusing on [X] risks treating symptoms rather than causes."
+        ],
+        "example": "A social media ban may reduce screen time, but it risks treating symptoms rather than causes — the real issue is algorithmic design, not device access."
+    },
+    "the true cause of": {
+        "plainMeaning": "……的真正原因（用于引出比表面原因更深层的结构性解释）。",
+        "argumentFunction": "Used to redirect the reader from superficial explanations to deeper structural or systemic causes — a key move in analytical writing.",
+        "chineseExplanation": "在议论文中用于超越表面现象、引出深层结构性原因的论证动作。后面通常接一个抽象名词（neglect, inequality, design）而非具体事件。",
+        "reusablePatterns": [
+            "The true cause of the crisis is not X but Y.",
+            "We must ask what the true cause of the disparity is.",
+            "Corruption, not the earthquake, was the true cause of the death toll."
+        ],
+        "example": "Decades of economic collapse and institutional neglect — rather than the earthquake itself — are the true cause of the staggering death toll."
+    },
+    "systemic failure": {
+        "plainMeaning": "系统性失败（指整个体系或制度在设计或执行上的全面失灵）。",
+        "argumentFunction": "Used to elevate criticism from individual errors to structural/institutional flaws — a powerful conclusion-building term.",
+        "chineseExplanation": "在政策评论、学术写作中用来指出问题不仅仅是某个人的失误，而是整个系统在设计或执行层面的失败。这个词暗示需要的是制度性改革而非修补。",
+        "reusablePatterns": [
+            "This reveals a systemic failure in disaster preparedness.",
+            "The crisis has exposed a systemic failure of governance.",
+            "What we are witnessing is not an isolated incident but a systemic failure."
+        ],
+        "example": "The slow rescue effort has exposed a systemic failure of disaster preparedness that no amount of international aid can disguise."
+    },
+    "not a matter of X but of Y": {
+        "plainMeaning": "不是X的问题，而是Y的问题（用于重新定义议题的核心）。",
+        "argumentFunction": "Used to reframe an issue by rejecting a common misconception and redirecting attention to a deeper or more relevant factor.",
+        "chineseExplanation": "议论文中最有力的框架重置工具之一。将一个议题从人们通常认为的层面（如'talent/地理/自然'）重新定位到另一个更应被关注的层面（如'effort/治理/政策'）。",
+        "reusablePatterns": [
+            "The gap is not a matter of [uncontrollable factor] but of [controllable factor].",
+            "Success in this field is not a matter of innate talent but of deliberate practice.",
+            "The crisis is not a matter of resource scarcity but of resource distribution."
+        ],
+        "example": "The gap between the scale of the disaster and the capacity of the response is not a matter of geography but of governance."
+    },
+    "on paper": {
+        "plainMeaning": "在纸面上（指法律、政策、规定等名义上存在，但实际未执行）。",
+        "argumentFunction": "Used to highlight the gap between formal rules and actual practice — a classic move in policy critique.",
+        "chineseExplanation": "用于指出某项制度名义上虽然存在，但现实中并未得到执行。暗示的是 'de jure vs. de facto' 或 'rhetoric vs. reality' 之间的差距。",
+        "reusablePatterns": [
+            "The law exists on paper but is not enforced.",
+            "On paper, the regulations are stringent.",
+            "The policy looks good on paper but fails in practice."
+        ],
+        "example": "Venezuela's building safety regulations exist on paper but have been systematically under-enforced for decades."
+    },
+    "against all odds": {
+        "plainMeaning": "尽管万般困难，出乎意料地（形容在极端不利条件下取得的成就或生存）。",
+        "argumentFunction": "Used to highlight individual resilience against systemic failure — often carries an implicit critique of the system that created the 'odds'.",
+        "chineseExplanation": "常用于新闻报道或叙事写作中，描写在极度不利条件下仍然取得的成功。在议论文中使用时要注意：它可以被用来赞美个体的坚韧，也可以被用来反衬系统的不作为。",
+        "reusablePatterns": [
+            "survive against all odds",
+            "succeed against all odds",
+            "be rescued against all odds after 100+ hours"
+        ],
+        "example": "Aarón Levi Cantillo Vargas survived against all odds after 106 hours — a miracle that also lays bare how few others had the same chance."
+    },
+    "would not have ... had it not been for": {
+        "plainMeaning": "如果不是因为……，就不会……（反事实条件句的高级紧缩形式）。",
+        "argumentFunction": "Used to construct a counterfactual argument — showing how an outcome could have been different under different conditions. A hallmark of advanced academic writing.",
+        "chineseExplanation": "反事实条件句是学术写作中非常重要的论证工具。它将读者的注意力从'已经发生的事情'引向'本可以避免的事情'，从而建立问责或提出替代方案。注意这个结构相当于 'if it had not been for X, Y would not have happened' 的倒装紧缩。",
+        "reusablePatterns": [
+            "The buildings would not have collapsed had it not been for weak enforcement.",
+            "She would not have survived had it not been for the rapid response team.",
+            "The crisis would not have escalated had it not been for the delayed international response."
+        ],
+        "example": "The death toll would not have been so staggering had it not been for decades of neglect in enforcing seismic building codes."
+    },
+    "outpace": {
+        "plainMeaning": "超过，赶超（速度或规模上超过另一事物）。",
+        "argumentFunction": "Used to emphasize that one trend is growing faster than another — creating a sense of urgency or imbalance. Common in data-driven argumentation.",
+        "chineseExplanation": "不仅是'超过'的意思，而是强调某个事物在以更快的速度增长、以至于产生了危险的差距或失衡。在公共政策、公共卫生、经济学话题中非常高频。",
+        "reusablePatterns": [
+            "demand outpaces supply",
+            "infection rates outpace the response capacity",
+            "The problem is that [X] is outpacing [Y]."
+        ],
+        "example": "The current outbreak has outpaced the early trajectory of the 2014 West Africa crisis, raising alarms among global health officials."
+    },
+    "unaccounted for": {
+        "plainMeaning": "下落不明，无法解释（指人或物未被记录或找到）。",
+        "argumentFunction": "Used to flag a data gap or transparency issue — often deployed to question the adequacy of a response or the reliability of official figures.",
+        "chineseExplanation": "用于公共危机报道和政策分析中，指出某个群体或资源没有被纳入官方统计或管理范围。这是从'已知的可知'转向'未知的未知'的修辞动作。",
+        "reusablePatterns": [
+            "remain unaccounted for",
+            "funds remain unaccounted for",
+            "nearly 300 people are unaccounted for"
+        ],
+        "example": "Nearly 300 people who tested positive for Ebola are unaccounted for, raising fears of undetected community transmission."
+    },
+    "dangerously underfunded": {
+        "plainMeaning": "资金严重不足到产生危险的程度。",
+        "argumentFunction": "Used to criticize the gap between declared commitment and actual resource allocation — a sharp way to call out political rhetoric vs. material reality.",
+        "chineseExplanation": "不仅是'资金不足'，而是资金短缺已经造成了切实的危险后果。加入 'dangerously' 这个副词是在暗示：这不是一般的预算问题，而是正在危及生命的政治失职。",
+        "reusablePatterns": [
+            "a dangerously underfunded public health system",
+            "remain dangerously underfunded",
+            "The response is critically and dangerously underfunded."
+        ],
+        "example": "Only 13% of the pledged $910m has been delivered — leaving the Ebola response dangerously underfunded."
+    },
+    "obstructed by": {
+        "plainMeaning": "被……阻碍/阻挠（指受到障碍物、冲突或反对的阻碍）。",
+        "argumentFunction": "Used to explain why a theoretically sound plan failed in practice — typically pointing to external constraints beyond the actor's control.",
+        "chineseExplanation": "用于分析某项工作未能完成的原因，强调外部障碍（conflict/bureaucracy/opposition）而非内部能力不足。在政策分析中，这是一种为执行者保留面子的批评策略。",
+        "reusablePatterns": [
+            "obstructed by conflict",
+            "obstructed by bureaucratic delays",
+            "severely obstructed by a lack of political will"
+        ],
+        "example": "Contact tracing efforts are obstructed by the ongoing armed conflict, which prevents health workers from accessing displacement camps."
+    },
+    "at the same stage": {
+        "plainMeaning": "在同一阶段（用于与历史事件进行同期对比）。",
+        "argumentFunction": "Used to establish a historical baseline for comparison — enables 'like-for-like' analysis by controlling for the time variable.",
+        "chineseExplanation": "学术分析和新闻评论中常用的比较框架。不是笼统地比较两个事件，而是将两者在'同一发展阶段'的数据/情况进行精确对比，增强了论证的严谨性。",
+        "reusablePatterns": [
+            "at the same stage of the outbreak",
+            "at the same stage last year",
+            "The two crises are comparable at the same stage."
+        ],
+        "example": "At the same stage, the 2014 West Africa outbreak had only 239 cases — this time, the number exceeds 1,100."
+    },
+    "lay bare": {
+        "plainMeaning": "揭露，暴露（指让原本隐藏的、不愿被看到的事物暴露出来）。",
+        "argumentFunction": "Used to describe how a crisis or event reveals underlying truths that were previously ignored or concealed. Strong rhetorical force.",
+        "chineseExplanation": "比 'reveal' 或 'expose' 更有力量——暗含的不是中性的'展现'，而是将某些人想要隐瞒的、丑陋的真相强行暴露在公众视野中。这是批评性写作的利器。",
+        "reusablePatterns": [
+            "The crisis has laid bare the inadequacy of the current system.",
+            "The report lays bare years of institutional neglect.",
+            "This incident lays bare a deeper structural problem."
+        ],
+        "example": "The earthquake has laid bare decades of negligence in enforcing seismic building codes."
+    },
+    "at the door of": {
+        "plainMeaning": "归咎于某人/某机构（把责任放在……的门口）。",
+        "argumentFunction": "Used to assign responsibility or blame to a specific entity — a direct and unambiguous way to establish accountability.",
+        "chineseExplanation": "这是一个带有强烈问责意味的表达方式。它不只是说'X导致了Y'，而是说'责任在X身上'——这个隐喻将抽象的'问责'转化为具象的画面：把问题放到某人/某机构的门口。",
+        "reusablePatterns": [
+            "lay the blame at the door of the government",
+            "The responsibility lies at the door of the international community.",
+            "We cannot lay all the blame at the door of one institution."
+        ],
+        "example": "It is tempting to lay the blame entirely at the door of the Venezuelan state."
+    },
+    "a matter of": {
+        "plainMeaning": "一个……的问题（用于定义某个议题的本质属性）。",
+        "argumentFunction": "Used to categorize or define the nature of a problem — frames the discussion by asserting what the core issue 'really is'.",
+        "chineseExplanation": "议论文中非常高频的框架设定短语。通过 'not a matter of X but of Y' 的结构，作者可以重新定义议题的本质。注意这个短语后面接名词，不接从句。",
+        "reusablePatterns": [
+            "This is a matter of principle, not convenience.",
+            "The delay was a matter of logistics, not politics.",
+            "Climate adaptation is increasingly a matter of survival."
+        ],
+        "example": "Whether the international community intervenes is a matter of both legal obligation and moral responsibility."
+    },
+    "rather than": {
+        "plainMeaning": "而不是（表示选择或对比）。",
+        "argumentFunction": "Used to contrast two alternatives — often to reject a common assumption and promote a preferred interpretation or course of action.",
+        "chineseExplanation": "议论文写作的基础对比连接词。和 'instead of' 的区别在于：'rather than' 更常用于抽象对比（概念 vs. 概念），而 'instead of' 更偏向具体替换（行动 vs. 行动）。在学术写作中 'rather than' 更受偏好，因为它不暗示其中一个选择绝对错误。",
+        "reusablePatterns": [
+            "X rather than Y",
+            "focus on prevention rather than treatment",
+            "adaptation rather than mitigation"
+        ],
+        "example": "We should focus on prevention rather than spending resources on post-disaster reconstruction."
+    },
+    "the gap between": {
+        "plainMeaning": "……之间的差距（用于指出两个事物之间的显著差异或不匹配）。",
+        "argumentFunction": "Used to identify a discrepancy or mismatch — often the starting point of a critical analysis. What follows is typically an explanation of why this gap exists.",
+        "chineseExplanation": "这是分析性写作中最常用的'提出问题'句式。通过在开篇指出一个 gap/discrepancy/divide，作者为后续的分析（解释这个差距为何存在、如何弥合）建立了清晰的论证方向。",
+        "reusablePatterns": [
+            "The gap between rich and poor is widening.",
+            "There is a widening gap between policy and practice.",
+            "The gap between promise and delivery has become unbridgeable."
+        ],
+        "example": "The gap between the scale of the disaster and the capacity of the response reveals a systemic governance failure."
+    },
+}
+
+def _lookup_explain(selected_text: str, context: dict = None) -> dict:
+    """Generate a learning-oriented explanation for a selected phrase.
+
+    First checks the built-in phrase dictionary, then falls back to a
+    template-based explanation generated from the text's characteristics.
+    """
+    text = selected_text.strip()
+    text_lower = text.lower()
+
+    # Exact match
+    if text_lower in _EXPLAIN_DB:
+        entry = _EXPLAIN_DB[text_lower]
+        return {
+            "selectedText": text,
+            "plainMeaning": entry["plainMeaning"],
+            "argumentFunction": entry["argumentFunction"],
+            "chineseExplanation": entry["chineseExplanation"],
+            "reusablePatterns": entry["reusablePatterns"],
+            "example": entry["example"],
+            "source": "built-in"
+        }
+
+    # Fuzzy match: check if any key is contained in the text
+    best_match = None
+    best_len = 0
+    for key in _EXPLAIN_DB:
+        if key in text_lower and len(key) > best_len:
+            best_match = key
+            best_len = len(key)
+
+    if best_match:
+        entry = _EXPLAIN_DB[best_match]
+        return {
+            "selectedText": text,
+            "plainMeaning": entry["plainMeaning"],
+            "argumentFunction": entry["argumentFunction"],
+            "chineseExplanation": entry["chineseExplanation"],
+            "reusablePatterns": entry["reusablePatterns"],
+            "example": entry["example"],
+            "source": "fuzzy-match"
+        }
+
+    # Fallback: template-based explanation
+    return _generate_template_explanation(text, context)
+
+
+def _generate_template_explanation(text: str, context: dict = None) -> dict:
+    """Generate a template-based explanation when no exact match exists."""
+    words = text.split()
+    word_count = len(words)
+
+    # Determine likely function based on text characteristics
+    text_lower = text.lower()
+
+    if word_count <= 2:
+        # Single word or short phrase
+        if any(w in text_lower for w in ["not", "never", "no"]):
+            func = "Used for negation or contrast — often to dismiss a common assumption before presenting an alternative view."
+        elif any(w in text_lower for w in ["should", "must", "need to"]):
+            func = "Used to express obligation or recommendation — common in prescriptive/policy-oriented argumentation."
+        elif any(w in text_lower for w in ["because", "since", "due to"]):
+            func = "Used to introduce causation — explains why something happens or happened."
+        elif any(w in text_lower for w in ["however", "but", "yet", "although"]):
+            func = "Used to introduce contrast or concession — acknowledges an opposing view before rebutting it."
+        elif any(w in text_lower for w in ["therefore", "thus", "consequently", "as a result"]):
+            func = "Used to introduce a logical conclusion — signals that what follows is derived from preceding arguments."
+        else:
+            func = "A key term or phrase in this passage — understanding it is essential for grasping the author's argument."
+    elif any(marker in text_lower for marker in ["not a matter of", "rather than", "instead of"]):
+        func = "Used to reframe an issue by rejecting one interpretation and redirecting attention to another — a core argumentative move."
+    elif any(marker in text_lower for marker in ["the reason", "due to", "because", "explains why"]):
+        func = "Used to establish causation — links an outcome to its underlying cause(s)."
+    elif any(marker in text_lower for marker in ["however", "nevertheless", "on the other hand", "by contrast"]):
+        func = "Used to introduce a counter-argument or contrasting perspective — essential for balanced academic writing."
+    elif any(marker in text_lower for marker in ["for example", "for instance", "such as", "specifically"]):
+        func = "Used to provide concrete evidence or illustration — strengthens an abstract claim with specific detail."
+    else:
+        func = "An expression worth mastering — understanding its rhetorical function helps you use it effectively in your own academic writing."
+
+    return {
+        "selectedText": text,
+        "plainMeaning": f"This expression ({word_count} word{'s' if word_count > 1 else ''}) conveys a specific meaning in academic/argumentative context. Its interpretation depends on the surrounding context.",
+        "argumentFunction": func,
+        "chineseExplanation": f"这个表达在学术论证语境中有特定的修辞功能。请在上下文中体会其用法——注意作者为什么选择这个词/短语而不是同义替代词。建议将这个表达与你在本期的可迁移表达卡片中积累的词汇一起学习。",
+        "reusablePatterns": [
+            f"... {text} ...",
+            f"The author uses '{text}' to indicate that ..."
+        ],
+        "example": f"Consider how '{text}' is used in the passage — try writing your own sentence using this expression in a similar argumentative context.",
+        "source": "template"
+    }
+
+
 # ── HTTP API Server ──
+
+
 
 class APIHandler(BaseHTTPRequestHandler):
     def _send_json(self, data: dict, status: int = 200):
@@ -7466,7 +9464,8 @@ class APIHandler(BaseHTTPRequestHandler):
                     return
             self._send_json({"error": "No briefing found"}, 404)
         elif self.path.startswith("/api/search/internal"):
-            # Internal knowledge search across all briefing content
+            # Internal knowledge search with two-tier mode support
+            #   ?q=<query>&limit=<N>&searchMode=text|semantic|hybrid
             import urllib.parse
             qs = urllib.parse.urlparse(self.path).query
             params = urllib.parse.parse_qs(qs)
@@ -7478,15 +9477,22 @@ class APIHandler(BaseHTTPRequestHandler):
                 limit = min(int(params.get("limit", ["15"])[0]), 50)
             except ValueError:
                 limit = 15
-            engine = _get_search_engine()
-            results = engine.search(query, limit=limit)
-            self._send_json({
-                "query": query,
-                "total": len(results),
-                "source": "arguelab_internal",
-                "stats": engine.stats(),
-                "results": results
-            })
+            search_mode = params.get("searchMode", ["text"])[0].strip().lower()
+            if search_mode not in ("text", "semantic", "hybrid"):
+                search_mode = "text"
+            try:
+                engine = _get_search_engine()
+                results = engine.search(query, limit=limit, search_mode=search_mode)
+                self._send_json({
+                    "query": query,
+                    "total": len(results),
+                    "source": "arguelab_internal",
+                    "searchMode": search_mode,
+                    "stats": engine.stats(),
+                    "results": results
+                })
+            except Exception as e:
+                self._send_json({"error": "Internal search unavailable", "detail": str(e)}, 500)
         elif self.path.startswith("/api/search/web"):
             # Web search proxy via DuckDuckGo HTML
             import urllib.parse
@@ -7506,6 +9512,11 @@ class APIHandler(BaseHTTPRequestHandler):
                 "total": len(results),
                 "source": "web",
                 "results": results
+            })
+        elif self.path == "/api/config":
+            self._send_json({
+                "web_search_enabled": WEB_SEARCH_ENABLED,
+                "explain_enabled": True,
             })
         else:
             self.send_response(404)
@@ -7752,6 +9763,35 @@ class APIHandler(BaseHTTPRequestHandler):
                 self._send_json({"status": "sent", "to": to_email})
             except Exception as e:
                 self._send_json({"error": str(e)}, 500)
+
+        elif self.path == "/api/lookup/explain":
+            selected_text = data.get("selectedText", "").strip()
+            if not selected_text:
+                self._send_json({"error": "Missing selectedText"}, 400)
+                return
+            context = data.get("context", {})
+            try:
+                result = _lookup_explain(selected_text, context)
+                self._send_json(result)
+            except Exception as e:
+                self._send_json({"error": "Explain lookup failed", "detail": str(e)}, 500)
+
+        elif self.path == "/api/search/web":
+            query = data.get("query", "").strip()
+            if not query:
+                self._send_json({"error": "Missing query"}, 400)
+                return
+            try:
+                context = data.get("context", {})
+                limit_raw = context.get("limit", 10) if isinstance(context, dict) else 10
+                limit = min(int(limit_raw), 20)
+            except (ValueError, TypeError):
+                limit = 10
+            try:
+                result = _web_search_post(query, context=context, limit=limit)
+                self._send_json(result)
+            except Exception as e:
+                self._send_json({"error": "Web search unavailable", "detail": str(e)}, 500)
 
         else:
             self._send_json({"error": "Not found"}, 404)
