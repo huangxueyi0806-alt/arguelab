@@ -4332,8 +4332,12 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
     }
 
     function clearSearchHighlights() {
-      searchMatches.forEach(function(el) {
-        el.classList.remove('search-highlight', 'active');
+      searchMatches.forEach(function(mark) {
+        var parent = mark.parentNode;
+        if (parent) {
+          parent.replaceChild(document.createTextNode(mark.textContent), mark);
+          if (parent.normalize) parent.normalize();
+        }
       });
       searchMatches = [];
       searchMatchIdx = -1;
@@ -4352,17 +4356,19 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
       var regex = new RegExp('(' + escapeRegex(query) + ')', 'gi');
       var results = [];
       findTextMatches(main, regex, results);
-      searchMatches = results;
 
-      // Wrap matches
-      searchMatches.forEach(function(node) {
+      // Replace text nodes with <mark> elements; track the mark elements
+      var marks = [];
+      results.forEach(function(node) {
         var mark = document.createElement('mark');
         mark.className = 'search-highlight';
         mark.textContent = node.textContent;
         var parent = node.parentNode;
         parent.insertBefore(mark, node);
         parent.removeChild(node);
+        marks.push(mark);
       });
+      searchMatches = marks;
 
       if (searchMatches.length > 0) {
         searchMatchIdx = 0;
@@ -4374,6 +4380,7 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
 
     function findTextMatches(node, regex, results) {
       if (node.nodeType === 3) { // Text node
+        regex.lastIndex = 0;  // reset global regex state across nodes
         if (regex.test(node.textContent)) {
           results.push(node);
         }
