@@ -1626,7 +1626,205 @@ ISSUE_PAGE_CSS = r"""
     margin: 0 1px;
   }
 
+  /* ── Research Lookup Drawer ── */
+  .research-drawer-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.25);
+    z-index: 9997;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+  .research-drawer-overlay.active {
+    opacity: 1; pointer-events: auto;
+  }
+  .research-drawer {
+    position: fixed; top: 0; right: 0; bottom: 0;
+    width: 460px; max-width: 90vw;
+    background: var(--bg);
+    border-left: 1px solid var(--border);
+    z-index: 9998;
+    display: flex; flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: -8px 0 32px rgba(0,0,0,0.3);
+  }
+  .research-drawer.active {
+    transform: translateX(0);
+  }
+  .rd-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .rd-header-left {
+    display: flex; align-items: center; gap: 10px;
+    min-width: 0;
+  }
+  .rd-query-badge {
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.05em; text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 5px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-family: var(--font-mono);
+    flex-shrink: 0;
+  }
+  .rd-title {
+    font-size: 14px; font-weight: 600;
+    color: var(--ink);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    font-family: var(--font-sans);
+  }
+  .rd-close {
+    width: 32px; height: 32px;
+    border: none; background: transparent;
+    color: var(--ink-muted);
+    cursor: pointer;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    transition: all 0.12s ease;
+    flex-shrink: 0;
+  }
+  .rd-close:hover {
+    background: var(--card-bg);
+    color: var(--ink);
+  }
+  .rd-body {
+    flex: 1; overflow-y: auto; padding: 12px 18px 24px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .rd-body::-webkit-scrollbar { width: 4px; }
+  .rd-body::-webkit-scrollbar-thumb {
+    background: var(--border); border-radius: 2px;
+  }
+  .rd-loading {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 60px 0; gap: 12px;
+    color: var(--ink-muted);
+    font-size: 13px;
+    font-family: var(--font-sans);
+  }
+  .rd-spinner {
+    width: 28px; height: 28px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: rd-spin 0.7s linear infinite;
+  }
+  @keyframes rd-spin { to { transform: rotate(360deg); } }
+  .rd-empty {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 60px 0; gap: 8px;
+    color: var(--ink-muted);
+    font-size: 13px;
+    font-family: var(--font-sans);
+    text-align: center;
+  }
+  .rd-empty-icon {
+    font-size: 32px; opacity: 0.4; margin-bottom: 4px;
+  }
+  .rd-result-card {
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    cursor: pointer;
+    transition: all 0.12s ease;
+    text-decoration: none;
+    display: block;
+  }
+  .rd-result-card:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-soft);
+  }
+  .rd-result-meta {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 6px;
+  }
+  .rd-section-tag {
+    font-size: 9px; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    padding: 2px 7px; border-radius: 4px;
+    font-family: var(--font-mono);
+    flex-shrink: 0;
+  }
+  .rd-section-tag.tag-context { background: rgba(74,111,165,0.15); color: #729ed4; }
+  .rd-section-tag.tag-passage { background: rgba(61,106,158,0.15); color: #6e98d4; }
+  .rd-section-tag.tag-expressions { background: rgba(166,124,46,0.15); color: #d4a84c; }
+  .rd-section-tag.tag-sentence { background: rgba(158,86,112,0.15); color: #d47a96; }
+  .rd-section-tag.tag-argument_chain { background: rgba(58,125,106,0.15); color: #6ec9a8; }
+  .rd-section-tag.tag-output { background: rgba(158,126,62,0.15); color: #d4b06e; }
+  .rd-section-tag.tag-topic { background: rgba(129,140,248,0.12); color: #a5adf0; }
+  .rd-section-tag.tag-web { background: rgba(108,199,145,0.12); color: #8ad4a8; }
+  .rd-date {
+    font-size: 11px; color: var(--ink-muted);
+    font-family: var(--font-mono);
+  }
+  .rd-snippet {
+    font-size: 12.5px; line-height: 1.55;
+    color: var(--ink-dim);
+    font-family: var(--font-sans);
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .rd-snippet em {
+    font-weight: 600; color: var(--accent);
+    font-style: normal;
+    background: rgba(136,157,196,0.15);
+    padding: 0 2px; border-radius: 2px;
+  }
+  .rd-web-url {
+    font-size: 10px; color: var(--ink-muted);
+    margin-top: 4px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    font-family: var(--font-mono);
+  }
+  .rd-mode-switch {
+    display: flex; gap: 4px;
+    padding: 4px;
+    border-radius: 9px;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    margin-bottom: 4px;
+  }
+  .rd-mode-btn {
+    flex: 1;
+    padding: 7px 8px;
+    border: none; border-radius: 7px;
+    background: transparent;
+    color: var(--ink-muted);
+    font-size: 11.5px; font-weight: 600;
+    font-family: var(--font-sans);
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: all 0.12s ease;
+    white-space: nowrap;
+  }
+  .rd-mode-btn.active {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+  .rd-mode-btn:hover:not(.active) {
+    color: var(--ink-dim);
+  }
+  .rd-external-link {
+    border-color: rgba(245,158,11,0.25) !important;
+    background: rgba(245,158,11,0.04) !important;
+  }
+  .rd-external-link:hover {
+    border-color: rgba(245,158,11,0.5) !important;
+    box-shadow: 0 0 0 2px rgba(245,158,11,0.12) !important;
+  }
+
   @media (max-width: 640px) {
+    .research-drawer {
+      width: 100vw; max-width: 100vw;
+    }
     .top-bar { padding: 6px 10px; gap: 6px; }
     .tb-search { min-width: 120px; padding: 4px 10px; }
     .tb-search-input { font-size: 12px; }
@@ -2947,7 +3145,7 @@ ISSUE_PAGE_CSS = r"""
     }
     body { font-size: 11pt; }
     .issue-shell { display: block; max-width: 100%; padding: 0; }
-    .issue-toc, .toc-mobile, .top-bar, .reader-toolbar, .keywords-panel, .text-select-popup { display: none !important; }
+    .issue-toc, .toc-mobile, .top-bar, .reader-toolbar, .keywords-panel, .text-select-popup, .research-drawer, .research-drawer-overlay { display: none !important; }
     .issue-main { max-width: 100%; padding: 0; }
     .issue-hero { padding: 20px 0 16px; }
     .issue-hero h1 { font-size: 18pt; }
@@ -4760,16 +4958,23 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
   }
 
   // ══════════════════════════════════════════
-  // 10. TEXT SELECTION SEARCH (划词检索)
+  // ══════════════════════════════════════════
+  // 10. TEXT SELECTION — RESEARCH LOOKUP (划词检索)
   // ══════════════════════════════════════════
   function initTextSelectionSearch() {
+    // ── Popup (3 buttons) ──
     var popup = document.createElement('div');
     popup.className = 'text-select-popup';
     popup.id = 'text-select-popup';
     popup.innerHTML =
-      '<button class="ts-btn" id="ts-search-btn" title="在页面中搜索选中的词">' +
-      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>' +
-      '搜索' +
+      '<button class="ts-btn" id="ts-internal-btn" title="在 ArgueLab 站内数据库中检索">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>' +
+      '站内检索' +
+      '</button>' +
+      '<span class="ts-divider"></span>' +
+      '<button class="ts-btn" id="ts-web-btn" title="联网搜索 — 查询外部信息、定义、新闻">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>' +
+      '联网搜索' +
       '</button>' +
       '<span class="ts-divider"></span>' +
       '<button class="ts-btn" id="ts-copy-btn" title="复制选中的文本">' +
@@ -4778,25 +4983,46 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
       '</button>';
     document.body.appendChild(popup);
 
+    // ── Drawer ──
+    var overlay = document.createElement('div');
+    overlay.className = 'research-drawer-overlay';
+    overlay.id = 'research-overlay';
+    document.body.appendChild(overlay);
+
+    var drawer = document.createElement('div');
+    drawer.className = 'research-drawer';
+    drawer.id = 'research-drawer';
+    drawer.innerHTML =
+      '<div class="rd-header">' +
+        '<div class="rd-header-left">' +
+          '<span class="rd-title" id="rd-title">Research Lookup</span>' +
+        '</div>' +
+        '<button class="rd-close" id="rd-close" title="关闭">&times;</button>' +
+      '</div>' +
+      '<div class="rd-body" id="rd-body">' +
+        '<div class="rd-empty" id="rd-empty">' +
+          '<div class="rd-empty-icon">&#x1F50D;</div>' +
+          '<div>选中文字后点击"站内检索"或"联网搜索"开始查询</div>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(drawer);
+
     var selectedText = '';
     var isActive = false;
     var hideTimer = null;
+    var currentMode = 'internal'; // 'internal' | 'web'
 
+    // ── Popup helpers ──
     function showPopup(x, y) {
       var pw = popup.offsetWidth;
       var ph = popup.offsetHeight;
       var wx = window.scrollX;
       var wy = window.scrollY;
       var ww = window.innerWidth;
-      var wh = window.innerHeight;
-
       var padding = 10;
       var left = Math.max(wx + padding, Math.min(x - pw / 2, wx + ww - pw - padding));
-      var top = y - ph - 14; // above selection
-      if (top < wy + 8) {
-        top = y + 20; // below selection if not enough room above
-      }
-
+      var top = y - ph - 14;
+      if (top < wy + 8) { top = y + 20; }
       popup.style.left = left + 'px';
       popup.style.top = top + 'px';
       popup.classList.add('active');
@@ -4810,19 +5036,183 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
       if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
     }
 
-    document.addEventListener('mouseup', function(e) {
-      // Clear any pending hide (prevent race with mousedown that clears selection)
-      if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
+    // ── Drawer helpers ──
+    function openDrawer(query, mode) {
+      currentMode = mode;
+      var titleEl = document.getElementById('rd-title');
+      if (titleEl) {
+        var label = mode === 'web' ? '联网搜索' : '站内检索';
+        titleEl.innerHTML = label + ': <span style="color:var(--accent);font-weight:600">' + escapeHTML(query) + '</span>';
+      }
+      document.getElementById('research-drawer').classList.add('active');
+      document.getElementById('research-overlay').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
 
-      // Let selection settle before reading
+    function closeDrawer() {
+      document.getElementById('research-drawer').classList.remove('active');
+      document.getElementById('research-overlay').classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    function escapeHTML(str) {
+      var div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    function showLoading() {
+      var body = document.getElementById('rd-body');
+      body.innerHTML = '<div class="rd-loading"><div class="rd-spinner"></div><span>Searching…</span></div>';
+    }
+
+    function showEmpty(msg) {
+      var body = document.getElementById('rd-body');
+      body.innerHTML = '<div class="rd-empty"><div class="rd-empty-icon">📭</div><div>' + (msg || 'No results found') + '</div></div>';
+    }
+
+    function showModeSwitch() {
+      // Create mode switch if not exists
+      var existing = document.getElementById('rd-mode-switch');
+      if (existing) return existing;
+      var sw = document.createElement('div');
+      sw.className = 'rd-mode-switch';
+      sw.id = 'rd-mode-switch';
+      sw.innerHTML =
+        '<button class="rd-mode-btn active" id="rd-mode-internal" title="ArgueLab 站内数据库检索">📚 站内</button>' +
+        '<button class="rd-mode-btn" id="rd-mode-web" title="外部网络搜索">🌐 联网</button>';
+      return sw;
+    }
+
+    function renderInternalResults(data) {
+      var body = document.getElementById('rd-body');
+      var html = '';
+
+      // Mode switch
+      html += '<div class="rd-mode-switch">' +
+        '<button class="rd-mode-btn active" onclick="document.dispatchEvent(new CustomEvent(\'rd-search\', {detail: {mode: \'internal\', query: \'' + escapeHTML(selectedText) + '\'}}))">📚 站内 ' + (data.total ? '(' + data.total + ')' : '') + '</button>' +
+        '<button class="rd-mode-btn" onclick="document.dispatchEvent(new CustomEvent(\'rd-search\', {detail: {mode: \'web\', query: \'' + escapeHTML(selectedText) + '\'}}))">🌐 联网</button>' +
+        '</div>';
+
+      if (!data.results || data.results.length === 0) {
+        html += '<div class="rd-empty"><div class="rd-empty-icon">📭</div><div>站内未找到匹配内容，尝试切换至"联网搜索"</div></div>';
+        body.innerHTML = html;
+        return;
+      }
+
+      for (var i = 0; i < data.results.length; i++) {
+        var r = data.results[i];
+        var tagClass = 'tag-' + r.section_type;
+        var tagLabel = r.section_heading.replace(/^[#\\d.\\s]*/, '').substring(0, 12);
+        var snippet = escapeHTML(r.snippet);
+        // Highlight query
+        var qry = escapeHTML(selectedText);
+        var re = new RegExp('(' + qry.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&') + ')', 'gi');
+        snippet = snippet.replace(re, '<em>$1</em>');
+
+        html +=
+          '<a class="rd-result-card" href="' + r.url + '" target="_top">' +
+            '<div class="rd-result-meta">' +
+              '<span class="rd-section-tag ' + tagClass + '">' + tagLabel + '</span>' +
+              '<span class="rd-date">' + escapeHTML(r.date) + '</span>' +
+            '</div>' +
+            '<div class="rd-snippet">' + snippet + '</div>' +
+          '</a>';
+      }
+
+      body.innerHTML = html;
+    }
+
+    function renderWebResults(data) {
+      var body = document.getElementById('rd-body');
+      var html = '';
+
+      // Mode switch
+      html += '<div class="rd-mode-switch">' +
+        '<button class="rd-mode-btn" onclick="document.dispatchEvent(new CustomEvent(\'rd-search\', {detail: {mode: \'internal\', query: \'' + escapeHTML(selectedText) + '\'}}))">📚 站内</button>' +
+        '<button class="rd-mode-btn active" onclick="document.dispatchEvent(new CustomEvent(\'rd-search\', {detail: {mode: \'web\', query: \'' + escapeHTML(selectedText) + '\'}}))">🌐 联网</button>' +
+        '</div>';
+
+      if (!data.results || data.results.length === 0) {
+        html += '<div class="rd-empty"><div class="rd-empty-icon">📭</div><div>未找到网络搜索结果</div></div>';
+        body.innerHTML = html;
+        return;
+      }
+
+      for (var i = 0; i < data.results.length; i++) {
+        var r = data.results[i];
+        var snip = escapeHTML(r.snippet);
+        var title = escapeHTML(r.title);
+        var isExternal = r.type === 'external_link';
+        var isAbstract = r.type === 'abstract';
+        var urlShow = r.url ? r.url.replace(/^https?:\\/\\//, '').replace(/\\/$/, '').substring(0, 60) : '';
+
+        var tagHtml = isExternal
+          ? '<span class="rd-section-tag tag-web" style="background:rgba(245,158,11,0.12);color:#f59e0b">🔗 OPEN IN DDG</span>'
+          : isAbstract
+            ? '<span class="rd-section-tag tag-web">📖 DEFINITION</span>'
+            : '<span class="rd-section-tag tag-web">WEB</span>';
+
+        var target = isExternal ? '_blank' : '_blank';
+        var rel = isExternal ? 'noopener' : 'noopener';
+
+        html +=
+          '<a class="rd-result-card' + (isExternal ? ' rd-external-link' : '') + '" href="' + (r.url ? escapeHTML(r.url) : '#') + '" target="' + target + '" rel="' + rel + '">' +
+            '<div class="rd-result-meta">' + tagHtml + '</div>' +
+            '<div class="rd-snippet"' + (isExternal ? ' style="font-weight:600;color:var(--ink);font-size:13px"' : '') + '>' + title + '</div>' +
+            (r.type !== 'external_link' ? '<div class="rd-snippet" style="margin-top:4px">' + snip + '</div>' +
+            '<div class="rd-web-url">' + escapeHTML(urlShow) + '</div>' : '') +
+          '</a>';
+      }
+
+      body.innerHTML = html;
+    }
+
+    // ── Search dispatch ──
+    function doResearchLookup(query, mode) {
+      selectedText = query;
+      if (!query) return;
+      openDrawer(query, mode);
+      showLoading();
+
+      var endpoint = mode === 'web'
+        ? '/api/search/web?q=' + encodeURIComponent(query) + '&limit=10'
+        : '/api/search/internal?q=' + encodeURIComponent(query) + '&limit=15';
+
+      fetch(endpoint)
+        .then(function(resp) {
+          if (!resp.ok) throw new Error('Search failed');
+          return resp.json();
+        })
+        .then(function(data) {
+          if (mode === 'web') {
+            renderWebResults(data);
+          } else {
+            renderInternalResults(data);
+          }
+        })
+        .catch(function(err) {
+          showEmpty('搜索请求失败，请检查网络后重试');
+        });
+    }
+
+    // ── Custom event listener for mode switching inside drawer ──
+    document.addEventListener('rd-search', function(e) {
+      doResearchLookup(e.detail.query, e.detail.mode);
+    });
+
+    // ── Selection detection ──
+    document.addEventListener('mouseup', function(e) {
+      if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
       setTimeout(function() {
         var sel = window.getSelection();
         var text = sel ? sel.toString().trim() : '';
 
-        // Ignore clicks on popup, search inputs, or form fields
         if (e.target.closest('#text-select-popup') ||
             e.target.closest('#top-search-input') ||
             e.target.closest('#search-input') ||
+            e.target.closest('#research-drawer') ||
+            e.target.closest('#research-overlay') ||
             e.target.closest('input') ||
             e.target.closest('textarea')) {
           return;
@@ -4833,10 +5223,8 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
           return;
         }
 
-        // Don't show popup for very common short words or whitespace-heavy text
         if (/^[\\s]+$/.test(text)) { hidePopup(); return; }
 
-        // Get selection bounding rect
         var range;
         try { range = sel.getRangeAt(0); } catch(err) { return; }
         var rect = range.getBoundingClientRect();
@@ -4848,25 +5236,23 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
       }, 15);
     });
 
-    // Click "Search in page" → feeds selected text into top bar search input
-    document.getElementById('ts-search-btn').addEventListener('mousedown', function(e) {
-      e.preventDefault(); // prevent deselection
-      var tbInput = document.getElementById('top-search-input');
-      if (tbInput && selectedText) {
-        tbInput.value = selectedText;
-        tbInput.focus();
-        // Dispatch input event so live-search picks it up
-        tbInput.dispatchEvent(new Event('input', { bubbles: true }));
-      }
+    // ── Button handlers ──
+    document.getElementById('ts-internal-btn').addEventListener('mousedown', function(e) {
+      e.preventDefault();
+      if (selectedText) { doResearchLookup(selectedText, 'internal'); }
       hidePopup();
     });
 
-    // Click "Copy" → copy to clipboard
+    document.getElementById('ts-web-btn').addEventListener('mousedown', function(e) {
+      e.preventDefault();
+      if (selectedText) { doResearchLookup(selectedText, 'web'); }
+      hidePopup();
+    });
+
     document.getElementById('ts-copy-btn').addEventListener('mousedown', function(e) {
       e.preventDefault();
       if (selectedText) {
         navigator.clipboard.writeText(selectedText).then(function() {
-          // Brief visual feedback
           var btn = document.getElementById('ts-copy-btn');
           if (btn) {
             btn.innerHTML =
@@ -4883,21 +5269,27 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
       hidePopup();
     });
 
-    // Dismiss popup on mousedown elsewhere (with small delay to allow button clicks)
+    // ── Drawer close ──
+    document.getElementById('rd-close').addEventListener('click', closeDrawer);
+    document.getElementById('research-overlay').addEventListener('click', closeDrawer);
+
+    // ── Dismiss popup ──
     document.addEventListener('mousedown', function(e) {
-      if (isActive && !e.target.closest('#text-select-popup')) {
+      if (isActive && !e.target.closest('#text-select-popup') && !e.target.closest('#research-drawer')) {
         hideTimer = setTimeout(hidePopup, 50);
       }
     });
 
-    // Dismiss on Escape
     document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape' && isActive) {
-        hidePopup();
+      if (e.key === 'Escape') {
+        if (document.getElementById('research-drawer').classList.contains('active')) {
+          closeDrawer();
+        } else if (isActive) {
+          hidePopup();
+        }
       }
     });
 
-    // Dismiss on scroll (popup would be in the wrong place)
     var scrollTimeout;
     window.addEventListener('scroll', function() {
       if (isActive) {
@@ -4906,7 +5298,6 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
       }
     }, { passive: true });
 
-    // Dismiss on window resize
     window.addEventListener('resize', function() {
       if (isActive) hidePopup();
     });
@@ -6750,6 +7141,254 @@ def _render_output_tasks(text: str) -> str:
     return "\n".join(html)
 
 
+# ── Internal Search Engine ──
+
+class BriefingSearchEngine:
+    """Full-text search across all ArgueLab briefing content.
+    
+    Indexes every briefing .md file, parsing content into typed sections
+    (context, passage, expressions, sentence, argument_chain, output).
+    """
+    
+    SECTION_KEYWORDS = {
+        "今日议题背景": "context",
+        "外刊核心段落": "passage",
+        "5个可迁移表达": "expressions",
+        "高级句型拆解": "sentence",
+        "中文观点": "argument_chain",
+        "输出任务": "output",
+        "来源附录": "source_notes",
+    }
+    
+    def __init__(self, briefing_dir: Path):
+        self.briefing_dir = briefing_dir
+        self.docs = []     # [{date, topic, source, url, sections: [{type, heading, content}]}]
+        self._build()
+    
+    def _parse(self, filepath: Path) -> dict | None:
+        text = filepath.read_text(encoding="utf-8")
+        lines = text.split("\n")
+        doc = {"date": "", "topic": "", "source": "", "url": "", "sections": []}
+        
+        # Parse frontmatter (YAML `---` blocks)
+        in_fm = False
+        has_fm = False
+        for line in lines:
+            if line.strip() == "---":
+                if not in_fm:
+                    in_fm = True
+                    has_fm = True
+                    continue
+                else:
+                    break
+            if in_fm:
+                if line.startswith("date:"):
+                    doc["date"] = line.split(":", 1)[1].strip()
+                elif line.startswith("topic:"):
+                    doc["topic"] = line.split(":", 1)[1].strip().strip('"')
+                elif line.startswith("source:"):
+                    doc["source"] = line.split(":", 1)[1].strip().strip('"')
+                elif line.startswith("url:"):
+                    doc["url"] = line.split(":", 1)[1].strip().strip('"')
+        
+        # Fallback: parse legacy format (no YAML frontmatter)
+        if not has_fm or not doc["date"]:
+            for line in lines:
+                # Extract date from heading: "# ArgueLab — 今日训练简报 | June 25, 2026"
+                if line.startswith("# ") and ("ArgueLab" in line or "简报" in line):
+                    m = re.search(r'(\d{4}-\d{2}-\d{2})', line)
+                    if m:
+                        doc["date"] = m.group(1)
+                    else:
+                        # Try "June 25, 2026" format → YYYY-MM-DD
+                        from datetime import datetime as _dt
+                        m2 = re.search(r'([A-Z][a-z]+ \d{1,2},? \d{4})', line)
+                        if m2:
+                            try:
+                                d = _dt.strptime(m2.group(1).replace(",", ""), "%B %d %Y")
+                                doc["date"] = d.strftime("%Y-%m-%d")
+                            except ValueError:
+                                pass
+                # Extract topic from "> **今日议题：** ..." or "**议题：** ..."
+                if "议题" in line and "**" in line:
+                    topic = re.sub(r'^>\s*\*+\s*今日议题[：:]\s*\*+', '', line)
+                    topic = re.sub(r'\*+', '', topic).strip()
+                    if topic and not doc["topic"]:
+                        doc["topic"] = topic
+        
+        if not doc["date"]:
+            return None
+        
+        # Parse sections
+        current_section = None
+        section_lines = []
+        
+        for line in lines:
+            if line.startswith("## "):
+                if current_section and section_lines:
+                    content = "\n".join(section_lines).strip()
+                    if content:
+                        doc["sections"].append({
+                            "type": current_section["type"],
+                            "heading": current_section["heading"],
+                            "content": content
+                        })
+                
+                heading = line[3:].strip()
+                stype = "other"
+                for kw, t in self.SECTION_KEYWORDS.items():
+                    if kw in heading:
+                        stype = t
+                        break
+                current_section = {"type": stype, "heading": heading}
+                section_lines = []
+            elif current_section:
+                section_lines.append(line)
+        
+        # Last section
+        if current_section and section_lines:
+            content = "\n".join(section_lines).strip()
+            if content:
+                doc["sections"].append({
+                    "type": current_section["type"],
+                    "heading": current_section["heading"],
+                    "content": content
+                })
+        
+        return doc
+    
+    def _build(self):
+        self.docs = []
+        if not self.briefing_dir.exists():
+            return
+        for mdfile in sorted(self.briefing_dir.glob("*.md")):
+            doc = self._parse(mdfile)
+            if doc:
+                self.docs.append(doc)
+    
+    def search(self, query: str, limit: int = 15) -> list:
+        """Return ranked search results across all indexed content."""
+        q = query.strip().lower()
+        if not q:
+            return []
+        terms = q.split()
+        hits = []
+        
+        for di, doc in enumerate(self.docs):
+            # Topic match (high-weight)
+            if q in doc["topic"].lower():
+                hits.append({
+                    "date": doc["date"], "topic": doc["topic"],
+                    "section_type": "topic", "section_heading": "议题",
+                    "snippet": doc["topic"], "score": 5.0,
+                    "url": f"/issues/{doc['date']}"
+                })
+            
+            for sec in doc["sections"]:
+                content_lower = sec["content"].lower()
+                if q not in content_lower:
+                    continue
+                
+                score = sum(content_lower.count(t) for t in terms)
+                # Section-type boosts
+                boost = {"expressions": 1.5, "sentence": 1.3, "passage": 1.2,
+                         "argument_chain": 1.1}.get(sec["type"], 1.0)
+                score *= boost
+                
+                # Snippet
+                idx = content_lower.find(q)
+                start = max(0, idx - 50)
+                end = min(len(sec["content"]), idx + len(query) + 100)
+                snip = sec["content"][start:end].strip()
+                if start > 0:
+                    snip = "…" + snip
+                if end < len(sec["content"]):
+                    snip += "…"
+                
+                hits.append({
+                    "date": doc["date"], "topic": doc["topic"],
+                    "section_type": sec["type"],
+                    "section_heading": sec["heading"],
+                    "snippet": snip, "score": score,
+                    "url": f"/issues/{doc['date']}"
+                })
+        
+        hits.sort(key=lambda r: r["score"], reverse=True)
+        return hits[:limit]
+    
+    def stats(self) -> dict:
+        return {
+            "total_docs": len(self.docs),
+            "total_sections": sum(len(d["sections"]) for d in self.docs)
+        }
+
+# (initialized lazily)
+_search_engine: BriefingSearchEngine | None = None
+
+def _get_search_engine() -> BriefingSearchEngine:
+    global _search_engine
+    if _search_engine is None:
+        _search_engine = BriefingSearchEngine(_get_briefing_dir())
+    return _search_engine
+
+
+# ── Web Search: DuckDuckGo Instant Answer API + search URL fallback ──
+
+def _web_search(query: str, limit: int = 10) -> list:
+    """Search the web via DuckDuckGo Instant Answer API.
+    
+    Returns structured results: [{title, snippet, url, type}]
+    Types: 'abstract' (DDG abstract/summary), 'related' (related topic),
+           'external_link' (open in DuckDuckGo).
+    """
+    results = []
+    
+    # 1. Try DuckDuckGo Instant Answer API for definitions/abstracts
+    import urllib.parse, json as _json
+    try:
+        encoded = urllib.parse.quote(query)
+        api_url = f"https://api.duckduckgo.com/?q={encoded}&format=json&no_html=1&skip_disambig=1"
+        req = urllib.request.Request(api_url, headers={"User-Agent": "ArgueLab/1.0"})
+        with urllib.request.urlopen(req, timeout=6) as resp:
+            data = _json.loads(resp.read().decode("utf-8"))
+        
+        # Abstract / definition
+        abstract = (data.get("AbstractText") or "").strip()
+        abstract_url = data.get("AbstractURL") or ""
+        if abstract and len(abstract) > 10:
+            results.append({
+                "title": data.get("Heading", query) or query,
+                "snippet": abstract[:500],
+                "url": abstract_url or f"https://duckduckgo.com/?q={encoded}",
+                "type": "abstract"
+            })
+        
+        # Related topics
+        for topic in data.get("RelatedTopics", [])[:limit - len(results)]:
+            if isinstance(topic, dict) and "Text" in topic:
+                text = topic["Text"]
+                url = topic.get("FirstURL", "")
+                results.append({
+                    "title": re.sub(r' - .*$', '', text)[:120],
+                    "snippet": re.sub(r'<[^>]+>', '', text)[:300],
+                    "url": url,
+                    "type": "related"
+                })
+    except Exception:
+        pass
+    
+    # 2. Always provide a "full search" link as fallback
+    encoded = urllib.parse.quote(query)
+    results.append({
+        "title": f"Open full web search for \"{query}\"",
+        "snippet": f"Click to open DuckDuckGo search results for \"{query}\" in a new tab.",
+        "url": f"https://duckduckgo.com/?q={encoded}",
+        "type": "external_link"
+    })
+    
+    return results[:limit]
+
+
 # ── HTTP API Server ──
 
 class APIHandler(BaseHTTPRequestHandler):
@@ -6826,6 +7465,48 @@ class APIHandler(BaseHTTPRequestHandler):
                     self._send_json({"html": html})
                     return
             self._send_json({"error": "No briefing found"}, 404)
+        elif self.path.startswith("/api/search/internal"):
+            # Internal knowledge search across all briefing content
+            import urllib.parse
+            qs = urllib.parse.urlparse(self.path).query
+            params = urllib.parse.parse_qs(qs)
+            query = params.get("q", [""])[0].strip()
+            if not query:
+                self._send_json({"error": "Missing query parameter 'q'"}, 400)
+                return
+            try:
+                limit = min(int(params.get("limit", ["15"])[0]), 50)
+            except ValueError:
+                limit = 15
+            engine = _get_search_engine()
+            results = engine.search(query, limit=limit)
+            self._send_json({
+                "query": query,
+                "total": len(results),
+                "source": "arguelab_internal",
+                "stats": engine.stats(),
+                "results": results
+            })
+        elif self.path.startswith("/api/search/web"):
+            # Web search proxy via DuckDuckGo HTML
+            import urllib.parse
+            qs = urllib.parse.urlparse(self.path).query
+            params = urllib.parse.parse_qs(qs)
+            query = params.get("q", [""])[0].strip()
+            if not query:
+                self._send_json({"error": "Missing query parameter 'q'"}, 400)
+                return
+            try:
+                limit = min(int(params.get("limit", ["10"])[0]), 20)
+            except ValueError:
+                limit = 10
+            results = _web_search(query, limit=limit)
+            self._send_json({
+                "query": query,
+                "total": len(results),
+                "source": "web",
+                "results": results
+            })
         else:
             self.send_response(404)
             self.end_headers()
