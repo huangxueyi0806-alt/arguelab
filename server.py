@@ -3560,7 +3560,8 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
         for i, kw in enumerate(keywords):
             safe_kw = _escape_html(kw)
             collapsed = ' kw-collapsed' if i >= 6 else ''
-            chips.append(f'<span class="kt-chip{collapsed}" data-kw="{safe_kw}" role="button" tabindex="0">{safe_kw}</span>')
+            dc_attr = ' data-collapsed="true"' if i >= 6 else ''
+            chips.append(f'<span class="kt-chip{collapsed}" data-kw="{safe_kw}"{dc_attr} role="button" tabindex="0">{safe_kw}</span>')
         show_all_btn = ''
         if len(keywords) > 6:
             show_all_btn = '<button class="kwp-toggle" id="kw-show-all" aria-expanded="false">Show all ({n})</button>'.format(n=len(keywords))
@@ -4590,7 +4591,7 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
       var expanded = false;
       showAllBtn.addEventListener('click', function() {
         expanded = !expanded;
-        var chips = document.querySelectorAll('.keywords-panel .kt-chip.kw-collapsed');
+        var chips = document.querySelectorAll('.keywords-panel .kt-chip[data-collapsed]');
         chips.forEach(function(c) { c.classList.toggle('kw-collapsed', !expanded); });
         showAllBtn.textContent = expanded ? 'Show less' : 'Show all (' + chips.length + ')';
         showAllBtn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
