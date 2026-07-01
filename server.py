@@ -1569,6 +1569,63 @@ ISSUE_PAGE_CSS = r"""
   .top-action-btn .ta-icon svg {
     width: 16px; height: 16px;
   }
+  /* ── Text Selection Popup (划词检索) ── */
+  .text-select-popup {
+    position: absolute;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 4px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-strong);
+    border-radius: 10px;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.04);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.12s ease, transform 0.12s ease;
+    pointer-events: none;
+    user-select: none;
+  }
+  .text-select-popup.active {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  .text-select-popup .ts-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 10px;
+    border: none;
+    border-radius: 7px;
+    background: transparent;
+    color: var(--ink-dim);
+    font-size: 12px;
+    font-family: var(--font-sans);
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.12s ease;
+    letter-spacing: 0.02em;
+  }
+  .text-select-popup .ts-btn:hover {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+  .text-select-popup .ts-btn svg {
+    width: 13px; height: 13px;
+    stroke: currentColor;
+    flex-shrink: 0;
+  }
+  .text-select-popup .ts-divider {
+    width: 1px; height: 18px;
+    background: var(--border);
+    margin: 0 1px;
+  }
+
   @media (max-width: 640px) {
     .top-bar { padding: 6px 10px; gap: 6px; }
     .tb-search { min-width: 120px; padding: 4px 10px; }
@@ -2890,7 +2947,7 @@ ISSUE_PAGE_CSS = r"""
     }
     body { font-size: 11pt; }
     .issue-shell { display: block; max-width: 100%; padding: 0; }
-    .issue-toc, .toc-mobile, .top-bar, .reader-toolbar, .keywords-panel { display: none !important; }
+    .issue-toc, .toc-mobile, .top-bar, .reader-toolbar, .keywords-panel, .text-select-popup { display: none !important; }
     .issue-main { max-width: 100%; padding: 0; }
     .issue-hero { padding: 20px 0 16px; }
     .issue-hero h1 { font-size: 18pt; }
@@ -4703,7 +4760,160 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
   }
 
   // ══════════════════════════════════════════
-  // 10. KEYWORD RELATION POPOVER
+  // 10. TEXT SELECTION SEARCH (划词检索)
+  // ══════════════════════════════════════════
+  function initTextSelectionSearch() {
+    var popup = document.createElement('div');
+    popup.className = 'text-select-popup';
+    popup.id = 'text-select-popup';
+    popup.innerHTML =
+      '<button class="ts-btn" id="ts-search-btn" title="在页面中搜索选中的词">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>' +
+      '搜索' +
+      '</button>' +
+      '<span class="ts-divider"></span>' +
+      '<button class="ts-btn" id="ts-copy-btn" title="复制选中的文本">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>' +
+      '复制' +
+      '</button>';
+    document.body.appendChild(popup);
+
+    var selectedText = '';
+    var isActive = false;
+    var hideTimer = null;
+
+    function showPopup(x, y) {
+      var pw = popup.offsetWidth;
+      var ph = popup.offsetHeight;
+      var wx = window.scrollX;
+      var wy = window.scrollY;
+      var ww = window.innerWidth;
+      var wh = window.innerHeight;
+
+      var padding = 10;
+      var left = Math.max(wx + padding, Math.min(x - pw / 2, wx + ww - pw - padding));
+      var top = y - ph - 14; // above selection
+      if (top < wy + 8) {
+        top = y + 20; // below selection if not enough room above
+      }
+
+      popup.style.left = left + 'px';
+      popup.style.top = top + 'px';
+      popup.classList.add('active');
+      isActive = true;
+    }
+
+    function hidePopup() {
+      popup.classList.remove('active');
+      isActive = false;
+      selectedText = '';
+      if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
+    }
+
+    document.addEventListener('mouseup', function(e) {
+      // Clear any pending hide (prevent race with mousedown that clears selection)
+      if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
+
+      // Let selection settle before reading
+      setTimeout(function() {
+        var sel = window.getSelection();
+        var text = sel ? sel.toString().trim() : '';
+
+        // Ignore clicks on popup, search inputs, or form fields
+        if (e.target.closest('#text-select-popup') ||
+            e.target.closest('#top-search-input') ||
+            e.target.closest('#search-input') ||
+            e.target.closest('input') ||
+            e.target.closest('textarea')) {
+          return;
+        }
+
+        if (!text || text.length < 2 || text.length > 150) {
+          hidePopup();
+          return;
+        }
+
+        // Don't show popup for very common short words or whitespace-heavy text
+        if (/^[\\s]+$/.test(text)) { hidePopup(); return; }
+
+        // Get selection bounding rect
+        var range;
+        try { range = sel.getRangeAt(0); } catch(err) { return; }
+        var rect = range.getBoundingClientRect();
+        var cx = rect.left + rect.width / 2 + window.scrollX;
+        var cy = rect.top + window.scrollY;
+
+        selectedText = text;
+        showPopup(cx, cy);
+      }, 15);
+    });
+
+    // Click "Search in page" → feeds selected text into top bar search input
+    document.getElementById('ts-search-btn').addEventListener('mousedown', function(e) {
+      e.preventDefault(); // prevent deselection
+      var tbInput = document.getElementById('top-search-input');
+      if (tbInput && selectedText) {
+        tbInput.value = selectedText;
+        tbInput.focus();
+        // Dispatch input event so live-search picks it up
+        tbInput.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+      hidePopup();
+    });
+
+    // Click "Copy" → copy to clipboard
+    document.getElementById('ts-copy-btn').addEventListener('mousedown', function(e) {
+      e.preventDefault();
+      if (selectedText) {
+        navigator.clipboard.writeText(selectedText).then(function() {
+          // Brief visual feedback
+          var btn = document.getElementById('ts-copy-btn');
+          if (btn) {
+            btn.innerHTML =
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' +
+              '已复制';
+            setTimeout(function() {
+              btn.innerHTML =
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>' +
+                '复制';
+            }, 1200);
+          }
+        }).catch(function() {});
+      }
+      hidePopup();
+    });
+
+    // Dismiss popup on mousedown elsewhere (with small delay to allow button clicks)
+    document.addEventListener('mousedown', function(e) {
+      if (isActive && !e.target.closest('#text-select-popup')) {
+        hideTimer = setTimeout(hidePopup, 50);
+      }
+    });
+
+    // Dismiss on Escape
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && isActive) {
+        hidePopup();
+      }
+    });
+
+    // Dismiss on scroll (popup would be in the wrong place)
+    var scrollTimeout;
+    window.addEventListener('scroll', function() {
+      if (isActive) {
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(hidePopup, 80);
+      }
+    }, { passive: true });
+
+    // Dismiss on window resize
+    window.addEventListener('resize', function() {
+      if (isActive) hidePopup();
+    });
+  }
+
+  // ══════════════════════════════════════════
+  // 11. KEYWORD RELATION POPOVER
   // ══════════════════════════════════════════
   var kwPopover = null;
 
@@ -4827,6 +5037,7 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
     initReadingTimer();
     initKeywordToolbar();
     initInPageSearch();
+    initTextSelectionSearch();
     initKeywordPopover();
     initKeywordsPanel();
   }
