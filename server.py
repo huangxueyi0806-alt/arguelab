@@ -1439,15 +1439,98 @@ ISSUE_PAGE_CSS = r"""
   }
 
   /* ── Top Actions Bar (unified: PDF + Theme) ── */
-  .top-actions {
+  /* ── Fixed Top Bar (Download + Search + Theme) ── */
+  .top-bar {
     position: fixed;
-    top: 20px;
-    right: 24px;
+    top: 0; left: 0; right: 0;
     z-index: 1000;
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 8px 20px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
   }
+  /* search group inside top bar */
+  .tb-search {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: var(--card-bg);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    min-width: 180px;
+  }
+  .tb-search:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+  .tb-search .ts-icon {
+    width: 14px; height: 14px;
+    color: var(--ink-muted);
+    flex-shrink: 0;
+  }
+  .tb-search-input {
+    flex: 1;
+    border: none; outline: none;
+    background: transparent;
+    color: var(--ink);
+    font-size: 13px;
+    font-family: var(--font-sans);
+    min-width: 80px;
+  }
+  .tb-search-input::placeholder {
+    color: var(--ink-muted);
+    font-size: 12px;
+  }
+  .tb-search-count {
+    font-size: 11px;
+    color: var(--ink-muted);
+    font-family: var(--font-mono);
+    white-space: nowrap;
+    display: none;
+  }
+  .tb-search-count.visible { display: inline; }
+  .tb-search-nav {
+    width: 22px; height: 22px;
+    display: none;
+    align-items: center; justify-content: center;
+    border: none; background: transparent;
+    color: var(--ink-muted);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 0;
+    transition: all 0.15s ease;
+  }
+  .tb-search-nav.visible { display: flex; }
+  .tb-search-nav:hover {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+  .tb-search-nav:disabled {
+    opacity: 0.3; cursor: default;
+  }
+  .tb-search-clear {
+    width: 22px; height: 22px;
+    display: none;
+    align-items: center; justify-content: center;
+    border: none; background: transparent;
+    color: var(--ink-muted);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0;
+    line-height: 1;
+  }
+  .tb-search-clear.visible { display: flex; }
+  .tb-search-clear:hover { color: var(--ink); }
+
   .top-action-btn {
     display: flex;
     align-items: center;
@@ -1487,7 +1570,9 @@ ISSUE_PAGE_CSS = r"""
     width: 16px; height: 16px;
   }
   @media (max-width: 640px) {
-    .top-actions { top: 12px; right: 12px; gap: 4px; }
+    .top-bar { padding: 6px 10px; gap: 6px; }
+    .tb-search { min-width: 120px; padding: 4px 10px; }
+    .tb-search-input { font-size: 12px; }
     .top-action-btn { padding: 6px 10px; font-size: 11px; }
     .top-action-btn .ta-label { display: none; }
   }
@@ -2805,7 +2890,7 @@ ISSUE_PAGE_CSS = r"""
     }
     body { font-size: 11pt; }
     .issue-shell { display: block; max-width: 100%; padding: 0; }
-    .issue-toc, .toc-mobile, .top-actions, .reader-toolbar, .keywords-panel { display: none !important; }
+    .issue-toc, .toc-mobile, .top-bar, .reader-toolbar, .keywords-panel { display: none !important; }
     .issue-main { max-width: 100%; padding: 0; }
     .issue-hero { padding: 20px 0 16px; }
     .issue-hero h1 { font-size: 18pt; }
@@ -3070,7 +3155,7 @@ ISSUE_PAGE_CSS = r"""
     border-radius: 12px;
     box-shadow: var(--shadow-sm);
     position: sticky;
-    top: 20px;
+    top: 52px;
     z-index: 95;
   }
   .reader-toolbar .rt-timer {
@@ -3083,6 +3168,27 @@ ISSUE_PAGE_CSS = r"""
     width: 14px; height: 14px;
     stroke: var(--accent); stroke-width: 1.8;
     fill: none; stroke-linecap: round; stroke-linejoin: round;
+  }
+  .reader-toolbar .rt-timer-pause {
+    width: 20px; height: 20px;
+    display: flex; align-items: center; justify-content: center;
+    border: none; background: transparent;
+    color: var(--ink-muted);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 11px;
+    padding: 0;
+    margin-left: 2px;
+    transition: all 0.15s ease;
+  }
+  .reader-toolbar .rt-timer-pause:hover {
+    color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .reader-toolbar .rt-timer-pause svg {
+    width: 12px; height: 12px;
+    fill: currentColor;
+    stroke: none;
   }
   .reader-toolbar .rt-divider {
     width: 1px; height: 22px;
@@ -3624,23 +3730,22 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
   <p class="issue-meta">{_escape_html(date_str)} &middot; {_escape_html(training_focus)}</p>
 </div>''')
 
-    # 2. Reader toolbar (between hero and keywords: timer, search, keywords toggle)
+    # 2. Reader toolbar (between hero and keywords: timer, keywords toggle)
     kw_toggle_btn = ''
     if keywords:
-        kw_toggle_btn = '<button class="rt-btn" id="btn-toggle-kw" title="Toggle keywords panel">Keywords</button>'
+        kw_toggle_btn = '<button class="rt-btn" id="btn-toggle-kw" title="Toggle keywords panel" style="margin-left:auto">Keywords</button>'
     reader_toolbar_html = (
         '<div class="reader-toolbar" id="reader-toolbar">'
         '<span class="rt-timer" id="reader-timer" title="Time reading this issue">'
         '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'
         '<span id="rt-timer-text">00:00</span>'
+        '<button class="rt-timer-pause" id="btn-timer-pause" title="Pause / Resume timer" aria-label="Pause timer">'
+        '<svg id="timer-pause-icon" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>'
+        '<svg id="timer-play-icon" viewBox="0 0 24 24" style="display:none"><polygon points="5,3 19,12 5,21"/></svg>'
+        '</button>'
         '</span>'
         '<span class="rt-divider"></span>'
-        '<button class="rt-btn" id="btn-search" title="Search this issue (Ctrl+K)">'
-        '<svg class="rt-btn-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>'
-        'Search'
-        '</button>'
         + kw_toggle_btn +
-        '<span class="rt-spacer"></span>'
         '</div>'
     )
     html_parts.append(reader_toolbar_html)
@@ -4207,14 +4312,36 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
     updateDisplay();
 
     // Start timer (page visibility aware)
+    var timerPaused = false;
     readingTimerInterval = setInterval(function() {
-      if (document.hidden) return;
+      if (timerPaused || document.hidden) return;
       readingSeconds++;
       updateDisplay();
       try {
         localStorage.setItem(readingStorageKey, readingSeconds);
       } catch(e) {}
     }, 1000);
+
+    // Pause / Resume button
+    var pauseBtn = document.getElementById('btn-timer-pause');
+    var pauseIcon = document.getElementById('timer-pause-icon');
+    var playIcon = document.getElementById('timer-play-icon');
+    if (pauseBtn) {
+      pauseBtn.addEventListener('click', function() {
+        timerPaused = !timerPaused;
+        if (timerPaused) {
+          pauseIcon.style.display = 'none';
+          playIcon.style.display = 'block';
+          pauseBtn.setAttribute('title', 'Resume timer');
+          pauseBtn.setAttribute('aria-label', 'Resume timer');
+        } else {
+          pauseIcon.style.display = 'block';
+          playIcon.style.display = 'none';
+          pauseBtn.setAttribute('title', 'Pause timer');
+          pauseBtn.setAttribute('aria-label', 'Pause timer');
+        }
+      });
+    }
   }
 
   // ══════════════════════════════════════════
@@ -4326,34 +4453,29 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
   }
 
   // ══════════════════════════════════════════
-  // 9. IN-PAGE SEARCH
+  // 9. IN-PAGE SEARCH (top bar primary + overlay fallback)
   // ══════════════════════════════════════════
   var searchMatches = [];
   var searchMatchIdx = -1;
 
   function initInPageSearch() {
+    // ── Top bar search elements ──
+    var tbInput = document.getElementById('top-search-input');
+    var tbCount = document.getElementById('top-search-count');
+    var tbPrev = document.getElementById('top-search-prev');
+    var tbNext = document.getElementById('top-search-next');
+    var tbClear = document.getElementById('top-search-clear');
+
+    // ── Overlay fallback elements ──
     var overlay = document.getElementById('search-overlay');
-    var input = document.getElementById('search-input');
-    var countEl = document.getElementById('search-count');
-    var prevBtn = document.getElementById('search-prev');
-    var nextBtn = document.getElementById('search-next');
-    var closeBtn = document.getElementById('search-close');
-    if (!overlay || !input) return;
+    var ovInput = document.getElementById('search-input');
+    var ovCount = document.getElementById('search-count');
+    var ovPrev = document.getElementById('search-prev');
+    var ovNext = document.getElementById('search-next');
+    var ovClose = document.getElementById('search-close');
 
-    function openSearch() {
-      overlay.classList.add('active');
-      input.focus();
-      input.select();
-    }
-
-    function closeSearch() {
-      overlay.classList.remove('active');
-      clearSearchHighlights();
-      input.value = '';
-      searchMatches = [];
-      searchMatchIdx = -1;
-      updateSearchNav();
-    }
+    // ── Shared state ──
+    var currentQuery = '';
 
     function clearSearchHighlights() {
       searchMatches.forEach(function(mark) {
@@ -4367,12 +4489,11 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
       searchMatchIdx = -1;
     }
 
-    function doSearch() {
+    function doSearch(query) {
       clearSearchHighlights();
-      var query = input.value.trim();
+      currentQuery = query;
       if (!query) {
-        countEl.textContent = '';
-        updateSearchNav();
+        updateAllNav();
         return;
       }
       var main = document.querySelector('.issue-main');
@@ -4381,7 +4502,6 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
       var results = [];
       findTextMatches(main, regex, results);
 
-      // Replace text nodes with <mark> elements; track the mark elements
       var marks = [];
       results.forEach(function(node) {
         var mark = document.createElement('mark');
@@ -4399,12 +4519,12 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
         searchMatches[0].classList.add('active');
         searchMatches[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
-      updateSearchNav();
+      updateAllNav();
     }
 
     function findTextMatches(node, regex, results) {
-      if (node.nodeType === 3) { // Text node
-        regex.lastIndex = 0;  // reset global regex state across nodes
+      if (node.nodeType === 3) {
+        regex.lastIndex = 0;
         if (regex.test(node.textContent)) {
           results.push(node);
         }
@@ -4419,7 +4539,6 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
 
     function navigateSearch(dir) {
       if (searchMatches.length === 0) return;
-      // Remove current active
       if (searchMatchIdx >= 0 && searchMatchIdx < searchMatches.length) {
         searchMatches[searchMatchIdx].classList.remove('active');
       }
@@ -4428,71 +4547,157 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
       if (searchMatchIdx >= searchMatches.length) searchMatchIdx = 0;
       searchMatches[searchMatchIdx].classList.add('active');
       searchMatches[searchMatchIdx].scrollIntoView({ behavior: 'smooth', block: 'center' });
-      updateSearchNav();
+      updateAllNav();
     }
 
-    function updateSearchNav() {
+    function updateAllNav() {
+      updateTopBarNav();
+      updateOverlayNav();
+    }
+
+    function updateTopBarNav() {
+      if (!tbCount || !tbPrev || !tbNext || !tbClear) return;
       if (searchMatches.length > 0) {
-        countEl.innerHTML = '<span class="sc-current">' + (searchMatchIdx + 1) + '</span>/' + searchMatches.length;
-        prevBtn.disabled = false;
-        nextBtn.disabled = false;
-      } else if (input.value.trim()) {
-        countEl.textContent = '0/0';
-        prevBtn.disabled = true;
-        nextBtn.disabled = true;
+        tbCount.textContent = (searchMatchIdx + 1) + '/' + searchMatches.length;
+        tbCount.classList.add('visible');
+        tbPrev.classList.add('visible');
+        tbPrev.disabled = false;
+        tbNext.classList.add('visible');
+        tbNext.disabled = false;
+        tbClear.classList.add('visible');
+      } else if (currentQuery) {
+        tbCount.textContent = '0/0';
+        tbCount.classList.add('visible');
+        tbPrev.classList.add('visible'); tbPrev.disabled = true;
+        tbNext.classList.add('visible'); tbNext.disabled = true;
+        tbClear.classList.add('visible');
       } else {
-        countEl.textContent = '';
-        prevBtn.disabled = true;
-        nextBtn.disabled = true;
+        tbCount.classList.remove('visible');
+        tbPrev.classList.remove('visible');
+        tbNext.classList.remove('visible');
+        tbClear.classList.remove('visible');
       }
     }
 
-    // Event listeners
-    input.addEventListener('input', doSearch);
-    input.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        navigateSearch(e.shiftKey ? -1 : 1);
+    function updateOverlayNav() {
+      if (!ovCount || !ovPrev || !ovNext) return;
+      if (searchMatches.length > 0) {
+        ovCount.innerHTML = '<span class="sc-current">' + (searchMatchIdx + 1) + '</span>/' + searchMatches.length;
+        ovPrev.disabled = false;
+        ovNext.disabled = false;
+      } else if (ovInput && ovInput.value.trim()) {
+        ovCount.textContent = '0/0';
+        ovPrev.disabled = true;
+        ovNext.disabled = true;
+      } else {
+        ovCount.textContent = '';
+        ovPrev.disabled = true;
+        ovNext.disabled = true;
       }
-    });
-    prevBtn.addEventListener('click', function() { navigateSearch(-1); });
-    nextBtn.addEventListener('click', function() { navigateSearch(1); });
-    closeBtn.addEventListener('click', closeSearch);
-    overlay.addEventListener('click', function(e) {
-      if (e.target === overlay) closeSearch();
-    });
+    }
 
-    // Search button in reader toolbar
-    var searchBtn = document.getElementById('btn-search');
-    if (searchBtn) {
-      searchBtn.addEventListener('click', function() {
-        if (overlay.classList.contains('active')) {
-          closeSearch();
-        } else {
-          clearKeywordHighlights();
-          openSearch();
+    function clearAllSearch() {
+      clearSearchHighlights();
+      currentQuery = '';
+      if (tbInput) tbInput.value = '';
+      if (ovInput) ovInput.value = '';
+      updateAllNav();
+    }
+
+    // ── Top bar search: live search as you type ──
+    if (tbInput) {
+      tbInput.addEventListener('input', function() {
+        var q = tbInput.value.trim();
+        // Sync overlay input
+        if (ovInput && ovInput.value !== tbInput.value) ovInput.value = tbInput.value;
+        doSearch(q);
+      });
+      tbInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          navigateSearch(e.shiftKey ? -1 : 1);
+        }
+        if (e.key === 'Escape') {
+          clearAllSearch();
+          tbInput.blur();
         }
       });
     }
+    if (tbPrev) tbPrev.addEventListener('click', function() { navigateSearch(-1); });
+    if (tbNext) tbNext.addEventListener('click', function() { navigateSearch(1); });
+    if (tbClear) tbClear.addEventListener('click', clearAllSearch);
 
-    // Global keyboard shortcut: Cmd/Ctrl+K or /
-    document.addEventListener('keydown', function(e) {
-      // Don't capture when typing in form elements
-      var active = document.activeElement;
-      var isFormField = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable);
-      if (isFormField) return;
-
-      if ((e.key === 'k' && (e.metaKey || e.ctrlKey)) || e.key === '/' || (e.key === 'f' && (e.metaKey || e.ctrlKey))) {
-        e.preventDefault();
-        if (overlay.classList.contains('active')) {
-          closeSearch();
+    // ── Overlay fallback ──
+    function openOverlay() {
+      if (!overlay) return;
+      overlay.classList.add('active');
+      if (ovInput) {
+        // Sync from top bar if there's a query
+        if (tbInput && tbInput.value.trim()) {
+          ovInput.value = tbInput.value;
         } else {
+          ovInput.value = '';
+        }
+        ovInput.focus();
+        ovInput.select();
+      }
+    }
+
+    function closeOverlay() {
+      if (!overlay) return;
+      overlay.classList.remove('active');
+    }
+
+    if (overlay) {
+      overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) closeOverlay();
+      });
+    }
+    if (ovClose) ovClose.addEventListener('click', closeOverlay);
+    if (ovInput) {
+      ovInput.addEventListener('input', function() {
+        var q = ovInput.value.trim();
+        if (tbInput && tbInput.value !== ovInput.value) tbInput.value = ovInput.value;
+        doSearch(q);
+      });
+      ovInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          navigateSearch(e.shiftKey ? -1 : 1);
+        }
+      });
+    }
+    if (ovPrev) ovPrev.addEventListener('click', function() { navigateSearch(-1); });
+    if (ovNext) ovNext.addEventListener('click', function() { navigateSearch(1); });
+
+    // ── Global keyboard shortcuts ──
+    document.addEventListener('keydown', function(e) {
+      var active = document.activeElement;
+      var isFormField = active && (
+        active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable
+      );
+      // Ctrl+K / Cmd+K / / → focus top bar search (primary)
+      if ((e.key === 'k' && (e.metaKey || e.ctrlKey)) || e.key === '/' || (e.key === 'f' && (e.metaKey || e.ctrlKey))) {
+        // If we're already in the top bar search, let the overlay open instead
+        if (isFormField && active === tbInput) {
+          e.preventDefault();
+          openOverlay();
+          return;
+        }
+        if (!isFormField) {
+          e.preventDefault();
           clearKeywordHighlights();
-          openSearch();
+          if (tbInput) { tbInput.focus(); tbInput.select(); }
         }
       }
-      if (e.key === 'Escape' && overlay.classList.contains('active')) {
-        closeSearch();
+      // Escape → clear search
+      if (e.key === 'Escape') {
+        if (overlay && overlay.classList.contains('active')) {
+          closeOverlay();
+        }
+        if (currentQuery) {
+          clearAllSearch();
+        }
       }
     });
   }
@@ -4644,8 +4849,18 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
 <style>{ISSUE_PAGE_CSS}</style>
 </head>
 <body>
-<!-- Top Actions Bar (unified: PDF Download + Theme Toggle) -->
-<div class="top-actions">
+<!-- Fixed Top Bar: Search + PDF Download + Theme Toggle -->
+<div class="top-bar" id="top-bar">
+  <div class="tb-search" id="tb-search">
+    <span class="ts-icon">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </span>
+    <input type="text" class="tb-search-input" id="top-search-input" placeholder="Search in page…" autocomplete="off">
+    <span class="tb-search-count" id="top-search-count"></span>
+    <button class="tb-search-nav" id="top-search-prev" title="Previous match" disabled>&uarr;</button>
+    <button class="tb-search-nav" id="top-search-next" title="Next match" disabled>&darr;</button>
+    <button class="tb-search-clear" id="top-search-clear" title="Clear search">&times;</button>
+  </div>
   <a href="/issues/{issue_date}/download" class="top-action-btn" title="Download PDF" download>
     <span class="ta-icon">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
