@@ -1438,68 +1438,21 @@ ISSUE_PAGE_CSS = r"""
     html, body, *, *::before, *::after { transition: none !important; }
   }
 
-  /* ── Theme Toggle ── */
-  .theme-toggle-wrapper {
+  /* ── Top Actions Bar (unified: PDF + Theme) ── */
+  .top-actions {
     position: fixed;
     top: 20px;
     right: 24px;
     z-index: 1000;
-  }
-  .theme-toggle {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 8px 16px;
-    border-radius: 24px;
-    border: 1px solid var(--border-strong);
-    background: var(--card-bg);
-    color: var(--ink-dim);
-    font-size: 12px;
-    font-family: var(--font-sans);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: var(--shadow-sm);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
   }
-  .theme-toggle:hover {
-    border-color: var(--accent);
-    color: var(--ink);
-  }
-  .theme-toggle:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
-  }
-  .theme-toggle .toggle-icon {
-    width: 16px; height: 16px;
-    display: flex; align-items: center; justify-content: center;
-    color: var(--ink-dim);
-  }
-  .theme-toggle .toggle-icon svg {
-    width: 16px; height: 16px;
-  }
-  .theme-toggle .toggle-label {
-    letter-spacing: 0.04em;
-    font-weight: 500;
-  }
-  @media (max-width: 640px) {
-    .theme-toggle-wrapper { top: 12px; right: 12px; }
-    .theme-toggle { padding: 6px 12px; }
-    .theme-toggle .toggle-label { display: none; }
-  }
-
-  /* ── PDF Download Button ── */
-  .pdf-download-wrapper {
-    position: fixed;
-    top: 20px;
-    right: 130px;
-    z-index: 1000;
-  }
-  .pdf-download-btn {
+  .top-action-btn {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
+    gap: 7px;
+    padding: 8px 14px;
     border-radius: 24px;
     border: 1px solid var(--border-strong);
     background: var(--card-bg);
@@ -1514,27 +1467,29 @@ ISSUE_PAGE_CSS = r"""
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     text-decoration: none;
+    white-space: nowrap;
+    user-select: none;
   }
-  .pdf-download-btn:hover {
+  .top-action-btn:hover {
     border-color: var(--accent);
     color: var(--ink);
   }
-  .pdf-download-btn:focus-visible {
+  .top-action-btn:focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
   }
-  .pdf-download-btn .dl-icon {
+  .top-action-btn .ta-icon {
     width: 16px; height: 16px;
     display: flex; align-items: center; justify-content: center;
     color: var(--ink-dim);
   }
-  .pdf-download-btn .dl-icon svg {
+  .top-action-btn .ta-icon svg {
     width: 16px; height: 16px;
   }
   @media (max-width: 640px) {
-    .pdf-download-wrapper { top: 12px; right: 72px; }
-    .pdf-download-btn { padding: 6px 12px; }
-    .pdf-download-btn .dl-label { display: none; }
+    .top-actions { top: 12px; right: 12px; gap: 4px; }
+    .top-action-btn { padding: 6px 10px; font-size: 11px; }
+    .top-action-btn .ta-label { display: none; }
   }
 
   /* ── Reset & Base ── */
@@ -1574,7 +1529,7 @@ ISSUE_PAGE_CSS = r"""
   .issue-shell {
     max-width: 1180px;
     margin: 0 auto;
-    padding: 96px 32px 80px;
+    padding: 60px 32px 80px;
     display: grid;
     grid-template-columns: 220px minmax(0, 760px);
     gap: 72px;
@@ -1597,7 +1552,7 @@ ISSUE_PAGE_CSS = r"""
   @media (max-width: 860px) {
     .issue-shell {
       display: block;
-      padding: 72px 20px 56px;
+      padding: 60px 20px 56px;
     }
     .issue-toc {
       position: static;
@@ -1710,9 +1665,9 @@ ISSUE_PAGE_CSS = r"""
   /* ── Hero ── */
   .issue-hero {
     text-align: center;
-    padding: 40px 0 56px;
+    padding: 40px 0 48px;
     border-bottom: 1px solid var(--border-strong);
-    margin-bottom: 64px;
+    margin-bottom: 40px;
   }
   .issue-kicker {
     font-size: 12px;
@@ -2850,7 +2805,7 @@ ISSUE_PAGE_CSS = r"""
     }
     body { font-size: 11pt; }
     .issue-shell { display: block; max-width: 100%; padding: 0; }
-    .issue-toc, .toc-mobile, .theme-toggle-wrapper, .pdf-download-wrapper { display: none !important; }
+    .issue-toc, .toc-mobile, .top-actions, .reader-toolbar, .keywords-panel { display: none !important; }
     .issue-main { max-width: 100%; padding: 0; }
     .issue-hero { padding: 20px 0 16px; }
     .issue-hero h1 { font-size: 18pt; }
@@ -3102,74 +3057,108 @@ ISSUE_PAGE_CSS = r"""
   .task-block .copy-btn { top: 20px; right: 20px; }
 
   /* ══════════════════════════════════════════
-     READING TIMER
+     READER TOOLBAR
      ══════════════════════════════════════════ */
-  .reading-timer-wrap {
-    position: fixed;
-    top: 20px;
-    right: 270px;
-    z-index: 1000;
-  }
-  .reading-timer-btn {
+  .reader-toolbar {
     display: flex;
     align-items: center;
-    gap: 7px;
-    padding: 8px 14px;
-    border-radius: 24px;
-    border: 1px solid var(--border-strong);
-    background: var(--card-bg);
-    color: var(--ink-muted);
-    font-size: 12px;
-    font-family: var(--font-mono);
-    font-weight: 500;
-    cursor: default;
-    box-shadow: var(--shadow-sm);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    letter-spacing: 0.03em;
-    user-select: none;
-  }
-  .reading-timer-btn .rt-icon {
-    width: 14px; height: 14px;
-    display: flex; align-items: center; justify-content: center;
-    color: var(--accent);
-  }
-  .reading-timer-btn .rt-icon svg {
-    width: 14px; height: 14px;
-    stroke: currentColor; stroke-width: 1.8;
-    fill: none; stroke-linecap: round; stroke-linejoin: round;
-  }
-  @media (max-width: 640px) {
-    .reading-timer-wrap { display: none; }
-  }
-
-  /* ══════════════════════════════════════════
-     KEYWORD TOOLBAR
-     ══════════════════════════════════════════ */
-  .keyword-toolbar {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 8px;
-    padding: 16px 20px;
-    margin-bottom: 32px;
+    gap: 10px;
+    padding: 10px 18px;
+    margin-bottom: 18px;
     background: var(--card-bg);
     border: 1px solid var(--border);
     border-radius: 12px;
     box-shadow: var(--shadow-sm);
     position: sticky;
-    top: 12px;
-    z-index: 90;
+    top: 20px;
+    z-index: 95;
   }
-  .keyword-toolbar .kt-label {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--ink-muted);
-    margin-right: 6px;
+  .reader-toolbar .rt-timer {
+    display: flex; align-items: center; gap: 5px;
+    font-family: var(--font-mono); font-size: 13px;
+    color: var(--ink-muted); font-weight: 500;
+    user-select: none;
+  }
+  .reader-toolbar .rt-timer svg {
+    width: 14px; height: 14px;
+    stroke: var(--accent); stroke-width: 1.8;
+    fill: none; stroke-linecap: round; stroke-linejoin: round;
+  }
+  .reader-toolbar .rt-divider {
+    width: 1px; height: 22px;
+    background: var(--border);
     flex-shrink: 0;
+  }
+  .reader-toolbar .rt-btn {
+    display: flex; align-items: center; gap: 5px;
+    padding: 6px 12px; border: 1px solid var(--border);
+    border-radius: 8px; background: transparent;
+    color: var(--ink-dim); font-size: 12px;
+    font-family: var(--font-sans); font-weight: 500;
+    cursor: pointer; transition: all 0.15s ease;
+  }
+  .reader-toolbar .rt-btn:hover {
+    border-color: var(--accent); color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .reader-toolbar .rt-btn:focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 1px;
+  }
+  .reader-toolbar .rt-btn.active {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .reader-toolbar .rt-btn .rt-btn-icon {
+    width: 14px; height: 14px;
+    stroke: currentColor; stroke-width: 1.8;
+    fill: none; stroke-linecap: round; stroke-linejoin: round;
+  }
+  .reader-toolbar .rt-spacer { flex: 1; }
+  @media (max-width: 860px) {
+    .reader-toolbar {
+      position: static;
+      padding: 8px 14px;
+      margin-bottom: 14px;
+    }
+    .reader-toolbar .rt-btn { padding: 5px 10px; font-size: 11px; }
+  }
+
+  /* ══════════════════════════════════════════
+     KEYWORDS PANEL
+     ══════════════════════════════════════════ */
+  .keywords-panel {
+    padding: 14px 18px;
+    margin-bottom: 28px;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+  }
+  .keywords-panel .kwp-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .keywords-panel .kwp-title {
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--ink-muted);
     font-family: var(--font-sans);
+  }
+  .keywords-panel .kwp-toggle {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 10px; border: 1px solid var(--border);
+    border-radius: 999px; font-size: 11px;
+    color: var(--ink-muted); cursor: pointer;
+    background: transparent;
+    font-family: var(--font-sans); font-weight: 500;
+    transition: all 0.15s ease; white-space: nowrap;
+  }
+  .keywords-panel .kwp-toggle:hover {
+    border-color: var(--accent); color: var(--accent);
+  }
+  .keywords-panel .kwp-chips {
+    display: flex; flex-wrap: wrap; gap: 6px;
   }
   .kt-chip {
     display: inline-flex;
@@ -3205,12 +3194,13 @@ ISSUE_PAGE_CSS = r"""
     color: var(--accent);
     font-weight: 600;
   }
+  .kt-chip.kw-collapsed { display: none; }
   @media (max-width: 860px) {
-    .keyword-toolbar {
-      position: static;
+    .keywords-panel {
       padding: 12px 14px;
-      gap: 6px;
+      margin-bottom: 20px;
     }
+    .keywords-panel .kwp-chips { gap: 5px; }
     .kt-chip { font-size: 11px; padding: 4px 9px; }
   }
 
@@ -3563,22 +3553,28 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
     # Limit to ~12 keywords for toolbar
     keywords = keywords[:12]
 
-    # Generate keyword toolbar HTML
-    keyword_chips_html = ""
+    # Generate keywords panel HTML (first 6 visible, rest collapsible)
+    keywords_panel_html = ""
     if keywords:
         chips = []
-        for kw in keywords:
+        for i, kw in enumerate(keywords):
             safe_kw = _escape_html(kw)
-            chips.append(f'<span class="kt-chip" data-kw="{safe_kw}" role="button" tabindex="0">{safe_kw}</span>')
-        keyword_chips_html = (
-            '<div class="keyword-toolbar" id="keyword-toolbar">'
-            '<span class="kt-label">Keywords</span>'
+            collapsed = ' kw-collapsed' if i >= 6 else ''
+            chips.append(f'<span class="kt-chip{collapsed}" data-kw="{safe_kw}" role="button" tabindex="0">{safe_kw}</span>')
+        show_all_btn = ''
+        if len(keywords) > 6:
+            show_all_btn = '<button class="kwp-toggle" id="kw-show-all" aria-expanded="false">Show all ({n})</button>'.format(n=len(keywords))
+        keywords_panel_html = (
+            '<div class="keywords-panel" id="keywords-panel">'
+            '<div class="kwp-header">'
+            '<span class="kwp-title">Keywords</span>'
+            + show_all_btn +
+            '</div>'
+            '<div class="kwp-chips">'
             + "".join(chips) +
             '</div>'
+            '</div>'
         )
-
-    # ── Render HTML ──
-    html_parts = []
 
     # TOC (desktop) — rendered as <aside> before main content
     toc_items = []
@@ -3599,7 +3595,7 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
         '<ul class="toc-list">{}</ul></aside>'.format("".join(toc_items))
     )
 
-    # Mobile TOC (inside main content, sticky at top)
+    # Mobile TOC (inside main content, sticky at top on mobile)
     mobile_chips = []
     for idx, (section_title, _) in enumerate(sections):
         if idx >= len(MODULE_MAP):
@@ -3613,17 +3609,44 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
         )
     mobile_toc = '<nav class="toc-mobile">{}</nav>'.format("".join(mobile_chips))
 
-    # Mobile TOC (inside main content, sticky at top)
+    # ── Render HTML ──
+    html_parts = []
+
+    # Mobile TOC (sticky at top of page, hidden on desktop via CSS)
     html_parts.insert(0, mobile_toc)
-    # Keyword toolbar (injected between mobile TOC and hero)
-    if keyword_chips_html:
-        html_parts.append(keyword_chips_html)
+
+    # 1. Issue hero — visual center of the first screen
     html_parts.append(f'''<div class="issue-hero">
   <div class="issue-kicker">{_escape_html(issue_number)}</div>
   <h1>{_escape_html(title)}</h1>
   <p class="issue-title">{_escape_html(topic_line)}</p>
   <p class="issue-meta">{_escape_html(date_str)} &middot; {_escape_html(training_focus)}</p>
 </div>''')
+
+    # 2. Reader toolbar (between hero and keywords: timer, search, keywords toggle)
+    kw_toggle_btn = ''
+    if keywords:
+        kw_toggle_btn = '<button class="rt-btn" id="btn-toggle-kw" title="Toggle keywords panel">Keywords</button>'
+    reader_toolbar_html = (
+        '<div class="reader-toolbar" id="reader-toolbar">'
+        '<span class="rt-timer" id="reader-timer" title="Time reading this issue">'
+        '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'
+        '<span id="rt-timer-text">00:00</span>'
+        '</span>'
+        '<span class="rt-divider"></span>'
+        '<button class="rt-btn" id="btn-search" title="Search this issue (Ctrl+K)">'
+        '<svg class="rt-btn-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>'
+        'Search'
+        '</button>'
+        + kw_toggle_btn +
+        '<span class="rt-spacer"></span>'
+        '</div>'
+    )
+    html_parts.append(reader_toolbar_html)
+
+    # 3. Keywords panel (collapsible, default shows first 6)
+    if keywords_panel_html:
+        html_parts.append(keywords_panel_html)
 
     # Default source badges per module type
     DEFAULT_BADGES = {
@@ -4166,7 +4189,7 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
   var readingStorageKey = 'arguelab-rt-' + ISSUE_DATE;
 
   function initReadingTimer() {
-    var timerEl = document.getElementById('reading-timer-text');
+    var timerEl = document.getElementById('rt-timer-text');
     if (!timerEl) return;
 
     // Restore accumulated time
@@ -4275,10 +4298,10 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
   }
 
   function initKeywordToolbar() {
-    var toolbar = document.getElementById('keyword-toolbar');
-    if (!toolbar) return;
+    var panel = document.getElementById('keywords-panel');
+    if (!panel) return;
 
-    toolbar.addEventListener('click', function(e) {
+    panel.addEventListener('click', function(e) {
       var chip = e.target.closest('.kt-chip');
       if (!chip) return;
       var kw = chip.getAttribute('data-kw');
@@ -4290,7 +4313,7 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
     });
 
     // Keyboard accessibility
-    toolbar.addEventListener('keydown', function(e) {
+    panel.addEventListener('keydown', function(e) {
       if (e.key === 'Enter' || e.key === ' ') {
         var chip = e.target.closest('.kt-chip');
         if (chip) {
@@ -4438,6 +4461,19 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
       if (e.target === overlay) closeSearch();
     });
 
+    // Search button in reader toolbar
+    var searchBtn = document.getElementById('btn-search');
+    if (searchBtn) {
+      searchBtn.addEventListener('click', function() {
+        if (overlay.classList.contains('active')) {
+          closeSearch();
+        } else {
+          clearKeywordHighlights();
+          openSearch();
+        }
+      });
+    }
+
     // Global keyboard shortcut: Cmd/Ctrl+K or /
     document.addEventListener('keydown', function(e) {
       // Don't capture when typing in form elements
@@ -4545,7 +4581,36 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
   }
 
   // ══════════════════════════════════════════
-  // 11. INITIALIZE ALL
+  // 11. KEYWORDS PANEL SHOW-ALL + TOGGLE
+  // ══════════════════════════════════════════
+  function initKeywordsPanel() {
+    // Show-all / Show-less toggle
+    var showAllBtn = document.getElementById('kw-show-all');
+    if (showAllBtn) {
+      var expanded = false;
+      showAllBtn.addEventListener('click', function() {
+        expanded = !expanded;
+        var chips = document.querySelectorAll('.keywords-panel .kt-chip.kw-collapsed');
+        chips.forEach(function(c) { c.classList.toggle('kw-collapsed', !expanded); });
+        showAllBtn.textContent = expanded ? 'Show less' : 'Show all (' + chips.length + ')';
+        showAllBtn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+      });
+    }
+
+    // Toolbar keywords toggle button
+    var toggleBtn = document.getElementById('btn-toggle-kw');
+    var panel = document.getElementById('keywords-panel');
+    if (toggleBtn && panel) {
+      toggleBtn.addEventListener('click', function() {
+        var hidden = panel.style.display === 'none';
+        panel.style.display = hidden ? '' : 'none';
+        toggleBtn.classList.toggle('active', hidden);
+      });
+    }
+  }
+
+  // ══════════════════════════════════════════
+  // 12. INITIALIZE ALL
   // ══════════════════════════════════════════
   function init() {
     injectCopyButtons();
@@ -4557,6 +4622,7 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
     initKeywordToolbar();
     initInPageSearch();
     initKeywordPopover();
+    initKeywordsPanel();
   }
 
   if (document.readyState === 'loading') {
@@ -4577,32 +4643,21 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
 <style>{ISSUE_PAGE_CSS}</style>
 </head>
 <body>
-<!-- Theme Toggle -->
-<div class="pdf-download-wrapper">
-  <a href="/issues/{issue_date}/download" class="pdf-download-btn" title="Download PDF" download>
-    <span class="dl-icon">
+<!-- Top Actions Bar (unified: PDF Download + Theme Toggle) -->
+<div class="top-actions">
+  <a href="/issues/{issue_date}/download" class="top-action-btn" title="Download PDF" download>
+    <span class="ta-icon">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
     </span>
-    <span class="dl-label">PDF</span>
+    <span class="ta-label">PDF</span>
   </a>
-</div>
-<div class="theme-toggle-wrapper">
-  <button class="theme-toggle" id="theme-toggle-btn" aria-label="Toggle reading mode" title="Switch between Reading Mode and Dark Mode">
-    <span class="toggle-icon" id="toggle-icon">
+  <button class="top-action-btn" id="theme-toggle-btn" aria-label="Toggle reading mode" title="Switch between Reading Mode and Dark Mode">
+    <span class="ta-icon" id="toggle-icon">
       <svg id="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
       <svg id="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
     </span>
-    <span class="toggle-label" id="toggle-label">Reading Mode</span>
+    <span class="ta-label" id="toggle-label">Reading Mode</span>
   </button>
-</div>
-<!-- Reading Timer -->
-<div class="reading-timer-wrap">
-  <div class="reading-timer-btn" id="reading-timer" title="Time spent reading">
-    <span class="rt-icon">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-    </span>
-    <span id="reading-timer-text">00:00</span>
-  </div>
 </div>
 
 <div class="issue-shell">
