@@ -1372,9 +1372,9 @@ ISSUE_PAGE_CSS = r"""
     /* Icons */
     --icon-bg: rgba(59,110,168,0.08);
     /* Spacing */
-    --section-gap: 72px;
-    --card-radius: 14px;
-    --card-padding: 26px 30px;
+    --section-gap: 80px;
+    --card-radius: 18px;
+    --card-padding: 32px 36px;
   }
 
   /* ── Dark Theme (toggle) ── */
@@ -1452,23 +1452,23 @@ ISSUE_PAGE_CSS = r"""
     align-items: center;
     justify-content: flex-end;
     gap: 10px;
-    padding: 8px 20px;
+    padding: 10px 24px;
     background: var(--bg);
     border-bottom: 1px solid var(--border);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(18px) saturate(1.2);
+    -webkit-backdrop-filter: blur(18px) saturate(1.2);
   }
   /* search group inside top bar */
   .tb-search {
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 5px 12px;
+    padding: 6px 14px;
     border: 1px solid var(--border);
-    border-radius: 20px;
+    border-radius: 22px;
     background: var(--card-bg);
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
-    min-width: 180px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    min-width: 200px;
   }
   .tb-search:focus-within {
     border-color: var(--accent);
@@ -1501,7 +1501,7 @@ ISSUE_PAGE_CSS = r"""
   }
   .tb-search-count.visible { display: inline; }
   .tb-search-nav {
-    width: 22px; height: 22px;
+    width: 24px; height: 24px;
     display: none;
     align-items: center; justify-content: center;
     border: none; background: transparent;
@@ -1521,7 +1521,7 @@ ISSUE_PAGE_CSS = r"""
     opacity: 0.3; cursor: default;
   }
   .tb-search-clear {
-    width: 22px; height: 22px;
+    width: 24px; height: 24px;
     display: none;
     align-items: center; justify-content: center;
     border: none; background: transparent;
@@ -1539,17 +1539,17 @@ ISSUE_PAGE_CSS = r"""
     display: flex;
     align-items: center;
     gap: 7px;
-    padding: 8px 14px;
-    border-radius: 24px;
-    border: 1px solid var(--border-strong);
+    padding: 8px 16px;
+    border-radius: 22px;
+    border: 1px solid var(--border);
     background: var(--card-bg);
-    color: var(--ink-dim);
+    color: var(--slate);
     font-size: 12px;
     font-family: var(--font-sans);
     font-weight: 500;
     letter-spacing: 0.04em;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.25s ease;
     box-shadow: var(--shadow-sm);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
@@ -1559,7 +1559,8 @@ ISSUE_PAGE_CSS = r"""
   }
   .top-action-btn:hover {
     border-color: var(--accent);
-    color: var(--ink);
+    color: var(--accent);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
   }
   .top-action-btn:focus-visible {
     outline: 2px solid var(--accent);
@@ -1576,7 +1577,7 @@ ISSUE_PAGE_CSS = r"""
   /* ── Text Selection Popup (划词检索) ──
      Academic paper-reading style: soft shadow, no glass blur, serif preview */
   .text-select-popup {
-    position: absolute;
+    position: fixed;
     z-index: 9999;
     display: flex;
     flex-direction: column;
@@ -1972,6 +1973,96 @@ ISSUE_PAGE_CSS = r"""
     box-shadow: 0 0 0 2px rgba(245,158,11,0.12) !important;
   }
 
+  /* ── In-page search highlights ── */
+  .rd-highlight {
+    background: rgba(255, 200, 50, 0.38);
+    color: inherit;
+    border-radius: 2px;
+    padding: 0 1px;
+    transition: background 0.15s ease;
+  }
+  .rd-highlight.rd-highlight-active {
+    background: rgba(255, 170, 0, 0.75);
+    outline: 2px solid rgba(255, 140, 0, 0.85);
+    outline-offset: 1px;
+    border-radius: 3px;
+    scroll-margin-top: 120px;
+    scroll-margin-bottom: 120px;
+  }
+
+  /* ── In-page nav bar ── */
+  .rd-nav-bar {
+    display: flex; align-items: center; gap: 9px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 2px;
+  }
+  .rd-nav-count {
+    font-size: 12.5px; font-weight: 600;
+    color: var(--ink);
+    font-family: var(--font-sans);
+    flex: 1;
+  }
+  .rd-nav-btn {
+    width: 30px; height: 30px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    background: var(--card-bg);
+    color: var(--ink-dim);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.12s ease;
+    flex-shrink: 0;
+  }
+  .rd-nav-btn:hover:not(:disabled) {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .rd-nav-btn:disabled {
+    opacity: 0.3; cursor: default;
+  }
+  .rd-nav-btn svg { width: 14px; height: 14px; }
+
+  /* ── In-page match cards ── */
+  .rd-match-card {
+    padding: 11px 13px;
+    border-radius: 9px;
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    cursor: pointer;
+    transition: all 0.12s ease;
+  }
+  .rd-match-card:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-soft);
+  }
+  .rd-match-card.active {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .rd-match-index {
+    font-size: 10px; font-weight: 700;
+    color: var(--accent);
+    font-family: var(--font-mono);
+    margin-bottom: 4px;
+  }
+  .rd-match-context {
+    font-size: 12.5px; line-height: 1.55;
+    color: var(--ink-dim);
+    font-family: var(--font-sans);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .rd-match-context em {
+    font-weight: 600; color: var(--accent);
+    font-style: normal;
+    background: rgba(136,157,196,0.15);
+    padding: 0 2px; border-radius: 2px;
+  }
+
   /* ── Explain Card in Drawer ── */
   .rd-explain-card {
     background: var(--card-bg);
@@ -2089,8 +2180,8 @@ ISSUE_PAGE_CSS = r"""
     font-family: var(--font-sans);
     background: var(--bg);
     color: var(--ink);
-    line-height: 1.85;
-    font-size: 16px;
+    line-height: 1.75;
+    font-size: 15px;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -2117,12 +2208,12 @@ ISSUE_PAGE_CSS = r"""
 
   /* ── Layout ── */
   .issue-shell {
-    max-width: 1180px;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 60px 32px 80px;
+    padding: 80px 40px 100px;
     display: grid;
-    grid-template-columns: 220px minmax(0, 760px);
-    gap: 72px;
+    grid-template-columns: 220px minmax(0, 800px);
+    gap: 80px;
     align-items: start;
   }
   .issue-toc {
@@ -2134,7 +2225,7 @@ ISSUE_PAGE_CSS = r"""
   }
   .issue-main {
     width: 100%;
-    max-width: 760px;
+    max-width: 800px;
     margin: 0 auto;
   }
 
@@ -2160,28 +2251,78 @@ ISSUE_PAGE_CSS = r"""
     color: var(--ink-muted);
     font-size: 13px;
   }
+  .toc-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    transition: margin 0.3s ease;
+  }
   .toc-label {
     font-size: 11px;
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--ink-muted);
-    margin-bottom: 24px;
     font-family: var(--font-sans);
+  }
+  .toc-toggle {
+    background: none;
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    color: var(--ink-muted);
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease, border-color 0.2s ease;
+    flex-shrink: 0;
+  }
+  .toc-toggle:hover {
+    color: var(--ink-dim);
+    border-color: var(--ink-dim);
+  }
+  .toc-toggle svg {
+    display: block;
+    transition: transform 0.3s ease;
+  }
+  /* Collapsed TOC */
+  .issue-shell.toc-collapsed {
+    grid-template-columns: 48px minmax(0, 800px);
+  }
+  .issue-toc.collapsed {
+    overflow: hidden;
+  }
+  .issue-toc.collapsed .toc-list {
+    display: none;
+  }
+  .issue-toc.collapsed .toc-label {
+    display: none;
+  }
+  .issue-toc.collapsed .toc-header {
+    margin-bottom: 0;
+    justify-content: center;
+  }
+  .issue-toc.collapsed .toc-toggle svg {
+    transform: rotate(180deg);
   }
   .toc-list { list-style: none; padding: 0; }
   .toc-link {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 10px 0;
+    padding: 9px 0;
     color: var(--ink-muted);
     text-decoration: none;
     transition: color .2s ease, transform .2s ease;
     font-family: var(--font-sans);
-    font-size: 13px;
+    font-size: 12.5px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    line-height: 1.4;
   }
   .toc-num {
-    font-size: 11px;
+    font-size: 10.5px;
     font-weight: 700;
     font-family: var(--font-mono);
     color: inherit;
@@ -2194,7 +2335,7 @@ ISSUE_PAGE_CSS = r"""
     background: var(--border-strong);
     flex-shrink: 0;
   }
-  .toc-link:hover { color: var(--ink); }
+  .toc-link:hover { color: var(--ink); transform: translateX(2px); }
   .toc-link.active { color: var(--ink); }
   .toc-link.active::before {
     background: var(--accent);
@@ -2255,25 +2396,37 @@ ISSUE_PAGE_CSS = r"""
   /* ── Hero ── */
   .issue-hero {
     text-align: center;
-    padding: 40px 0 48px;
-    border-bottom: 1px solid var(--border-strong);
-    margin-bottom: 40px;
+    padding: 56px 0 64px;
+    margin-bottom: 48px;
+    position: relative;
+  }
+  .issue-hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-strong), transparent);
   }
   .issue-kicker {
-    font-size: 12px;
-    letter-spacing: 0.18em;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 1.8px;
     color: var(--accent);
-    margin-bottom: 18px;
+    margin-bottom: 22px;
     font-family: var(--font-sans);
     text-transform: uppercase;
   }
   .issue-hero h1 {
     font-family: var(--font-serif);
-    font-size: clamp(34px, 5vw, 54px);
-    line-height: 1.08;
-    letter-spacing: -0.035em;
+    font-size: clamp(36px, 5.2vw, 58px);
+    line-height: 1.06;
+    letter-spacing: -0.04em;
     color: var(--ink);
-    margin: 0 0 18px;
+    margin: 0 0 20px;
+    font-weight: 700;
   }
   .issue-title {
     font-family: var(--font-serif);
@@ -2285,7 +2438,7 @@ ISSUE_PAGE_CSS = r"""
     max-width: 720px;
   }
   .issue-meta {
-    font-size: 14px;
+    font-size: 13.5px;
     line-height: 1.6;
     color: var(--ink-muted);
     margin: 0;
@@ -2296,36 +2449,38 @@ ISSUE_PAGE_CSS = r"""
   .issue-section {
     margin-bottom: var(--section-gap);
     scroll-margin-top: 60px;
+    padding: 8px 0;
   }
   .issue-section:last-of-type { margin-bottom: 48px; }
 
   /* Section Heading with color badge */
   .section-heading {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     gap: 14px;
-    margin-bottom: 28px;
-    padding-bottom: 14px;
+    margin-bottom: 32px;
+    padding-bottom: 18px;
     border-bottom: 1px solid var(--divider);
   }
   .section-badge {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    font-size: 14px;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    font-size: 15px;
     font-weight: 700;
     font-family: var(--font-sans);
     flex-shrink: 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
   }
   .section-heading h2 {
-    font-size: 20px;
+    font-size: 22px;
     font-weight: 700;
-    font-family: var(--font-sans);
-    letter-spacing: -0.2px;
-    line-height: 1.3;
+    font-family: var(--font-serif);
+    letter-spacing: -0.3px;
+    line-height: 1.25;
   }
   .section-heading .section-subtitle {
     font-size: 13px;
@@ -2455,6 +2610,10 @@ ISSUE_PAGE_CSS = r"""
     padding: var(--card-padding);
     margin-bottom: 24px;
     box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s ease;
+  }
+  .content-card:hover {
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
   }
   .content-card:last-child { margin-bottom: 0; }
   .content-card > * + * { margin-top: 16px; }
@@ -2474,10 +2633,15 @@ ISSUE_PAGE_CSS = r"""
   .ctx-block {
     background: var(--surface-elevated);
     border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 20px 24px;
-    margin-bottom: 18px;
+    border-radius: 16px;
+    padding: 24px 28px;
+    margin-bottom: 20px;
     box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+  .ctx-block:hover {
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    border-color: var(--border-hover);
   }
   .ctx-block:last-child { margin-bottom: 0; }
   .ctx-label {
@@ -2584,14 +2748,18 @@ ISSUE_PAGE_CSS = r"""
     background: var(--card-elevated);
     border: 1px solid var(--color-passage-border);
     border-radius: var(--card-radius);
-    padding: 28px 30px;
+    padding: 32px 36px;
     margin-bottom: 0;
     border-left: 3px solid var(--color-passage);
     box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s ease;
+  }
+  .passage-block:hover {
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
   }
   .passage-block p {
-    font-size: 16px;
-    line-height: 1.9;
+    font-size: 15.5px;
+    line-height: 1.85;
     color: var(--ink);
     max-width: 780px;
   }
@@ -2625,8 +2793,8 @@ ISSUE_PAGE_CSS = r"""
   .guide-block {
     background: var(--color-passage-soft);
     border-left: 3px solid var(--color-passage);
-    padding: 18px 22px;
-    border-radius: 0 10px 10px 0;
+    padding: 20px 26px;
+    border-radius: 0 12px 12px 0;
     margin-bottom: 0;
     font-size: 14px;
     color: var(--ink-dim);
@@ -2639,16 +2807,16 @@ ISSUE_PAGE_CSS = r"""
     background: var(--card-bg);
     border: 1px solid var(--color-expression-border);
     border-radius: var(--card-radius);
-    padding: 24px 28px;
+    padding: 28px 32px;
     margin-bottom: 20px;
     border-left: 3px solid var(--color-expression);
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
     box-shadow: var(--shadow-sm);
   }
-  .expr-card:hover { border-color: var(--color-expression); }
+  .expr-card:hover { border-color: var(--color-expression); box-shadow: 0 2px 12px rgba(0,0,0,0.04); }
   .expr-card:last-child { margin-bottom: 0; }
   .expr-card .expr-num {
-    font-size: 11px;
+    font-size: 10.5px;
     font-weight: 600;
     color: var(--color-expression);
     text-transform: uppercase;
@@ -2657,7 +2825,7 @@ ISSUE_PAGE_CSS = r"""
     font-family: var(--font-sans);
   }
   .expr-card .expr-phrase {
-    font-size: 17px;
+    font-size: 18px;
     font-weight: 700;
     color: var(--ink);
     font-family: var(--font-mono);
@@ -2707,12 +2875,16 @@ ISSUE_PAGE_CSS = r"""
     background: var(--card-elevated);
     border: 1px solid var(--color-sentence-border);
     border-radius: var(--card-radius);
-    padding: 24px 28px;
+    padding: 28px 32px;
     border-left: 3px solid var(--color-sentence);
     box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s ease;
+  }
+  .target-sentence-card:hover {
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
   }
   .target-sentence-card .ts-label {
-    font-size: 11px;
+    font-size: 10.5px;
     font-weight: 600;
     color: var(--color-sentence);
     text-transform: uppercase;
@@ -2732,8 +2904,12 @@ ISSUE_PAGE_CSS = r"""
     background: var(--card-bg);
     border: 1px solid var(--border);
     border-radius: var(--card-radius);
-    padding: 20px 24px;
+    padding: 24px 28px;
     box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s ease;
+  }
+  .why-card:hover {
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
   }
   .why-card .why-label {
     font-size: 11px;
@@ -2755,8 +2931,12 @@ ISSUE_PAGE_CSS = r"""
     background: var(--card-bg);
     border: 1px solid var(--border);
     border-radius: var(--card-radius);
-    padding: 20px 24px;
+    padding: 24px 28px;
     box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s ease;
+  }
+  .structure-card:hover {
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
   }
   .structure-card .struct-label {
     font-size: 11px;
@@ -2793,11 +2973,15 @@ ISSUE_PAGE_CSS = r"""
   .grammar-mini-card {
     background: var(--card-bg);
     border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 16px 20px;
-    margin-bottom: 12px;
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 14px;
     border-left: 3px solid var(--color-sentence);
     box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s ease;
+  }
+  .grammar-mini-card:hover {
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
   }
   .grammar-mini-card:last-child { margin-bottom: 0; }
   .grammar-mini-card .gm-title {
@@ -2898,23 +3082,27 @@ ISSUE_PAGE_CSS = r"""
   .chain-flow {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 18px;
   }
   .chain-step {
     background: var(--card-bg);
     border: 1px solid var(--color-chain-border);
     border-radius: var(--card-radius);
-    padding: 20px 24px;
+    padding: 24px 28px;
     border-left: 3px solid var(--color-chain);
     box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s ease;
+  }
+  .chain-step:hover {
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
   }
   .chain-step .step-label {
-    font-size: 11px;
-    font-weight: 700;
+    font-size: 10.5px;
+    font-weight: 600;
     color: var(--color-chain);
     text-transform: uppercase;
     letter-spacing: 1px;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     font-family: var(--font-sans);
   }
   .chain-step .step-en {
@@ -2975,9 +3163,13 @@ ISSUE_PAGE_CSS = r"""
     background: var(--card-elevated);
     border: 1px solid var(--color-chain-border);
     border-radius: var(--card-radius);
-    padding: 24px 28px;
+    padding: 28px 32px;
     border-left: 3px solid var(--color-chain);
     box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s ease;
+  }
+  .sample-paragraph-card:hover {
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
   }
   .sample-paragraph-card .sp-label {
     font-size: 11px;
@@ -3138,10 +3330,14 @@ ISSUE_PAGE_CSS = r"""
   .task-block {
     margin-bottom: 40px;
     border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 28px;
+    border-radius: var(--card-radius);
+    padding: 32px 36px;
     background: var(--surface);
     box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s ease;
+  }
+  .task-block:hover {
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
   }
   .task-block .task-header {
     display: flex;
@@ -3334,32 +3530,33 @@ ISSUE_PAGE_CSS = r"""
   @media (max-width: 960px) {
     .issue-toc { display: none; }
     .toc-mobile { display: block; }
-    .issue-shell { padding: 72px 20px 56px; }
+    .issue-shell { padding: 80px 24px 60px; }
     .issue-main { max-width: 100%; padding: 0; }
   }
 
   @media (max-width: 640px) {
-    .issue-shell { padding: 72px 16px 56px; }
+    .issue-shell { padding: 80px 20px 60px; }
     .issue-main { padding: 0; }
     .issue-hero { padding: 40px 0 28px; }
-    .issue-hero h1 { font-size: 22px; }
+    .issue-hero h1 { font-size: 24px; }
     .issue-title { font-size: 14px; }
-    .issue-section { margin-bottom: 52px; }
+    .issue-section { margin-bottom: 56px; padding: 8px 0; }
     .section-heading { gap: 10px; }
-    .section-heading h2 { font-size: 17px; }
-    .section-badge { width: 30px; height: 30px; font-size: 12px; border-radius: 8px; }
-    .content-card { padding: 20px 18px; }
-    .passage-block { padding: 20px 18px; }
+    .section-heading h2 { font-size: 18px; }
+    .section-badge { width: 34px; height: 34px; font-size: 13px; border-radius: 9px; }
+    .content-card { padding: 22px 20px; }
+    .passage-block { padding: 22px 20px; }
     .task-grid { grid-template-columns: 1fr; }
-    .expr-card { padding: 20px 18px; }
-    .chain-step { padding: 18px 18px; }
-    .grammar-mini-card { padding: 14px 16px; }
-    .target-sentence-card { padding: 18px 20px; }
+    .expr-card { padding: 22px 20px; }
+    .chain-step { padding: 20px 20px; }
+    .grammar-mini-card { padding: 16px 18px; }
+    .target-sentence-card { padding: 20px 20px; }
     .target-sentence-card .ts-text { font-size: 15px; }
-    .check-card { padding: 20px 18px; }
-    .guide-card { padding: 20px 18px; }
-    .sample-paragraph-card { padding: 20px 18px; }
-    .weighing-card { padding: 20px 18px; }
+    .check-card { padding: 22px 20px; }
+    .guide-card { padding: 22px 20px; }
+    .sample-paragraph-card { padding: 22px 20px; }
+    .weighing-card { padding: 22px 20px; }
+    .task-block { padding: 24px 20px; }
     body { font-size: 15px; }
     .cn-body, .en-body { font-size: 15px; }
     .toc-mobile { padding: 8px 12px; }
@@ -3659,14 +3856,14 @@ ISSUE_PAGE_CSS = r"""
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 10px 18px;
-    margin-bottom: 18px;
+    padding: 12px 20px;
+    margin-bottom: 24px;
     background: var(--card-bg);
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: 14px;
     box-shadow: var(--shadow-sm);
     position: sticky;
-    top: 52px;
+    top: 56px;
     z-index: 95;
   }
   .reader-toolbar .rt-timer {
@@ -4476,7 +4673,11 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
         )
 
     toc_desktop = (
-        '<aside class="issue-toc"><div class="toc-label">In This Issue</div>'
+        '<aside class="issue-toc"><div class="toc-header">'
+        '<div class="toc-label">In This Issue</div>'
+        '<button class="toc-toggle" id="toc-toggle-btn" aria-label="Collapse sidebar" title="Collapse sidebar">'
+        '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>'
+        '</button></div>'
         '<ul class="toc-list">{}</ul></aside>'.format("".join(toc_items))
     )
 
@@ -4680,6 +4881,40 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
 (function() {
   var tocItems = document.querySelectorAll('.toc-link, .toc-chip');
   var sections = document.querySelectorAll('.issue-section');
+  var toc = document.querySelector('.issue-toc');
+  var shell = document.querySelector('.issue-shell');
+  var toggleBtn = document.getElementById('toc-toggle-btn');
+  var STORAGE_KEY = 'arguelab-toc-collapsed';
+
+  // ── Collapse / Expand ──
+  function setCollapsed(state) {
+    if (state) {
+      toc.classList.add('collapsed');
+      shell.classList.add('toc-collapsed');
+      toggleBtn.setAttribute('aria-label', 'Expand sidebar');
+      toggleBtn.setAttribute('title', 'Expand sidebar');
+    } else {
+      toc.classList.remove('collapsed');
+      shell.classList.remove('toc-collapsed');
+      toggleBtn.setAttribute('aria-label', 'Collapse sidebar');
+      toggleBtn.setAttribute('title', 'Collapse sidebar');
+    }
+  }
+
+  if (toggleBtn) {
+    // Restore persisted state
+    var savedCollapsed = localStorage.getItem(STORAGE_KEY);
+    if (savedCollapsed === 'true') {
+      setCollapsed(true);
+    }
+
+    toggleBtn.addEventListener('click', function() {
+      var isCollapsed = toc.classList.contains('collapsed');
+      setCollapsed(!isCollapsed);
+      localStorage.setItem(STORAGE_KEY, isCollapsed ? 'false' : 'true');
+    });
+  }
+
   if (!tocItems.length || !sections.length) return;
 
   function updateActive() {
@@ -5069,7 +5304,7 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
   // 7. READING TIMER
   // ══════════════════════════════════════════
   var readingSeconds = 0;
-  var readingTimerInterval = null;
+  var readingTimerRaf = null;   // requestAnimationFrame handle
   var readingStorageKey = 'arguelab-rt-' + ISSUE_DATE;
 
   function initReadingTimer() {
@@ -5089,13 +5324,15 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
     }
     updateDisplay();
 
-    // Start timer — Date.now()-based to survive browser throttle
+    // Timer state
     var timerPaused = false;
     var lastTick = Date.now();
 
+    // Core tick: Date.now()-based accurate elapsed counting.
+    // Always runs — even if the page is hidden (iframe preview, background tab).
+    // Hidden-time skipping is handled by visibilitychange, not here.
     function timerTick() {
-      if (timerPaused) { lastTick = Date.now(); return; }
-      if (document.hidden)  { lastTick = Date.now(); return; }
+      if (timerPaused) return;
 
       var now = Date.now();
       var elapsed = Math.floor((now - lastTick) / 1000);
@@ -5109,34 +5346,58 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
       }
     }
 
-    readingTimerInterval = setInterval(timerTick, 500);
+    // Primary: setInterval at 1s (works in all contexts — iframe, hidden, background)
+    // Secondary: RAF for smoother display updates while page is visible
+    function startRafLoop() {
+      if (readingTimerRaf) cancelAnimationFrame(readingTimerRaf);
+      function loop() {
+        if (timerPaused) { readingTimerRaf = null; return; }
+        // RAF only runs when visible — browsers throttle it when hidden.
+        // setInterval (below) handles the fallback counting.
+        if (!document.hidden) {
+          timerTick();
+        }
+        readingTimerRaf = requestAnimationFrame(loop);
+      }
+      readingTimerRaf = requestAnimationFrame(loop);
+    }
 
-    // When the page becomes visible, reset lastTick so we don't
-    // count hidden time but the timer resumes counting immediately
-    // instead of waiting for the next setInterval slot.
+    // Robust fallback: setInterval always runs, even in iframes / background tabs.
+    // Uses Date.now() diff so it never double-counts alongside RAF.
+    var timerInterval = setInterval(timerTick, 1000);
+
+    // ── Bootstrap ──
+    startRafLoop();
+
+    // ── Visibility change: skip hidden time ──
     document.addEventListener('visibilitychange', function() {
-      if (!document.hidden) { lastTick = Date.now(); }
+      if (document.hidden) {
+        // Going hidden: reset lastTick so hidden seconds aren't counted
+        lastTick = Date.now();
+      } else {
+        // Coming back: reset lastTick to start fresh
+        lastTick = Date.now();
+      }
     });
 
-    // Pause / Resume button
+    // ── Pause / Resume button ──
     var pauseBtn = document.getElementById('btn-timer-pause');
     var pauseIcon = document.getElementById('timer-pause-icon');
     var playIcon = document.getElementById('timer-play-icon');
     if (pauseBtn) {
       pauseBtn.addEventListener('click', function() {
         timerPaused = !timerPaused;
+        lastTick = Date.now();
         if (timerPaused) {
           pauseIcon.style.display = 'none';
           playIcon.style.display = 'block';
           pauseBtn.setAttribute('title', 'Resume timer');
           pauseBtn.setAttribute('aria-label', 'Resume timer');
-          lastTick = Date.now();
         } else {
           pauseIcon.style.display = 'block';
           playIcon.style.display = 'none';
           pauseBtn.setAttribute('title', 'Pause timer');
           pauseBtn.setAttribute('aria-label', 'Pause timer');
-          lastTick = Date.now();
         }
       });
     }
@@ -5591,6 +5852,46 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
       '</div>';
     document.body.appendChild(drawer);
 
+    // ── Delegated click: data-rd-mode buttons dispatch rd-search ──
+    drawer.addEventListener('click', function(e) {
+      // ── Match card click → scroll to match ──
+      var matchCard = e.target.closest('.rd-match-card');
+      if (matchCard) {
+        var idx = parseInt(matchCard.getAttribute('data-rd-match'));
+        if (!isNaN(idx)) scrollToMatch(idx);
+        return;
+      }
+
+      // ── Nav button click → prev/next ──
+      var navBtn = e.target.closest('[data-rd-nav]');
+      if (navBtn) {
+        var dir = navBtn.getAttribute('data-rd-nav');
+        if (dir === 'prev') navigateMatch(-1);
+        else if (dir === 'next') navigateMatch(1);
+        return;
+      }
+
+      var btn = e.target.closest('.rd-mode-btn');
+      if (!btn) {
+        // Check for copy-pattern button
+        var copyBtn = e.target.closest('.rd-ex-copy-btn');
+        if (copyBtn) {
+          var target = copyBtn.getAttribute('data-copy-target');
+          if (target === 'parent') {
+            var text = copyBtn.parentElement.textContent.replace('▸ ', '').trim();
+            navigator.clipboard.writeText(text).then(function() {
+              showToast('已复制');
+            }).catch(function() {});
+          }
+        }
+        return;
+      }
+      var mode = btn.getAttribute('data-rd-mode');
+      if (!mode || !selectedText) return;
+      if (btn.disabled) return;
+      document.dispatchEvent(new CustomEvent('rd-search', {detail: {mode: mode, query: selectedText}}));
+    });
+
     var selectedText = '';
     var isActive = false;
     var hideTimer = null;
@@ -5616,16 +5917,14 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
         return;
       }
 
-      // Desktop: position floating popup
+      // Desktop: position floating popup — uses position: fixed (viewport-relative)
       var pw = popup.offsetWidth;
       var ph = popup.offsetHeight;
-      var wx = window.scrollX;
-      var wy = window.scrollY;
       var ww = window.innerWidth;
       var padding = 12;
-      var left = Math.max(wx + padding, Math.min(x - pw / 2, wx + ww - pw - padding));
+      var left = Math.max(padding, Math.min(x - pw / 2, ww - pw - padding));
       var top = y - ph - 16;
-      if (top < wy + 8) { top = y + 22; }
+      if (top < 8) { top = y + 22; }
       popup.style.left = left + 'px';
       popup.style.top = top + 'px';
       popup.classList.add('active');
@@ -5661,6 +5960,142 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
       bsActive = false;
     }
 
+    // ── In-page search ──
+    var _matchNodes = [];
+    var _currentMatchIndex = -1;
+
+    function escapeRegex(str) {
+      return str.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&');
+    }
+
+    function searchInPage(query) {
+      clearHighlights();
+      var root = document.querySelector('.issue-main');
+      if (!root) root = document.body;
+
+      var matches = [];
+      var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null, false);
+      var node;
+      var qRe = new RegExp(escapeRegex(query), 'gi');
+      var globalIdx = 0;
+
+      while (node = walker.nextNode()) {
+        var parent = node.parentElement;
+        if (!parent || parent.closest('#research-drawer, #research-overlay, #text-select-popup, #selection-bottom-sheet, #selection-bs-overlay, script, style, noscript, .rd-highlight')) {
+          continue;
+        }
+
+        var text = node.textContent;
+        var m;
+        qRe.lastIndex = 0;
+
+        while (m = qRe.exec(text)) {
+          var ctxStart = Math.max(0, m.index - 55);
+          var ctxEnd = Math.min(text.length, m.index + m[0].length + 55);
+          var ctx = (ctxStart > 0 ? '\u2026' : '') + text.substring(ctxStart, ctxEnd) + (ctxEnd < text.length ? '\u2026' : '');
+
+          matches.push({
+            node: node,
+            startOffset: m.index,
+            endOffset: m.index + m[0].length,
+            text: m[0],
+            index: globalIdx,
+            context: ctx
+          });
+          globalIdx++;
+        }
+      }
+
+      highlightMatches(matches);
+      _currentMatchIndex = -1;
+      return matches;
+    }
+
+    function highlightMatches(matches) {
+      _matchNodes = [];
+      // Process in reverse order to preserve offsets
+      for (var i = matches.length - 1; i >= 0; i--) {
+        var m = matches[i];
+        try {
+          var range = document.createRange();
+          range.setStart(m.node, m.startOffset);
+          range.setEnd(m.node, m.endOffset);
+          var mark = document.createElement('mark');
+          mark.className = 'rd-highlight';
+          mark.setAttribute('data-rd-match-index', i);
+          range.surroundContents(mark);
+          _matchNodes.unshift(mark);
+          // Store reference on the match object
+          m.markEl = mark;
+        } catch(e) {
+          // Cross-element boundary — skip
+        }
+      }
+      // Rebuild _matchNodes in forward order
+      _matchNodes = document.querySelectorAll('.rd-highlight[data-rd-match-index]');
+      // Sort by DOM order (data attribute stores reverse index, rebase)
+      _matchNodes = Array.prototype.slice.call(_matchNodes).sort(function(a, b) {
+        return (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING) ? -1 : 1;
+      });
+      for (var j = 0; j < _matchNodes.length; j++) {
+        _matchNodes[j].setAttribute('data-rd-match-index', j);
+      }
+    }
+
+    function clearHighlights() {
+      var marks = document.querySelectorAll('.rd-highlight');
+      for (var i = marks.length - 1; i >= 0; i--) {
+        var mark = marks[i];
+        var parent = mark.parentNode;
+        if (parent) {
+          while (mark.firstChild) {
+            parent.insertBefore(mark.firstChild, mark);
+          }
+          parent.removeChild(mark);
+        }
+      }
+      _matchNodes = [];
+      _currentMatchIndex = -1;
+      // Merge adjacent text nodes that may have been split
+      document.body.normalize();
+    }
+
+    function scrollToMatch(index) {
+      if (!_matchNodes || _matchNodes.length === 0) return;
+      if (index < 0) index = 0;
+      if (index >= _matchNodes.length) index = _matchNodes.length - 1;
+
+      // Deactivate previous
+      if (_currentMatchIndex >= 0 && _currentMatchIndex < _matchNodes.length) {
+        _matchNodes[_currentMatchIndex].classList.remove('rd-highlight-active');
+      }
+
+      _currentMatchIndex = index;
+      var mark = _matchNodes[index];
+      mark.classList.add('rd-highlight-active');
+      mark.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      // Update drawer match cards
+      var prevCard = document.querySelector('.rd-match-card.active');
+      if (prevCard) prevCard.classList.remove('active');
+      var cards = document.querySelectorAll('.rd-match-card[data-rd-match]');
+      for (var c = 0; c < cards.length; c++) {
+        if (parseInt(cards[c].getAttribute('data-rd-match')) === index) {
+          cards[c].classList.add('active');
+          cards[c].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          break;
+        }
+      }
+    }
+
+    function navigateMatch(direction) {
+      if (_matchNodes.length === 0) return;
+      var next = _currentMatchIndex + direction;
+      if (next < 0) next = _matchNodes.length - 1;
+      if (next >= _matchNodes.length) next = 0;
+      scrollToMatch(next);
+    }
+
     // ── Drawer helpers ──
     function openDrawer(query, mode) {
       currentMode = mode;
@@ -5678,6 +6113,7 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
       document.getElementById('research-drawer').classList.remove('active');
       document.getElementById('research-overlay').classList.remove('active');
       document.body.style.overflow = '';
+      clearHighlights();
     }
 
     function escapeHTML(str) {
@@ -5696,25 +6132,70 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
       body.innerHTML = '<div class="rd-empty"><div class="rd-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:32px;height:32px;opacity:0.4"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div><div>' + (msg || 'No results found') + '</div></div>';
     }
 
-    function renderInternalResults(data) {
+    function renderInPageResults(matches, query) {
+      clearHighlights();
       var body = document.getElementById('rd-body');
       var html = '';
       var webDisabled = (typeof ARGUELAB_WEB_ENABLED !== 'undefined' && !ARGUELAB_WEB_ENABLED);
       var webTitle = webDisabled ? 'Web search is not configured' : '外部网络搜索';
       var webClass = webDisabled ? ' rd-mode-disabled' : '';
 
-      // Mode switch
+      // Mode switch: In-page (active) | Knowledge Base | Web
       html += '<div class="rd-mode-switch">' +
-        '<button class="rd-mode-btn active" onclick="document.dispatchEvent(new CustomEvent(\'rd-search\', {detail: {mode: \'internal\', query: \'' + escapeHTML(selectedText) + '\'}}))">' +
-        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;vertical-align:-2px;margin-right:4px"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>' +
-        'In-site ' + (data.total ? '(' + data.total + ')' : '') + '</button>' +
-        '<button class="rd-mode-btn' + webClass + '" onclick="' + (webDisabled ? '' : 'document.dispatchEvent(new CustomEvent(\'rd-search\', {detail: {mode: \'web\', query: \'' + escapeHTML(selectedText) + '\'}}))') + '" title="' + webTitle + '"' + (webDisabled ? ' disabled style="opacity:0.4;cursor:not-allowed"' : '') + '>' +
-        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;vertical-align:-2px;margin-right:4px"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>' +
-        'Web' + (webDisabled ? ' (off)' : '') + '</button>' +
+        '<button class="rd-mode-btn active" data-rd-mode="internal">' +
+        'In-page (' + matches.length + ')</button>' +
+        '<button class="rd-mode-btn" data-rd-mode="kb">Knowledge Base</button>' +
+        '<button class="rd-mode-btn' + webClass + '" data-rd-mode="web" title="' + webTitle + '"' + (webDisabled ? ' disabled' : '') + '>Web</button>' +
+        '</div>';
+
+      if (matches.length === 0) {
+        html += '<div class="rd-empty"><div class="rd-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:32px;height:32px;opacity:0.4"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div><div>No matches found on this page. Try Knowledge Base.</div></div>';
+        body.innerHTML = html;
+        return;
+      }
+
+      // Nav bar: count + prev/next
+      html += '<div class="rd-nav-bar">' +
+        '<span class="rd-nav-count">' + matches.length + ' match' + (matches.length > 1 ? 'es' : '') + ' on this page</span>' +
+        '<button class="rd-nav-btn" data-rd-nav="prev" title="Prev (Shift+Enter)">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>' +
+        '</button>' +
+        '<button class="rd-nav-btn" data-rd-nav="next" title="Next (Enter)">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>' +
+        '</button>' +
+        '</div>';
+
+      // Match cards
+      var escapedQ = escapeHTML(query);
+      for (var i = 0; i < matches.length; i++) {
+        var ctx = escapeHTML(matches[i].context);
+        var qRe = new RegExp('(' + query.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&') + ')', 'gi');
+        ctx = ctx.replace(qRe, '<em>$1</em>');
+        html += '<div class="rd-match-card" data-rd-match="' + i + '">' +
+          '<div class="rd-match-index">#' + (i + 1) + '</div>' +
+          '<div class="rd-match-context">' + ctx + '</div>' +
+          '</div>';
+      }
+
+      body.innerHTML = html;
+    }
+
+    function renderKnowledgeBaseResults(data) {
+      var body = document.getElementById('rd-body');
+      var html = '';
+      var webDisabled = (typeof ARGUELAB_WEB_ENABLED !== 'undefined' && !ARGUELAB_WEB_ENABLED);
+      var webTitle = webDisabled ? 'Web search is not configured' : '外部网络搜索';
+      var webClass = webDisabled ? ' rd-mode-disabled' : '';
+
+      // Mode switch: In-page | Knowledge Base (active) | Web
+      html += '<div class="rd-mode-switch">' +
+        '<button class="rd-mode-btn" data-rd-mode="internal">In-page</button>' +
+        '<button class="rd-mode-btn active" data-rd-mode="kb">Knowledge Base ' + (data.total ? '(' + data.total + ')' : '') + '</button>' +
+        '<button class="rd-mode-btn' + webClass + '" data-rd-mode="web" title="' + webTitle + '"' + (webDisabled ? ' disabled' : '') + '>Web</button>' +
         '</div>';
 
       if (!data.results || data.results.length === 0) {
-        html += '<div class="rd-empty"><div class="rd-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:32px;height:32px;opacity:0.4"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div><div>No in-site matches. Try switching to Web search.</div></div>';
+        html += '<div class="rd-empty"><div class="rd-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:32px;height:32px;opacity:0.4"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div><div>No cross-issue matches. Try In-page or Web search.</div></div>';
         body.innerHTML = html;
         return;
       }
@@ -5749,14 +6230,11 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
       var webTitle = webDisabled ? 'Web search is not configured' : '外部网络搜索';
       var webClass = webDisabled ? ' rd-mode-disabled' : '';
 
-      // Mode switch
+      // Mode switch: In-page | Knowledge Base | Web (active)
       html += '<div class="rd-mode-switch">' +
-        '<button class="rd-mode-btn" onclick="document.dispatchEvent(new CustomEvent(\'rd-search\', {detail: {mode: \'internal\', query: \'' + escapeHTML(selectedText) + '\'}}))">' +
-        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;vertical-align:-2px;margin-right:4px"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>' +
-        'In-site</button>' +
-        '<button class="rd-mode-btn active' + webClass + '" onclick="' + (webDisabled ? '' : 'document.dispatchEvent(new CustomEvent(\'rd-search\', {detail: {mode: \'web\', query: \'' + escapeHTML(selectedText) + '\'}}))') + '" title="' + webTitle + '"' + (webDisabled ? ' disabled style="opacity:0.4;cursor:not-allowed"' : '') + '>' +
-        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;vertical-align:-2px;margin-right:4px"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>' +
-        'Web' + (webDisabled ? ' (off)' : '') + '</button>' +
+        '<button class="rd-mode-btn" data-rd-mode="internal">In-page</button>' +
+        '<button class="rd-mode-btn" data-rd-mode="kb">Knowledge Base</button>' +
+        '<button class="rd-mode-btn active' + webClass + '" data-rd-mode="web" title="' + webTitle + '"' + (webDisabled ? ' disabled' : '') + '>Web</button>' +
         '</div>';
 
       if (!data.results || data.results.length === 0) {
@@ -5800,14 +6278,12 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
       var html = '';
       var webDisabled = (typeof ARGUELAB_WEB_ENABLED !== 'undefined' && !ARGUELAB_WEB_ENABLED);
       var webClass = webDisabled ? ' rd-mode-disabled' : '';
-      var webOnclick = webDisabled ? '' : 'document.dispatchEvent(new CustomEvent(\'rd-search\', {detail: {mode: \'web\', query: \'' + escapeHTML(selectedText) + '\'}}))';
-
       // Mode switch with explain tab active
       html += '<div class="rd-mode-switch">' +
-        '<button class="rd-mode-btn" onclick="document.dispatchEvent(new CustomEvent(\'rd-search\', {detail: {mode: \'internal\', query: \'' + escapeHTML(selectedText) + '\'}}))">' +
+        '<button class="rd-mode-btn" data-rd-mode="internal">' +
         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;vertical-align:-2px;margin-right:3px"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>' +
         'In-site</button>' +
-        '<button class="rd-mode-btn' + webClass + '" onclick="' + webOnclick + '"' + (webDisabled ? ' disabled style="opacity:0.4;cursor:not-allowed"' : '') + ' title="' + (webDisabled ? 'Web search is not configured' : 'Web search') + '">' +
+        '<button class="rd-mode-btn' + webClass + '" data-rd-mode="web"' + (webDisabled ? ' disabled style="opacity:0.4;cursor:not-allowed"' : '') + ' title="' + (webDisabled ? 'Web search is not configured' : 'Web search') + '">' +
         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;vertical-align:-2px;margin-right:3px"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>' +
         'Web' + (webDisabled ? ' (off)' : '') + '</button>' +
         '<button class="rd-mode-btn active">' +
@@ -5842,7 +6318,8 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
         html += '<div class="rd-ex-label">可迁移句型 (' + data.reusablePatterns.length + ')</div>';
         for (var i = 0; i < data.reusablePatterns.length; i++) {
           html += '<div class="rd-ex-pattern"><span class="rd-ex-bullet">▸</span> ' + escapeHTML(data.reusablePatterns[i]) +
-            '<button class="rd-ex-copy-btn" onclick="var t=this.parentElement;navigator.clipboard.writeText(t.textContent.replace(\'▸ \',\'\').trim())" title="复制此句型"><svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><rect x=\'9\' y=\'9\' width=\'13\' height=\'13\' rx=\'2\' ry=\'2\'/><path d=\'M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1\'/></svg></button>' +
+            '<button class="rd-ex-copy-btn" data-copy-target="parent" title="复制此句型"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>' +
+            '</div>';
             '</div>';
         }
         html += '</div>';
@@ -5901,6 +6378,15 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
     function doResearchLookup(query, mode) {
       selectedText = query;
       if (!query) return;
+
+      if (mode === 'internal') {
+        // In-page DOM search: highlight matches and show in drawer
+        openDrawer(query, 'internal');
+        var matches = searchInPage(query);
+        renderInPageResults(matches, query);
+        return;
+      }
+
       openDrawer(query, mode);
       showLoading();
 
@@ -5917,7 +6403,7 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
           if (mode === 'web') {
             renderWebResults(data);
           } else {
-            renderInternalResults(data);
+            renderKnowledgeBaseResults(data);
           }
         })
         .catch(function(err) {
@@ -5967,8 +6453,8 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
         var range;
         try { range = extracted.sel.getRangeAt(0); } catch(err) { return; }
         var rect = range.getBoundingClientRect();
-        var cx = rect.left + rect.width / 2 + window.scrollX;
-        var cy = rect.top + window.scrollY;
+        var cx = rect.left + rect.width / 2;
+        var cy = rect.top;
 
         selectedText = extracted.text;
         showPopup(cx, cy);
@@ -6004,8 +6490,8 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
         var range2;
         try { range2 = extracted.sel.getRangeAt(0); } catch(err) { return; }
         var rect = range2.getBoundingClientRect();
-        var cx = rect.left + rect.width / 2 + window.scrollX;
-        var cy = rect.top + window.scrollY;
+        var cx = rect.left + rect.width / 2;
+        var cy = rect.top;
 
         selectedText = extracted.text;
         showPopup(cx, cy);
@@ -6174,11 +6660,22 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
     });
 
     document.addEventListener('keydown', function(e) {
+      var isDrawerOpen = document.getElementById('research-drawer').classList.contains('active');
       if (e.key === 'Escape') {
-        if (document.getElementById('research-drawer').classList.contains('active')) {
+        if (isDrawerOpen) {
           closeDrawer();
         } else if (isActive) {
           hidePopup();
+        }
+        return;
+      }
+      // ── Drawer keyboard nav: Enter = next, Shift+Enter = prev ──
+      if (isDrawerOpen && _matchNodes && _matchNodes.length > 0 && e.key === 'Enter') {
+        e.preventDefault();
+        if (e.shiftKey) {
+          navigateMatch(-1);
+        } else {
+          navigateMatch(1);
         }
       }
     });
@@ -6884,6 +7381,13 @@ def _render_passage_section(text: str) -> str:
             i += 1
             continue
 
+        # Source attribution in bold: **来源：** ...
+        if s.startswith("**来源：**") or s.startswith("**来源**"):
+            source_text = _markdown_inline_to_html(s)
+            parts.append(f'<p class="source-line">{source_text}</p>')
+            i += 1
+            continue
+
         # Chinese source in blockquote: > **来源：** ...
         if s.startswith("> **来源：**") or s.startswith("> **来源**"):
             parts.append(f'<p class="source-line">{_markdown_inline_to_html(s.lstrip("> "))}</p>')
@@ -6907,23 +7411,26 @@ def _render_passage_section(text: str) -> str:
             i = j
             continue
 
-        # "Argument Structure" header
+        # "Argument Structure" / "精选段落" header — skip
         if s.startswith("**Argument Structure") or s == "**Argument Structure 标注**":
             i += 1
             continue
+        if s == "**精选段落**" or s.startswith("**精选段落"):
+            i += 1
+            continue
 
-        # Reading guide (emoji format)
+        # Reading guide (emoji format) — skip heading, collect body until next section
         if s.startswith("📖") or s.startswith("**📖"):
-            guide_lines = []
-            guide_lines.append(s)
             j = i + 1
-            while j < len(lines) and lines[j].strip() and not lines[j].strip().startswith("---"):
-                guide_lines.append(lines[j].strip())
+            # skip leading blank lines after the heading
+            while j < len(lines) and not lines[j].strip():
                 j += 1
-            guide_text = "\n".join(guide_lines)
+            guide_body_lines = []
+            while j < len(lines) and lines[j].strip() and not lines[j].strip().startswith("---"):
+                guide_body_lines.append(lines[j].strip())
+                j += 1
+            guide_text = "\n".join(guide_body_lines)
             guide_text = _markdown_inline_to_html(guide_text)
-            guide_text = re.sub(r'<strong>.*?📖.*?</strong>\s*', '', guide_text)
-            guide_text = re.sub(r'📖\s*\*\*.*?\*\*\s*', '', guide_text)
             parts.append(f'<div class="guide-block">{guide_text}</div>')
             i = j
             continue
