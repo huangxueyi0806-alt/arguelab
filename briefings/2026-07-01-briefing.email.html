@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>ArgueLab #20260701 | 美国最高法院裁定出生公民权不可被行政令推翻，14th Amendment 的宪法文本优先于总统的个人政策偏好——&quot;American&quot;到底是由血统定义，还是由出生地定义？</title>
+<style>
+  /* ── Reset & Base ── */
+  body { margin:0; padding:0; background:#F3F5F8; -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; }
+  .ReadMsgBody { width:100%; }
+  .ExternalClass { width:100%; }
+
+  /* ── Card ── */
+  .email-card {
+    background: radial-gradient(ellipse 100% 80px at 50% 0%, rgba(96,165,250,0.10), transparent 35%), #0B0F14;
+    border-radius:18px;
+    border:1px solid rgba(148,163,184,0.16);
+    overflow:hidden;
+  }
+
+  /* ── Typography ── */
+  .logo {
+    font-family:Georgia,'Times New Roman',serif;
+    font-size:32px;
+    font-weight:700;
+    color:#E2E5EC;
+    letter-spacing:-0.02em;
+  }
+  .logo .lab { color:#889DC4; }
+  .tagline {
+    font-family:Georgia,'Times New Roman',serif;
+    font-size:13px;
+    color:#7C8798;
+    font-style:italic;
+  }
+
+  .greeting {
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Noto Sans SC',sans-serif;
+    font-size:15px;
+    color:#C8CFDE;
+    line-height:1.7;
+  }
+
+  .label {
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Noto Sans SC',sans-serif;
+    font-size:11px;
+    color:#6B7280;
+    letter-spacing:1.5px;
+    font-weight:600;
+    margin:0 0 10px;
+  }
+
+  .issue-value, .focus-value {
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Noto Sans SC',sans-serif;
+    font-size:16px;
+    color:#E2E5EC;
+    line-height:1.7;
+    margin:0;
+  }
+
+  .issue-accent {
+    border-left:2px solid rgba(136,157,196,0.25);
+    padding-left:14px;
+  }
+
+  /* ── Practice mini-rows ── */
+  .practice-row td {
+    padding:10px 0;
+    border-bottom:1px solid rgba(148,163,184,0.06);
+  }
+  .practice-row:last-child td { border-bottom:none; }
+  .practice-dot {
+    display:inline-block;
+    width:5px;
+    height:5px;
+    border-radius:50%;
+    background:rgba(148,163,184,0.45);
+    margin-right:12px;
+    vertical-align:middle;
+  }
+  .practice-text {
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Noto Sans SC',sans-serif;
+    font-size:14px;
+    color:#B0B8C4;
+    line-height:1.7;
+  }
+
+  /* ── Buttons ── */
+  .btn {
+    display:inline-block;
+    height:46px;
+    line-height:46px;
+    padding:0 26px;
+    border-radius:10px;
+    font-size:14.5px;
+    font-weight:700;
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Noto Sans SC',sans-serif;
+    letter-spacing:0.01em;
+    text-decoration:none;
+    margin:0 6px;
+    transition:transform 0.15s ease, box-shadow 0.15s ease;
+    -webkit-transition:transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .btn-primary {
+    background: linear-gradient(180deg, #E7EEF8 0%, #B8C7DD 100%) !important;
+    color:#0B0F14 !important;
+    border:1px solid rgba(255,255,255,0.45);
+    box-shadow: 0 8px 20px rgba(15,23,42,0.35), inset 0 1px 0 rgba(255,255,255,0.75);
+  }
+  .btn-secondary {
+    background:rgba(15,23,42,0.45) !important;
+    color:#B8C7DD !important;
+    border:1px solid rgba(148,163,184,0.34);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+  }
+  .btn:hover {
+    transform:translateY(-1px);
+    -webkit-transform:translateY(-1px);
+  }
+  .btn-primary:hover {
+    box-shadow: 0 10px 24px rgba(15,23,42,0.45), inset 0 1px 0 rgba(255,255,255,0.85);
+  }
+  .btn-secondary:hover {
+    border-color:rgba(184,199,221,0.5);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+  .btn:active {
+    transform:translateY(0);
+    -webkit-transform:translateY(0);
+  }
+
+  /* ── Subtext ── */
+  .subtext {
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Noto Sans SC',sans-serif;
+    font-size:12px;
+    color:#7C8798;
+    margin:0;
+    text-align:center;
+  }
+
+  /* ── Divider ── */
+  .divider { border:none; border-top:1px solid rgba(148,163,184,0.12); }
+
+  /* ── Footer ── */
+  .footer-text {
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Noto Sans SC',sans-serif;
+    font-size:12px;
+    color:#7C8798;
+    line-height:1.8;
+    margin:0;
+    text-align:center;
+  }
+  .footer-text a { color:#7C8798; text-decoration:underline; }
+
+  /* ── Mobile ── */
+  @media only screen and (max-width:640px) {
+    .email-card { border-radius:0 !important; }
+    .logo { font-size:28px !important; }
+    .btn-row td { display:block !important; width:100% !important; text-align:center !important; padding:6px 0 !important; }
+    .btn { display:block !important; width:auto !important; margin:4px auto !important; }
+  }
+</style>
+</head>
+<body style="background:#E8E6DD;margin:0;padding:0;">
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>ArgueLab #20260701 | 美国最高法院裁定出生公民权不可被行政令推翻，14th Amendment 的宪法文本优先于总统的个人政策偏好——&quot;American&quot;到底是由血统定义，还是由出生地定义？</title>
+<style>
+  /* ── Reset & Base ── */
+  body { margin:0; padding:0; background:#F3F5F8; -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; }
+  .ReadMsgBody { width:100%; }
+  .ExternalClass { width:100%; }
+
+  /* ── Card ── */
+  .email-card {
+    background: radial-gradient(ellipse 100% 80px at 50% 0%, rgba(96,165,250,0.10), transparent 35%), #0B0F14;
+    border-radius:18px;
+    border:1px solid rgba(148,163,184,0.16);
+    overflow:hidden;
+  }
+
+  /* ── Typography ── */
+  .logo {
+    font-family:Georgia,'Times New Roman',serif;
+    font-size:32px;
+    font-weight:700;
+    color:#E2E5EC;
+    letter-spacing:-0.02em;
+  }
+  .logo .lab { color:#889DC4; }
+  .tagline {
+    font-family:Georgia,'Times New Roman',serif;
+    font-size:13px;
+    color:#7C8798;
+    font-style:italic;
+  }
+
+  .greeting {
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Noto Sans SC',sans-serif;
+    font-size:15px;
+    color:#C8CFDE;
+    line-height:1.7;
+  }
+
+  .label {
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Noto Sans SC',sans-serif;
+    font-size:11px;
+    color:#6B7280;
+    letter-spacing:1.5px;
+    font-weight:600;
+    margin:0 0 10px;
+  }
+
+  .issue-value, .focus-value {
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Noto Sans SC',sans-serif;
+    font-size:16px;
+    color:#E2E5EC;
+    line-height:1.7;
+    margin:0;
+  }
+
+  .issue-accent {
+    border-left:2px solid rgba(136,157,196,0.25);
+    padding-left:14px;
+  }
+
+  /* ── Practice mini-rows ── */
+  .practice-row td {
+    padding:10px 0;
+    border-bottom:1px solid rgba(148,163,184,0.06);
+  }
+  .practice-row:last-child td { border-bottom:none; }
+  .practice-dot {
+    display:inline-block;
+    width:5px;
+    height:5px;
+    border-radius:50%;
+    background:rgba(148,163,184,0.45);
+    margin-right:12px;
+    vertical-align:middle;
+  }
+  .practice-text {
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Noto Sans SC',sans-serif;
+    font-size:14px;
+    color:#B0B8C4;
+    line-height:1.7;
+  }
+
+  /* ── Buttons ── */
+  .btn {
+    display:inline-block;
+    height:46px;
+    line-height:46px;
+    padding:0 26px;
+    border-radius:10px;
+    font-size:14.5px;
+    font-weight:700;
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Noto Sans SC',sans-serif;
+    letter-spacing:0.01em;
+    text-decoration:none;
+    margin:0 6px;
+    transition:transform 0.15s ease, box-shadow 0.15s ease;
+    -webkit-transition:transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .btn-primary {
+    background: linear-gradient(180deg, #E7EEF8 0%, #B8C7DD 100%) !important;
+    color:#0B0F14 !important;
+    border:1px solid rgba(255,255,255,0.45);
+    box-shadow: 0 8px 20px rgba(15,23,42,0.35), inset 0 1px 0 rgba(255,255,255,0.75);
+  }
+  .btn-secondary {
+    background:rgba(15,23,42,0.45) !important;
+    color:#B8C7DD !important;
+    border:1px solid rgba(148,163,184,0.34);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+  }
+  .btn:hover {
+    transform:translateY(-1px);
+    -webkit-transform:translateY(-1px);
+  }
+  .btn-primary:hover {
+    box-shadow: 0 10px 24px rgba(15,23,42,0.45), inset 0 1px 0 rgba(255,255,255,0.85);
+  }
+  .btn-secondary:hover {
+    border-color:rgba(184,199,221,0.5);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+  .btn:active {
+    transform:translateY(0);
+    -webkit-transform:translateY(0);
+  }
+
+  /* ── Subtext ── */
+  .subtext {
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Noto Sans SC',sans-serif;
+    font-size:12px;
+    color:#7C8798;
+    margin:0;
+    text-align:center;
+  }
+
+  /* ── Divider ── */
+  .divider { border:none; border-top:1px solid rgba(148,163,184,0.12); }
+
+  /* ── Footer ── */
+  .footer-text {
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Noto Sans SC',sans-serif;
+    font-size:12px;
+    color:#7C8798;
+    line-height:1.8;
+    margin:0;
+    text-align:center;
+  }
+  .footer-text a { color:#7C8798; text-decoration:underline; }
+
+  /* ── Mobile ── */
+  @media only screen and (max-width:640px) {
+    .email-card { border-radius:0 !important; }
+    .logo { font-size:28px !important; }
+    .btn-row td { display:block !important; width:100% !important; text-align:center !important; padding:6px 0 !important; }
+    .btn { display:block !important; width:auto !important; margin:4px auto !important; }
+  }
+</style>
+</head>
+<body style="margin:0;padding:0;background:#F3F5F8;">
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+<tr>
+<td align="center" style="padding:40px 16px;">
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="620" class="email-card" style="max-width:620px;border-radius:18px;border:1px solid rgba(148,163,184,0.16);overflow:hidden;">
+<tr>
+<td bgcolor="#0B0F14" style="background-color:#0B0F14;border-radius:18px;padding:0;">
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+<tr>
+<td align="center" style="padding:44px 40px 8px;">
+<span class="logo" style="font-family:Georgia,'Times New Roman',serif;font-size:32px;font-weight:700;color:#E2E5EC;letter-spacing:-0.02em;">Argue<span class="lab" style="color:#889DC4;">Lab</span></span><br>
+<span class="tagline" style="font-family:Georgia,'Times New Roman',serif;font-size:13px;color:#7C8798;font-style:italic;display:inline-block;margin-top:8px;">Read like a scholar. Argue like a native.</span>
+</td>
+</tr>
+<tr>
+<td style="padding:0 40px 28px;">
+<hr class="divider" style="border:none;border-top:1px solid rgba(148,163,184,0.14);margin:0;">
+</td>
+</tr>
+<tr>
+<td style="padding:0 40px 28px;">
+<p class="greeting" style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Noto Sans SC',sans-serif;font-size:15px;color:#C8CFDE;line-height:1.7;margin:0;">Reader，今天的训练卡已经生成。</p>
+</td>
+</tr>
+<tr>
+<td style="padding:0 40px 28px;">
+<p class="label" style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Noto Sans SC',sans-serif;font-size:11px;color:#6B7280;letter-spacing:1.5px;font-weight:600;margin:0 0 10px;">TODAY'S ISSUE</p>
+<div class="issue-accent" style="border-left:2px solid rgba(136,157,196,0.25);padding-left:14px;">
+<p class="issue-value" style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Noto Sans SC',sans-serif;font-size:16px;color:#E2E5EC;line-height:1.7;margin:0;">美国最高法院裁定出生公民权不可被行政令推翻，14th Amendment 的宪法文本优先于总统的个人政策偏好——&quot;American&quot;到底是由血统定义，还是由出生地定义？</p>
+</div>
+</td>
+</tr>
+<tr>
+<td style="padding:0 40px 28px;">
+<p class="label" style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Noto Sans SC',sans-serif;font-size:11px;color:#6B7280;letter-spacing:1.5px;font-weight:600;margin:0 0 10px;">TRAINING FOCUS</p>
+<p class="focus-value" style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Noto Sans SC',sans-serif;font-size:16px;color:#E2E5EC;line-height:1.7;margin:0;">这是&quot;如何解读宪法文本&quot;的经典案例，对英专生的学术写作和议论文训练极具价值。TEM-8 翻译和写作中常出现&quot;法律与政策&quot;、&quot;传统与现代&quot;、&quot;文本解释与目的解释&quot;</p>
+</td>
+</tr>
+<tr>
+<td style="padding:0 40px 28px;">
+<p class="label" style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Noto Sans SC',sans-serif;font-size:11px;color:#6B7280;letter-spacing:1.5px;font-weight:600;margin:0 0 10px;">WHAT YOU WILL PRACTICE</p>
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+<tr class="practice-row"><td style="padding:10px 0;"><span class="practice-dot" style="display:inline-block;width:5px;height:5px;border-radius:50%;background:rgba(148,163,184,0.45);margin-right:12px;vertical-align:middle;"></span><span class="practice-text" style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Noto Sans SC',sans-serif;font-size:14px;color:#B0B8C4;line-height:1.7;">外刊表达拆解与迁移训练</span></td></tr>
+</table>
+</td>
+</tr>
+<tr>
+<td align="center" style="padding:0 40px 32px;">
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" class="btn-row" style="margin:0 auto;">
+<tr>
+<td style="padding:0 6px;"><a href="https://arguelab-production.up.railway.app/issues/2026-07-01" class="btn btn-primary" style="display:inline-block;height:46px;line-height:46px;padding:0 26px;border-radius:10px;font-size:14.5px;font-weight:700;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Noto Sans SC',sans-serif;letter-spacing:0.01em;text-decoration:none;background:#D4DCE8;color:#0B0F14;border:1px solid rgba(255,255,255,0.45);box-shadow:0 8px 20px rgba(15,23,42,0.35),inset 0 1px 0 rgba(255,255,255,0.75);">Read Online</a></td>
+
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td align="center" style="padding:0 40px 32px;">
+<p class="subtext" style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Noto Sans SC',sans-serif;font-size:12px;color:#7C8798;margin:0;">Core material is available online.</p>
+</td>
+</tr>
+<tr>
+<td style="padding:0 40px 20px;">
+<hr class="divider" style="border:none;border-top:1px solid rgba(148,163,184,0.12);margin:0;">
+</td>
+</tr>
+<tr>
+<td align="center" style="padding:0 40px 36px;">
+<p class="footer-text" style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Noto Sans SC',sans-serif;font-size:12px;color:#7C8798;line-height:1.8;margin:0;">No spam. You can <a href="#" style="color:#7C8798;text-decoration:underline;">unsubscribe</a> anytime.</p>
+<p class="footer-text" style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Noto Sans SC',sans-serif;font-size:12px;color:#7C8798;line-height:1.8;margin:8px 0 0;">You received this because you joined ArgueLab Beta.</p>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>
+</body>
+</html>
