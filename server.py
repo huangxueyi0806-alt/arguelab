@@ -7081,6 +7081,7 @@ def _render_context_block(text: str) -> str:
         "为什么选": ("为什么选这个议题", "ctx-block ctx-rationale"),
         "Framing 提示": ("Framing 提示", "ctx-block ctx-framing"),
         "Framing": ("Framing 提示", "ctx-block ctx-framing"),
+        "外刊常用 framing": ("Framing 提示", "ctx-block ctx-framing"),
     }
 
     text = text.strip()
@@ -7089,7 +7090,8 @@ def _render_context_block(text: str) -> str:
     # Detect which sub-header this is
     matched_key = None
     for key in label_map:
-        if first_line.startswith(f"**{key}：**") or first_line.startswith(f"**{key}:**") or first_line.startswith(f"**{key}**"):
+        if (first_line.startswith(f"**{key}：**") or first_line.startswith(f"**{key}:**") or
+            first_line.startswith(f"**{key}？**") or first_line.startswith(f"**{key}**")):
             matched_key = key
             break
         # Also match **Key** without colon followed by content
@@ -7107,7 +7109,7 @@ def _render_context_block(text: str) -> str:
     body_lines = text.split("\n")
     first = body_lines[0]
     # Remove **Key：** or **Key:** or **Key** prefix
-    first = re.sub(rf'^\*\*{re.escape(matched_key)}(?:[：:]?\*\*|\\*\\*)\s*', '', first)
+    first = re.sub(rf'^\*\*{re.escape(matched_key)}[：:？]?\*\*\s*', '', first)
     body_lines[0] = first
     body_text = "\n".join(body_lines).strip()
 
@@ -7144,24 +7146,41 @@ def _render_context_block(text: str) -> str:
                 f'</div>'
             )
 
-    # Non-framing blocks: parse bullet points if present
+    # Non-framing blocks: parse bullet points if present,
+    # but also preserve any non-bullet paragraph text
     has_bullets = any(line.strip().startswith("- ") for line in body_lines)
     if has_bullets:
+        parts = []
+        non_bullet_lines = []
         bullet_items = []
         for line in body_lines:
-            line = line.strip()
-            if not line:
+            line_s = line.strip()
+            if not line_s:
+                if non_bullet_lines:
+                    parts.append(f'<div class="ctx-text">{_markdown_inline_to_html(" ".join(non_bullet_lines))}</div>')
+                    non_bullet_lines = []
                 continue
-            if line.startswith("- "):
-                item_html = _markdown_inline_to_html(line[2:])
+            if line_s.startswith("- "):
+                if non_bullet_lines:
+                    parts.append(f'<div class="ctx-text">{_markdown_inline_to_html(" ".join(non_bullet_lines))}</div>')
+                    non_bullet_lines = []
+                item_html = _markdown_inline_to_html(line_s[2:])
                 bullet_items.append(f'<li>{item_html}</li>')
+            else:
+                non_bullet_lines.append(line_s)
+        if non_bullet_lines:
+            parts.append(f'<div class="ctx-text">{_markdown_inline_to_html(" ".join(non_bullet_lines))}</div>')
         if bullet_items:
+            parts.append(f'<ul class="ctx-list">{"".join(bullet_items)}</ul>')
+        if parts:
             return (
                 f'<div class="{css_class}">'
                 f'<div class="ctx-label">{label}</div>'
-                f'<ul class="ctx-list">{"".join(bullet_items)}</ul>'
+                f'{"".join(parts)}'
                 f'</div>'
             )
+        # Fallback: no content rendered (shouldn't happen but safe)
+        return ""
     # No bullets — render as plain text card
     return (
         f'<div class="{css_class}">'
@@ -7182,7 +7201,7 @@ def _render_context_section(text: str) -> str:
         return ""
 
     # Split at bold sub-header boundaries (**议题：**, **背景：**, etc.)
-    sub_pattern = r'\n(?=\*\*(?:议题|背景|争议|为什么选这个议题|为什么选|Framing 提示|Framing)[：:]\*\*\s)'
+    sub_pattern = r'\n(?=\*\*(?:议题|背景|争议|为什么选这个议题|为什么选|Framing 提示|Framing|外刊常用 framing)[：:？]\*\*\s)'
 
     blocks = re.split(sub_pattern, text)
     results = []
