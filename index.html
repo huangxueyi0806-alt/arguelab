@@ -1,0 +1,2774 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ArgueLab — 外刊议题 → 英文表达训练</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    /* Typography */
+    --font-serif: Georgia, "Times New Roman", "Noto Serif SC", "Songti SC", serif;
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+    --font-mono: "SF Mono", Menlo, Consolas, monospace;
+
+    /* Core palette — Light / Reading Mode */
+    --ink: #1F2933;
+    --slate: #5E6673;
+    --muted: #8A8F98;
+    --accent: #3B6EA8;
+    --accent-hover: #2C5A8A;
+    --accent-subtle: rgba(59,110,168,0.08);
+    --accent-glow: rgba(59,110,168,0.10);
+    --warm: #A67C2E;
+    --warm-subtle: rgba(166,124,46,0.08);
+    --bg: #F7F4ED;
+    --bg-elevated: #EFECE5;
+    --card: #FFFFFF;
+    --card-hover: #FBF8F1;
+    --surface-elevated: #FFFFFF;
+    --border: #E5E0D5;
+    --border-hover: #C5C0B5;
+    --accent-bg: rgba(59,110,168,0.04);
+    --warm-bg: rgba(166,124,46,0.06);
+    --green-tint: rgba(110,168,120,0.06);
+    --on-accent: #FFFFFF;
+    --footer-bg: #EFECE5;
+    --footer-divider: rgba(0,0,0,0.08);
+    --error: #C44545;
+    --success: #2E8B57;
+    --header-bg: rgba(247,244,237,0.92);
+    --header-bg-scrolled: rgba(247,244,237,0.98);
+    --header-shadow: 0 1px 12px rgba(0,0,0,0.08);
+    --mini-cta-bg: rgba(239,236,229,0.96);
+    --mini-cta-shadow: 0 -4px 24px rgba(0,0,0,0.08);
+    --deck-card-bg: rgba(255,252,247,0.88);
+    --deck-card-active-bg: rgba(255,255,255,0.96);
+    --deck-card-shadow: 0 8px 48px rgba(0,0,0,0.08), 0 0 0 1px rgba(59,110,168,0.04) inset;
+    --deck-btn-bg: rgba(255,255,255,0.7);
+    --shadow-soft: 0 1px 3px rgba(0,0,0,0.06);
+    --icon-bg: rgba(59,110,168,0.08);
+  }
+
+  html[data-theme="dark"] {
+    --ink: #e2e5ec;
+    --slate: #959fb2;
+    --muted: #6a7285;
+    --accent: #889dc4;
+    --accent-hover: #a3b8de;
+    --accent-subtle: rgba(136,157,196,0.10);
+    --accent-glow: rgba(136,157,196,0.16);
+    --warm: #c4954a;
+    --warm-subtle: rgba(196,149,74,0.10);
+    --bg: #0a0d12;
+    --bg-elevated: #11141c;
+    --card: #141821;
+    --card-hover: #1a1f2a;
+    --surface-elevated: #111722;
+    --border: #1e2332;
+    --border-hover: #2d3548;
+    --accent-bg: rgba(136,157,196,0.06);
+    --warm-bg: rgba(196,149,74,0.08);
+    --green-tint: rgba(110,168,120,0.08);
+    --on-accent: #0a0d12;
+    --footer-bg: #070a0f;
+    --footer-divider: rgba(30,35,50,0.4);
+    --error: #c47272;
+    --success: #6ea878;
+    --header-bg: rgba(10,13,18,0.88);
+    --header-bg-scrolled: rgba(10,13,18,0.96);
+    --header-shadow: 0 1px 12px rgba(0,0,0,0.35);
+    --mini-cta-bg: rgba(17,20,28,0.96);
+    --mini-cta-shadow: 0 -4px 24px rgba(0,0,0,0.4);
+    --deck-card-bg: rgba(20,24,33,0.68);
+    --deck-card-active-bg: rgba(20,24,33,0.88);
+    --deck-card-shadow: 0 8px 48px rgba(0,0,0,0.4), 0 0 0 1px rgba(136,157,196,0.06) inset;
+    --deck-btn-bg: rgba(20,24,33,0.6);
+    --shadow-soft: 0 1px 3px rgba(0,0,0,0.25);
+    --icon-bg: rgba(136,157,196,0.08);
+  }
+
+  html { transition: background-color 0.3s ease, color 0.3s ease; }
+  body { font-family: var(--font-sans); color: var(--ink); background: var(--bg); line-height: 1.75; -webkit-font-smoothing: antialiased; font-size: 15px; }
+  code, pre, .mono { font-family: var(--font-mono); }
+  a { color: var(--accent); text-decoration: none; transition: color 0.2s; }
+  a:hover { color: var(--accent-hover); }
+
+  /* ── Theme Toggle ── */
+  .theme-toggle-wrap {
+    position: fixed; top: 20px; right: 28px; z-index: 110;
+  }
+  .theme-toggle-btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 8px 16px; border-radius: 22px;
+    font-size: 12px; font-weight: 600; cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--slate);
+    font-family: var(--font-sans);
+    transition: all 0.25s;
+    letter-spacing: 0.04em;
+  }
+  .theme-toggle-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .theme-toggle-btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .theme-toggle-icon {
+    width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .theme-toggle-icon svg {
+    width: 16px; height: 16px;
+    stroke: currentColor; stroke-width: 1.7; fill: none;
+    stroke-linecap: round; stroke-linejoin: round;
+  }
+
+  @media (max-width: 768px) {
+    .theme-toggle-wrap { top: 18px; right: 20px; }
+    .theme-toggle-label { display: none; }
+    .theme-toggle-btn { padding: 8px 10px; border-radius: 50%; }
+  }
+
+  /* ── Section Commons ── */
+  .section { padding: 96px 0; }
+  .section-inner { width: min(1080px, calc(100% - 48px)); margin: 0 auto; }
+  .section-inner.wide { width: min(1180px, calc(100% - 48px)); }
+  .section-inner.narrow { width: min(820px, calc(100% - 40px)); }
+  .section-inner.reading { width: min(820px, calc(100% - 40px)); }
+  .section-heading { margin-bottom: 48px; }
+  .section-heading.centered { text-align: center; max-width: 720px; margin: 0 auto 48px; }
+  .eyebrow { font-size: 10.5px; font-weight: 600; letter-spacing: 1.8px; text-transform: uppercase; color: var(--accent); font-family: var(--font-sans); margin-bottom: 10px; display: block; }
+  .section-label { font-size: 10.5px; font-weight: 600; letter-spacing: 1.8px; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; font-family: var(--font-sans); }
+  .section-title { font-family: var(--font-serif); font-size: clamp(24px, 3.2vw, 36px); font-weight: 700; margin-bottom: 14px; line-height: 1.25; letter-spacing: -0.3px; }
+  .section-desc { color: var(--slate); font-size: 15.5px; max-width: 560px; line-height: 1.7; font-family: var(--font-sans); }
+  .section-heading.centered .section-desc { margin-left: auto; margin-right: auto; }
+
+  /* ── Unified Icon Mark ── */
+  .icon-mark {
+    width: 38px; height: 38px; border-radius: 11px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--icon-bg); border: 1px solid var(--border);
+    color: var(--accent); flex-shrink: 0;
+  }
+  .icon-mark svg {
+    width: 19px; height: 19px;
+    stroke: currentColor; stroke-width: 1.7;
+    fill: none; stroke-linecap: round; stroke-linejoin: round;
+  }
+
+  /* ── Header ── */
+  header { position: sticky; top: 0; z-index: 100; background: var(--header-bg); backdrop-filter: blur(18px); border-bottom: 1px solid var(--border); }
+  .nav { max-width: 1080px; margin: 0 auto; padding: 0 28px; height: 62px; display: flex; align-items: center; justify-content: space-between; }
+  .logo { font-family: var(--font-serif); font-size: 20px; font-weight: 700; color: var(--ink); letter-spacing: -0.3px; }
+  .logo span { color: var(--accent); }
+  .logo-tagline { font-size: 10.5px; color: var(--muted); margin-left: 8px; font-family: var(--font-sans); font-weight: 400; letter-spacing: 0; display: inline-block; transform: translateY(-1px); }
+  .nav-links { display: flex; gap: 28px; font-size: 13.5px; color: var(--slate); font-family: var(--font-sans); }
+  .nav-links a { color: var(--slate); transition: color 0.2s; }
+  .nav-links a:hover { color: var(--ink); text-decoration: none; }
+  .nav-cta { font-size: 13px; font-weight: 600; background: var(--accent-subtle); color: var(--accent); padding: 7px 16px; border-radius: 6px; transition: all 0.2s; border: 1px solid var(--border-hover); font-family: var(--font-sans); letter-spacing: 0.04em; }
+  .nav-cta:hover { background: var(--accent-glow); border-color: var(--accent); text-decoration: none; color: var(--accent-hover); }
+  header.scrolled { background: var(--header-bg-scrolled); box-shadow: var(--header-shadow); border-bottom-color: var(--accent-subtle); }
+  .nav-links a.active { color: var(--accent); }
+
+  /* ── Hero ── */
+  .hero { position: relative; overflow: hidden; padding: 0; }
+  .hero::before {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 0%, var(--accent-subtle) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 50% at 85% 50%, var(--accent-subtle) 0%, transparent 70%);
+  }
+  .hero::after {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background-image:
+      linear-gradient(var(--accent-subtle) 1px, transparent 1px),
+      linear-gradient(90deg, var(--accent-subtle) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse 65% 55% at 50% 25%, black 0%, transparent 70%);
+    -webkit-mask-image: radial-gradient(ellipse 65% 55% at 50% 25%, black 0%, transparent 70%);
+  }
+  .hero-inner {
+    max-width: 1080px; margin: 0 auto; padding: 130px 28px 88px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: center;
+    position: relative; z-index: 1;
+  }
+  .hero-left { min-width: 0; }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 10.5px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--accent); background: var(--accent-subtle);
+    padding: 5px 15px; border-radius: 20px; margin-bottom: 40px;
+    border: 1px solid var(--accent-subtle); font-family: var(--font-sans);
+  }
+  .hero-badge .bdot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+  .hero h1 {
+    font-family: var(--font-serif); font-weight: 700; line-height: 1.06; color: var(--ink);
+    margin: 0 0 22px; letter-spacing: -1px;
+  }
+  .hero h1 .en { display: block; font-size: clamp(38px, 5.8vw, 68px); letter-spacing: -1.6px; }
+  .hero h1 .cn {
+    display: block; font-size: clamp(19px, 2.5vw, 26px); font-weight: 600;
+    color: var(--slate); letter-spacing: 0; margin-top: 10px;
+    font-family: var(--font-sans); line-height: 1.5;
+  }
+  .hero-sub {
+    font-size: 15px; color: var(--muted); max-width: 440px; line-height: 1.8; margin-bottom: 42px;
+    font-family: var(--font-sans);
+  }
+  .hero-cta { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn-primary { display: inline-flex; align-items: center; gap: 6px; background: var(--accent); color: var(--on-accent); padding: 13px 28px; border-radius: 6px; font-size: 14.5px; font-weight: 600; border: none; cursor: pointer; transition: all 0.25s; font-family: var(--font-sans); letter-spacing: 0.04em; }
+  .btn-primary:hover { background: var(--accent-hover); color: var(--on-accent); text-decoration: none; }
+  .btn-outline { display: inline-flex; align-items: center; gap: 6px; background: transparent; color: var(--slate); padding: 13px 28px; border-radius: 6px; font-size: 14.5px; font-weight: 600; border: 1px solid var(--border); cursor: pointer; transition: all 0.25s; font-family: var(--font-sans); letter-spacing: 0.04em; }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent-hover); text-decoration: none; }
+
+  /* Right panel — argument lab card */
+  .hero-right { display: flex; align-items: center; justify-content: center; }
+  .arg-card {
+    width: 100%; max-width: 420px;
+    background: var(--deck-card-bg);
+    backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px);
+    border: 1px solid var(--accent-subtle);
+    border-radius: 14px; padding: 44px 38px 38px;
+    position: relative; overflow: hidden;
+  }
+  .arg-card::before {
+    content: ''; position: absolute; top: -1px; left: 44px; right: 44px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent-glow), transparent);
+  }
+  .arg-card .arg-label {
+    font-size: 9px; font-weight: 600; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 30px;
+    font-family: var(--font-sans);
+  }
+  .arg-card .arg-step {
+    display: flex; align-items: flex-start; gap: 14px; margin-bottom: 14px;
+    padding: 12px 16px; border-radius: 8px;
+    background: var(--accent-subtle);
+    border-left: 2px solid var(--accent-subtle);
+    transition: border-color 0.35s, background 0.35s;
+    position: relative; z-index: 1;
+  }
+  .arg-card .arg-step:last-child { margin-bottom: 0; }
+  .arg-card .arg-step:hover {
+    border-left-color: var(--accent);
+    background: var(--accent-bg);
+  }
+  .arg-step .step-icon {
+    width: 26px; height: 26px; border-radius: 7px;
+    background: var(--accent-subtle);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; font-size: 11px; color: var(--accent);
+    font-family: var(--font-serif); font-weight: 700;
+  }
+  .arg-step .step-body { flex: 1; min-width: 0; }
+  .arg-step .step-head {
+    font-size: 10.5px; font-weight: 600; color: var(--accent);
+    letter-spacing: 0.04em; margin-bottom: 3px; font-family: var(--font-sans);
+  }
+  .arg-step .step-text { font-size: 12.5px; color: var(--slate); line-height: 1.6; font-family: var(--font-sans); }
+  .arg-card .arg-glow {
+    position: absolute; top: 50%; right: -60px; transform: translateY(-50%);
+    width: 160px; height: 160px; border-radius: 50%;
+    background: radial-gradient(circle, var(--accent-subtle) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  @media (max-width: 768px) {
+    .hero-inner { grid-template-columns: 1fr; gap: 44px; padding: 100px 24px 64px; text-align: center; }
+    .hero h1 .en { font-size: clamp(30px, 9vw, 42px); }
+    .hero h1 .cn { font-size: clamp(17px, 5vw, 21px); }
+    .hero-sub { margin-left: auto; margin-right: auto; font-size: 14.5px; }
+    .hero-cta { justify-content: center; }
+    .hero-right { justify-content: center; }
+    .arg-card { max-width: 340px; padding: 32px 24px 28px; }
+    .arg-card::before { left: 28px; right: 28px; }
+  }
+
+  /* ── Metrics ── */
+  .metrics { background: var(--bg-elevated); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 40px 0; }
+  .metrics-inner { max-width: 1080px; margin: 0 auto; padding: 0 28px; display: flex; justify-content: center; align-items: center; gap: 72px; flex-wrap: wrap; text-align: center; }
+  .metric-num { font-family: var(--font-serif); font-size: 34px; font-weight: 700; color: var(--accent); line-height: 1.1; }
+  .metric-num small { font-size: 16px; font-weight: 400; color: var(--muted); font-family: var(--font-sans); }
+  .metric-label { font-size: 12.5px; color: var(--slate); margin-top: 5px; letter-spacing: 0.3px; font-family: var(--font-sans); }
+
+  /* ── Why This Exists ── */
+  .why { padding: 96px 0; background: var(--bg-elevated); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .why-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; margin-top: 48px; justify-items: center; }
+  .why-card { padding: 32px 28px; border: 1px solid var(--border); border-radius: 18px; background: var(--surface-elevated); box-shadow: var(--shadow-soft); transition: all 0.3s ease; width: 100%; box-sizing: border-box; }
+  .why-card:hover { border-color: var(--accent-subtle); background: var(--card-hover); transform: translateY(-3px); }
+  .why-num { font-size: 10.5px; font-weight: 600; letter-spacing: 1.2px; color: var(--muted); text-transform: uppercase; margin-bottom: 16px; font-family: var(--font-sans); }
+  .why-card h3 { font-size: 16.5px; font-weight: 700; margin-bottom: 10px; line-height: 1.35; font-family: var(--font-sans); }
+  .why-card p { font-size: 14px; color: var(--slate); line-height: 1.7; font-family: var(--font-sans); }
+  .why-card .cn { font-size: 12.5px; color: var(--muted); margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); font-family: var(--font-sans); }
+
+  /* ── Training Blueprint (was "What You Receive") ── */
+  .receive { padding: 96px 0; background: var(--bg); }
+  .briefing-blueprint {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+    align-items: stretch;
+    margin-top: 0;
+  }
+  .blueprint-item {
+    position: relative;
+    padding: 28px 26px 24px;
+    border-radius: 18px;
+    background: var(--surface-elevated);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-soft);
+    transition: transform 0.25s ease, border-color 0.25s ease;
+    display: flex; flex-direction: column; align-items: flex-start;
+  }
+  .blueprint-item::after {
+    content: ''; position: absolute; top: 0; left: 26px; right: 26px;
+    height: 1px;
+    background: linear-gradient(90deg, var(--accent-subtle) 0%, var(--accent-glow) 50%, transparent 100%);
+    opacity: 0.5;
+    transition: opacity 0.25s ease;
+  }
+  .blueprint-item:hover::after { opacity: 1; }
+  .blueprint-item:hover {
+    transform: translateY(-3px);
+    border-color: var(--accent-subtle);
+  }
+  .blueprint-index {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.14em;
+    color: var(--muted); font-family: var(--font-mono);
+    margin-bottom: 16px;
+  }
+  .blueprint-item .icon-mark { margin-bottom: 16px; }
+  .blueprint-item h3 {
+    font-size: 16px; font-weight: 700; margin-bottom: 6px;
+    font-family: var(--font-sans);
+  }
+  .blueprint-en-sub {
+    font-size: 12px; color: var(--muted); font-style: italic;
+    margin-bottom: 12px; font-family: var(--font-serif); letter-spacing: 0.02em;
+  }
+  .blueprint-item p {
+    font-size: 13.5px; color: var(--slate); line-height: 1.7;
+    flex: 1; font-family: var(--font-sans);
+  }
+  .blueprint-example {
+    margin-top: 18px; padding: 12px 16px; background: var(--accent-bg);
+    border-radius: 8px; border: 1px solid var(--accent-subtle);
+    font-size: 12.5px; color: var(--slate); line-height: 1.6;
+    width: 100%; font-family: var(--font-sans);
+  }
+  .blueprint-example strong { color: var(--accent); font-weight: 600; }
+  .blueprint-example code { background: var(--accent-subtle); color: var(--accent); padding: 1px 6px; border-radius: 3px; font-size: 12px; font-family: var(--font-mono); }
+
+  @media (max-width: 900px) {
+    .briefing-blueprint { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 600px) {
+    .briefing-blueprint { grid-template-columns: 1fr; }
+  }
+
+  /* ── Sample Issue ── */
+  .sample { padding: 96px 0; background: var(--bg-elevated); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .sample-tabs { display: flex; gap: 0; margin-top: 40px; border-bottom: 1px solid var(--border); overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .sample-tab { padding: 12px 24px; font-size: 13.5px; font-weight: 600; color: var(--slate); cursor: pointer; border: none; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.2s; white-space: nowrap; background: none; font-family: var(--font-sans); outline: none; letter-spacing: 0.04em; }
+  .sample-tab:focus-visible { color: var(--accent); outline: 2px solid var(--accent); outline-offset: -2px; border-radius: 4px; }
+  .sample-tab:hover { color: var(--ink); }
+  .sample-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .sample-body { background: var(--card); border: 1px solid var(--border); border-top: none; border-radius: 0 0 8px 8px; padding: 36px; position: relative; overflow: hidden; }
+  .sample-pane { display: none; }
+  .sample-pane.active { display: block; animation: sampleFadeIn 0.32s ease both; }
+  .sample-pane h3 { font-size: 18px; font-weight: 700; margin-bottom: 6px; font-family: var(--font-sans); }
+  .sample-pane .pane-sub { font-size: 13.5px; color: var(--muted); margin-bottom: 22px; font-family: var(--font-sans); }
+
+  @keyframes sampleFadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0);   }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sample-pane.active { animation: none; }
+  }
+  .pane-block { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 20px 22px; margin-bottom: 16px; }
+  .pane-block:last-child { margin-bottom: 0; }
+  .pane-block .block-title { font-size: 13px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; font-family: var(--font-sans); }
+  .pane-block p { font-size: 14.5px; line-height: 1.75; color: var(--ink); font-family: var(--font-sans); }
+  .pane-block .en { font-family: var(--font-serif); font-size: 14.5px; line-height: 1.8; color: var(--slate); }
+  .pane-block .zh { font-size: 13.5px; color: var(--slate); line-height: 1.7; font-family: var(--font-sans); }
+  .pane-block code { background: var(--accent-subtle); color: var(--accent); padding: 1px 7px; border-radius: 4px; font-size: 13px; font-family: var(--font-mono); }
+  .pane-block .tag { display: inline-block; font-size: 11px; background: var(--warm-subtle); color: var(--warm); padding: 2px 10px; border-radius: 4px; font-weight: 600; margin-bottom: 8px; letter-spacing: 0.04em; font-family: var(--font-sans); }
+  .checklist { list-style: none; font-size: 14px; color: var(--slate); font-family: var(--font-sans); }
+  .checklist li { padding: 5px 0 5px 24px; position: relative; line-height: 1.6; }
+  .checklist li::before { content: "✓"; position: absolute; left: 0; color: var(--success); font-weight: 700; font-family: var(--font-sans); }
+
+  /* ── Card Deck (Learning Loop) ── */
+  .how { padding: 112px 0; background: var(--bg); }
+  .deck-wrapper { margin-top: 52px; }
+  .deck-stage { position: relative; width: 100%; max-width: 880px; margin: 0 auto; overflow: hidden; }
+  .deck-card { position: absolute; top: 50%; left: 50%; width: 100%; max-width: 600px; transform: translate(-50%,-50%) scale(.74); opacity: 0; filter: blur(8px); transition: transform .65s cubic-bezier(.22,1,.36,1), opacity .5s cubic-bezier(.22,1,.36,1), filter .5s cubic-bezier(.22,1,.36,1); pointer-events: none; z-index: 1; background: var(--deck-card-bg); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid var(--accent-subtle); border-radius: 18px; padding: 56px 52px; text-align: center; }
+  .deck-card.active { transform: translate(-50%,-50%) scale(1); opacity: 1; filter: blur(0); z-index: 5; pointer-events: auto; background: var(--deck-card-active-bg); border-color: var(--accent-subtle); box-shadow: var(--deck-card-shadow); }
+  .deck-card.peek-left { transform: translate(calc(-50% - 220px),-50%) scale(.86); opacity: .22; filter: blur(4px); z-index: 2; }
+  .deck-card.peek-right { transform: translate(calc(-50% + 220px),-50%) scale(.86); opacity: .22; filter: blur(4px); z-index: 3; }
+  .deck-card .step-num { font-size: 10.5px; font-weight: 600; letter-spacing: 2.5px; color: var(--accent); text-transform: uppercase; margin-bottom: 14px; font-family: var(--font-sans); }
+  .deck-card .step-en { font-family: var(--font-serif); font-size: 52px; font-weight: 700; color: var(--ink); line-height: 1; letter-spacing: -1px; margin-bottom: 10px; }
+  .deck-card .step-cn { font-size: 17px; font-weight: 600; color: var(--slate); margin-bottom: 28px; letter-spacing: .3px; font-family: var(--font-sans); }
+  .deck-card .divider { width: 40px; height: 2px; background: var(--accent); margin: 0 auto 28px; opacity: .5; border-radius: 1px; }
+  .deck-card p { font-size: 14.5px; color: var(--slate); line-height: 1.9; max-width: 480px; margin: 0 auto; font-family: var(--font-sans); }
+  .deck-card .en-quote { font-size: 13.5px; color: var(--muted); margin-top: 24px; font-style: italic; font-family: var(--font-serif); letter-spacing: .2px; }
+  .deck-controls { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 32px; }
+  .deck-progress { font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: 1.5px; min-width: 40px; text-align: center; font-variant-numeric: tabular-nums; font-family: var(--font-sans); }
+  .deck-btn { display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; background: var(--deck-btn-bg); border: 1px solid var(--accent-subtle); color: var(--slate); cursor: pointer; transition: all .25s; font-size: 18px; line-height: 1; font-family: var(--font-sans); }
+  .deck-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); background: var(--accent-bg); }
+  .deck-btn:disabled { opacity: .18; cursor: default; }
+  .deck-dots { display: flex; gap: 7px; align-items: center; }
+  .deck-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--border); cursor: pointer; transition: all .35s; border: none; padding: 0; }
+  .deck-dot:hover { background: var(--muted); }
+  .deck-dot.active { background: var(--accent); width: 21px; border-radius: 3px; }
+  @media (max-width: 768px) {
+    .deck-stage { overflow: visible; }
+    .deck-card { position: relative; top: auto; left: auto; transform: none; max-width: 100%; display: none; filter: none; padding: 32px 24px; border-radius: 12px; backdrop-filter: none; -webkit-backdrop-filter: none; background: var(--card); }
+    .deck-card.active { display: block; animation: deckFadeInMobile .45s ease; transform: none; box-shadow: var(--shadow-soft); border-color: var(--border); }
+    .deck-card.peek-left, .deck-card.peek-right { display: none; }
+    .deck-card .step-en { font-size: 38px; }
+    .deck-card .step-cn { font-size: 15px; margin-bottom: 20px; }
+    .deck-card p { font-size: 14px; }
+    @keyframes deckFadeInMobile { from { opacity: 0; } to { opacity: 1; } }
+  }
+
+  /* ── Audience (was "Who It Is For") ── */
+  .who { padding: 96px 0; background: var(--bg-elevated); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .audience-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 22px;
+    justify-content: center;
+  }
+  .audience-card {
+    background: var(--surface-elevated); border: 1px solid var(--border);
+    border-radius: 18px; padding: 28px 26px;
+    box-shadow: var(--shadow-soft);
+    transition: transform 0.25s ease, border-color 0.25s ease;
+    min-height: 280px;
+    display: flex; flex-direction: column; align-items: flex-start;
+  }
+  .audience-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--accent-subtle);
+  }
+  .audience-card .icon-mark { margin-bottom: 18px; }
+  .audience-card h3 {
+    font-size: 16px; font-weight: 700; margin-bottom: 10px;
+    font-family: var(--font-sans);
+  }
+  .audience-card p {
+    font-size: 13.5px; color: var(--slate); line-height: 1.7;
+    flex: 1; font-family: var(--font-sans);
+  }
+  .audience-quote {
+    font-size: 13px; color: var(--warm); margin-top: 16px;
+    font-weight: 500; line-height: 1.6; font-family: var(--font-sans);
+    padding-top: 14px; border-top: 1px solid var(--border);
+    width: 100%;
+  }
+
+  @media (max-width: 600px) {
+    .audience-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ── Comparison ── */
+  .compare { padding: 96px 0; background: var(--bg); }
+  .compare-table { margin-top: 40px; background: var(--card); border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+  .compare-table table { width: 100%; border-collapse: collapse; font-size: 14px; font-family: var(--font-sans); }
+  .compare-table th { background: var(--bg-elevated); color: var(--ink); padding: 14px 20px; text-align: left; font-weight: 600; font-size: 13px; letter-spacing: 0.04em; border-bottom: 1px solid var(--border); font-family: var(--font-sans); }
+  .compare-table th:first-child { width: 20%; }
+  .compare-table td { padding: 13px 20px; border-bottom: 1px solid var(--border); vertical-align: top; font-size: 13.5px; color: var(--slate); font-family: var(--font-sans); }
+  .compare-table tr:last-child td { border-bottom: none; }
+  .compare-table .highlight-col { background: var(--accent-bg); }
+  .compare-table .check { color: var(--success); font-weight: 700; }
+  .compare-table .dash { color: var(--muted); }
+  .compare-table .product-name { font-weight: 700; color: var(--accent); }
+
+  /* ── Pricing ── */
+  .pricing { padding: 96px 0; background: var(--bg-elevated); border-top: 1px solid var(--border); }
+  .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 22px; margin-top: 44px; justify-items: center; }
+  .price-card { background: var(--surface-elevated); border: 1px solid var(--border); border-radius: 18px; padding: 34px 30px; position: relative; transition: all 0.3s ease; width: 100%; box-sizing: border-box; box-shadow: var(--shadow-soft); }
+  .price-card:hover { border-color: var(--accent-subtle); transform: translateY(-3px); }
+  .price-card.featured { border-color: var(--accent); background: var(--bg-elevated); }
+  .price-card.featured:hover { border-color: var(--accent-hover); }
+  .price-card.featured::before { content: "Beta 特权"; position: absolute; top: -1px; right: 28px; background: var(--accent); color: var(--on-accent); font-size: 10.5px; font-weight: 700; padding: 4px 14px; border-radius: 0 0 6px 6px; letter-spacing: 0.04em; font-family: var(--font-sans); }
+  .price-name { font-size: 15.5px; font-weight: 700; margin-bottom: 6px; font-family: var(--font-sans); }
+  .price-tag { font-size: 36px; font-weight: 800; font-family: var(--font-serif); margin: 10px 0; }
+  .price-tag small { font-size: 14px; font-weight: 400; color: var(--muted); font-family: var(--font-sans); }
+  .price-desc { font-size: 14px; color: var(--slate); margin-bottom: 22px; line-height: 1.6; font-family: var(--font-sans); }
+  .price-features { list-style: none; font-size: 13.5px; margin-bottom: 26px; color: var(--slate); font-family: var(--font-sans); }
+  .price-features li { padding: 5px 0 5px 22px; position: relative; }
+  .price-features li::before { content: "✓"; position: absolute; left: 0; color: var(--success); font-weight: 700; font-family: var(--font-sans); }
+  .price-features .no::before { content: "—"; color: var(--muted); }
+  .price-btn { display: block; text-align: center; padding: 13px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.25s; font-family: var(--font-sans); letter-spacing: 0.04em; }
+  .price-btn-dark { background: var(--accent); color: var(--on-accent); border: none; }
+  .price-btn-dark:hover { background: var(--accent-hover); color: var(--on-accent); text-decoration: none; }
+  .price-btn-outline { background: transparent; color: var(--slate); border: 1px solid var(--border); }
+  .price-btn-outline:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; }
+
+  /* ── FAQ ── */
+  .faq { padding: 96px 0; background: var(--bg); }
+  .faq-list { margin-top: 40px; max-width: 740px; }
+  .faq-item { border-bottom: 1px solid var(--border); }
+  .faq-q { width: 100%; background: none; border: none; text-align: left; font-size: 15.5px; font-weight: 600; padding: 20px 0; cursor: pointer; display: flex; justify-content: space-between; align-items: center; color: var(--ink); font-family: var(--font-sans); transition: color 0.2s; }
+  .faq-q:hover { color: var(--accent); }
+  .faq-arrow { width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; transition: transform 0.25s; color: var(--muted); flex-shrink: 0; }
+  .faq-arrow svg { width: 14px; height: 14px; stroke: currentColor; stroke-width: 1.8; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .faq-a { font-size: 14.5px; color: var(--slate); line-height: 1.8; overflow: hidden; max-height: 0; transition: max-height 0.45s cubic-bezier(.22,1,.36,1); font-family: var(--font-sans); }
+  .faq-item.open .faq-a { max-height: 800px; }
+  .faq-item.open .faq-arrow { transform: rotate(180deg); }
+
+  /* ── Beta Intake Form ── */
+  .beta-section { padding: 96px 0; background: var(--bg-elevated); border-top: 1px solid var(--border); }
+  .beta-grid { max-width: 1080px; margin: 0 auto; padding: 0 28px; display: grid; grid-template-columns: 1fr 1.25fr; gap: 64px; align-items: start; }
+  .beta-section .section-label { color: var(--accent); font-size: 11.5px; letter-spacing: 0.14em; font-weight: 700; margin-bottom: 16px; font-family: var(--font-sans); }
+  .beta-section .section-title { font-size: 30px; font-weight: 700; color: var(--ink); line-height: 1.32; margin-bottom: 20px; font-family: var(--font-serif); }
+  .beta-section .section-desc { color: var(--slate); font-size: 14.5px; line-height: 1.78; margin-bottom: 28px; font-family: var(--font-sans); }
+  .beta-section .section-desc p + p { margin-top: 10px; }
+  .beta-perks { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 32px; }
+  .beta-perk { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--slate); white-space: nowrap; font-family: var(--font-sans); }
+  .beta-perk::before { content: ''; display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); opacity: 0.6; flex-shrink: 0; }
+  .beta-section .section-desc:last-of-type { font-size: 12.5px; color: var(--muted); font-style: italic; font-family: var(--font-serif); }
+
+  /* Form card */
+  .beta-form-card { background: var(--surface-elevated); border: 1px solid var(--border); border-radius: 18px; padding: 40px; position: relative; min-height: 520px; box-shadow: var(--shadow-soft); }
+  .beta-form-card.loading { opacity: 0.52; pointer-events: none; transition: opacity 0.3s ease; }
+  .beta-form-card .beta-form-fields { transition: opacity 0.4s ease, transform 0.4s ease; }
+  .beta-form-card.success-state .beta-form-fields { opacity: 0; transform: translateY(-10px); pointer-events: none; position: absolute; width: calc(100% - 80px); visibility: hidden; }
+  .beta-form-card .beta-success { position: absolute; top: 40px; left: 40px; right: 40px; opacity: 0; transform: translateY(10px); pointer-events: none; transition: opacity 0.45s ease, transform 0.45s ease; }
+  .beta-form-card.success-state .beta-success { opacity: 1; transform: translateY(0); pointer-events: auto; position: relative; top: auto; left: auto; right: auto; }
+
+  .beta-error-banner { background: rgba(196,68,68,0.06); border: 1px solid rgba(196,68,68,0.15); border-radius: 8px; padding: 12px 18px; margin-bottom: 24px; font-size: 13px; color: var(--error); line-height: 1.55; display: none; font-family: var(--font-sans); }
+  .beta-error-banner.visible { display: block; }
+
+  .beta-field { margin-bottom: 24px; }
+  .beta-field:last-of-type { margin-bottom: 28px; }
+  .beta-label { display: block; font-size: 12.5px; font-weight: 600; color: var(--slate); margin-bottom: 8px; letter-spacing: 0.03em; text-transform: uppercase; font-family: var(--font-sans); }
+  .beta-label .required { color: var(--accent); margin-left: 2px; }
+  .beta-label .optional { color: var(--muted); font-weight: 400; text-transform: none; letter-spacing: 0; margin-left: 4px; font-size: 11.5px; }
+
+  .beta-input, .beta-select, .beta-textarea { width: 100%; padding: 13px 16px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--ink); font-size: 14.5px; outline: none; font-family: var(--font-sans); transition: border-color 0.25s, box-shadow 0.25s; }
+  .beta-input::placeholder, .beta-textarea::placeholder { color: var(--muted); font-size: 14px; }
+  .beta-input:focus, .beta-select:focus, .beta-textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-subtle); }
+  .beta-input.error, .beta-select.error, .beta-textarea.error { border-color: var(--error); }
+  .beta-radios.error, .beta-chips.error { border: 1px solid var(--error); border-radius: 8px; padding: 8px; }
+  .beta-radios.error { padding: 12px; }
+  .beta-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%236a7285' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; padding-right: 40px; cursor: pointer; }
+  .beta-select option { background: var(--bg); color: var(--slate); }
+
+  html[data-theme="dark"] .beta-select {
+    background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%236a7285' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+  }
+
+  .beta-textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
+
+  .beta-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .beta-chip { padding: 9px 18px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--slate); font-size: 13.5px; cursor: pointer; transition: all 0.22s; font-family: var(--font-sans); user-select: none; }
+  .beta-chip:hover { border-color: var(--border-hover); color: var(--ink); }
+  .beta-chip.selected { background: var(--accent-subtle); border-color: var(--accent); color: var(--accent); }
+
+  .beta-radios { display: flex; flex-direction: column; gap: 8px; }
+  .beta-radio { padding: 14px 18px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); cursor: pointer; transition: all 0.22s; display: flex; align-items: center; gap: 12px; font-size: 14px; color: var(--slate); font-family: var(--font-sans); }
+  .beta-radio:hover { border-color: var(--border-hover); color: var(--ink); }
+  .beta-radio.selected { border-color: var(--accent); background: var(--accent-subtle); color: var(--accent); }
+  .beta-radio-dot { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid var(--border); flex-shrink: 0; transition: all 0.22s; position: relative; }
+  .beta-radio.selected .beta-radio-dot { border-color: var(--accent); }
+  .beta-radio.selected .beta-radio-dot::after { content: ''; position: absolute; inset: 3px; border-radius: 50%; background: var(--accent); }
+
+  .beta-consent { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; font-size: 13px; color: var(--slate); line-height: 1.6; font-family: var(--font-sans); }
+  .beta-consent input[type="checkbox"] { position: absolute; opacity: 0; width: 0; height: 0; pointer-events: none; }
+  .beta-checkbox { width: 18px; height: 18px; border-radius: 4px; border: 1.5px solid var(--border); flex-shrink: 0; margin-top: 2px; transition: all 0.22s; display: flex; align-items: center; justify-content: center; }
+  .beta-consent.checked .beta-checkbox { border-color: var(--accent); background: var(--accent); }
+  .beta-consent.checked .beta-checkbox::after { content: ''; width: 5px; height: 9px; border: solid var(--on-accent); border-width: 0 2px 2px 0; transform: rotate(45deg) translateY(-1px); }
+
+  .beta-error { font-size: 12px; color: var(--error); margin-top: 6px; display: none; font-family: var(--font-sans); }
+  .beta-error.visible { display: block; }
+
+  .beta-submit { width: 100%; padding: 15px 24px; border-radius: 8px; border: none; background: var(--accent); color: var(--on-accent); font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.22s; font-family: var(--font-sans); letter-spacing: 0.04em; }
+  .beta-submit:hover { background: var(--accent-hover); }
+  .beta-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+  .beta-submit-note { font-size: 11.5px; color: var(--muted); text-align: center; margin-top: 12px; line-height: 1.6; font-family: var(--font-sans); }
+
+  .beta-success { text-align: left; padding: 8px 0 0; }
+  .beta-success-icon { text-align: center; margin-bottom: 20px; }
+  .beta-success-icon svg { display: inline-block; }
+  .beta-success-title { font-size: 22px; font-weight: 700; color: var(--ink); margin-bottom: 8px; font-family: var(--font-serif); text-align: center; }
+  .beta-success-subtitle { font-size: 14px; color: var(--accent); text-align: center; margin-bottom: 16px; font-weight: 500; font-family: var(--font-sans); }
+  .beta-success-text { font-size: 13.5px; color: var(--slate); line-height: 1.8; margin-bottom: 24px; font-family: var(--font-sans); }
+
+  .beta-summary { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 22px 24px; margin-bottom: 24px; }
+  .beta-summary-title { font-size: 10.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 14px; font-family: var(--font-sans); }
+  .beta-summary-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 9px; font-family: var(--font-sans); }
+  .beta-summary-row:last-child { margin-bottom: 0; }
+  .beta-summary-label { font-size: 12px; color: var(--muted); min-width: 52px; flex-shrink: 0; font-weight: 500; font-family: var(--font-sans); }
+  .beta-summary-value { font-size: 12.5px; color: var(--ink); line-height: 1.5; word-break: break-all; font-family: var(--font-sans); }
+
+  .beta-success-actions { display: flex; gap: 10px; margin-bottom: 18px; }
+  .beta-success-btn { flex: 1; padding: 12px 20px; border-radius: 8px; font-size: 13.5px; font-weight: 600; cursor: pointer; transition: all 0.22s; font-family: var(--font-sans); border: none; text-align: center; text-decoration: none; letter-spacing: 0.04em; }
+  .beta-success-btn.primary { background: var(--accent); color: var(--on-accent); }
+  .beta-success-btn.primary:hover { background: var(--accent-hover); }
+  .beta-success-btn.secondary { background: transparent; border: 1px solid var(--border); color: var(--slate); }
+  .beta-success-btn.secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+  .beta-success-footer { font-size: 11px; color: var(--muted); text-align: center; line-height: 1.6; font-family: var(--font-sans); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .beta-form-card .beta-form-fields,
+    .beta-form-card .beta-success { transition: none; }
+  }
+
+  @media (max-width: 860px) {
+    .beta-grid { grid-template-columns: 1fr; gap: 40px; }
+    .beta-section .section-title { font-size: 26px; }
+    .beta-form-card { padding: 28px 24px; min-height: auto; }
+    .beta-form-card.success-state .beta-form-fields { width: calc(100% - 48px); }
+    .beta-form-card .beta-success { top: 28px; left: 24px; right: 24px; }
+    .beta-success-actions { flex-direction: column; }
+  }
+
+  /* ── Footer ── */
+  footer { background: var(--footer-bg); color: var(--muted); padding: 44px 28px; font-size: 13.5px; border-top: 1px solid var(--border); font-family: var(--font-sans); }
+  .footer-inner { max-width: 1080px; margin: 0 auto; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 24px; }
+  .footer-brand { font-family: var(--font-serif); font-size: 16px; font-weight: 700; color: var(--ink); }
+  .footer-brand small { display: block; font-size: 12px; color: var(--muted); font-weight: 400; margin-top: 4px; font-family: var(--font-sans); }
+  .footer-links { display: flex; gap: 28px; }
+  .footer-links a { color: var(--muted); font-size: 13.5px; transition: color 0.2s; font-family: var(--font-sans); }
+  .footer-links a:hover { color: var(--slate); text-decoration: none; }
+  .footer-copy { max-width: 1080px; margin: 18px auto 0; padding-top: 18px; border-top: 1px solid var(--footer-divider); font-size: 12px; color: var(--muted); font-family: var(--font-sans); }
+  .footer-manifesto { max-width: 1080px; margin: 20px auto 0; font-size: 13px; color: var(--muted); font-style: italic; line-height: 1.7; font-family: var(--font-serif); }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .nav-links { display: none; }
+    .logo-tagline { display: none; }
+    .metrics-inner { gap: 32px; }
+    .metric-item { min-width: 110px; }
+    .metric-num { font-size: 28px; }
+    .compare-table { overflow-x: auto; }
+    .compare-table table { min-width: 640px; }
+    .pricing-grid { grid-template-columns: 1fr; }
+    .why-grid { grid-template-columns: 1fr; }
+    .section-inner { padding: 0 24px; }
+    .footer-inner { flex-direction: column; align-items: center; text-align: center; }
+    .footer-links { justify-content: center; }
+  }
+
+  /* ── Fade-in ── */
+  .fade-in { opacity: 0; transform: translateY(18px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .fade-in.visible { opacity: 1; transform: none; }
+
+  /* ── Mini CTA ── */
+  .mini-cta { position: fixed; bottom: 0; left: 0; right: 0; z-index: 90; background: var(--mini-cta-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-top: 1px solid var(--accent-subtle); box-shadow: var(--mini-cta-shadow); padding: 13px 28px; display: flex; align-items: center; justify-content: center; gap: 18px; transform: translateY(100%); transition: transform 0.45s cubic-bezier(.22,1,.36,1); }
+  .mini-cta.visible { transform: translateY(0); }
+  .mini-cta p { font-size: 14px; color: var(--slate); margin: 0; white-space: nowrap; font-family: var(--font-sans); }
+  .mini-cta p strong { color: var(--ink); font-weight: 700; }
+  .mini-cta .btn-primary { padding: 9px 22px; font-size: 13.5px; border-radius: 6px; white-space: nowrap; }
+  @media (max-width: 768px) {
+    .mini-cta { padding: 10px 16px; gap: 10px; }
+    .mini-cta p { font-size: 13px; }
+    .mini-cta .btn-primary { padding: 8px 16px; font-size: 13px; }
+  }
+
+  /* ── prefers-reduced-motion ── */
+  @media (prefers-reduced-motion: reduce) {
+    html { transition: none; }
+    *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+  }
+
+  /* ══════════════════════════════════════════
+     AI TRAINING ENGINE
+     ══════════════════════════════════════════ */
+  .engine { padding: 96px 0; background: var(--bg); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .engine-flow { margin-top: 48px; }
+
+  .engine-nodes {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+    position: relative;
+  }
+
+  .engine-node {
+    position: relative;
+    padding: 40px 24px 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: transform 0.3s ease;
+  }
+  .engine-node:hover { transform: translateY(-3px); }
+
+  /* Connector arrow between nodes */
+  .engine-node:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: -12px;
+    top: 56px;
+    width: 24px;
+    height: 24px;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5 12h14M14 5l7 7-7 7' stroke='%238A8F98' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.35;
+    pointer-events: none;
+    z-index: 1;
+  }
+  html[data-theme="dark"] .engine-node:not(:last-child)::after {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5 12h14M14 5l7 7-7 7' stroke='%236a7285' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  }
+
+  .engine-index {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+
+  .engine-icon-wrap {
+    width: 52px; height: 52px;
+    border-radius: 14px;
+    background: var(--accent-bg);
+    border: 1px solid var(--accent-subtle);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 18px;
+    color: var(--accent);
+    transition: all 0.3s ease;
+  }
+  .engine-node:hover .engine-icon-wrap {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-subtle);
+  }
+  .engine-icon-wrap svg {
+    width: 24px; height: 24px;
+    stroke: currentColor; stroke-width: 1.6;
+    fill: none; stroke-linecap: round; stroke-linejoin: round;
+  }
+
+  .engine-node h3 {
+    font-family: var(--font-sans);
+    font-size: 15.5px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: var(--ink);
+    line-height: 1.3;
+  }
+  .engine-sub {
+    font-family: var(--font-serif);
+    font-size: 12px;
+    color: var(--muted);
+    font-style: italic;
+    margin-bottom: 14px;
+    letter-spacing: 0.03em;
+  }
+  .engine-node p {
+    font-size: 13.5px;
+    color: var(--slate);
+    line-height: 1.65;
+    flex: 1;
+    font-family: var(--font-sans);
+  }
+
+  /* Source badges */
+  .source-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    font-family: var(--font-sans);
+  }
+  .source-badge.sb-source {
+    background: rgba(59,110,168,0.06);
+    color: #3B6EA8;
+    border: 1px solid rgba(59,110,168,0.12);
+  }
+  .source-badge.sb-training {
+    background: rgba(166,124,46,0.08);
+    color: #A67C2E;
+    border: 1px solid rgba(166,124,46,0.14);
+  }
+  .source-badge.sb-ai {
+    background: rgba(110,168,120,0.08);
+    color: #3a7d6a;
+    border: 1px solid rgba(110,168,120,0.14);
+  }
+  .source-badge.sb-user {
+    background: rgba(158,86,112,0.08);
+    color: #9e5670;
+    border: 1px solid rgba(158,86,112,0.14);
+  }
+  html[data-theme="dark"] .source-badge.sb-source {
+    background: rgba(136,157,196,0.10);
+    color: #889dc4;
+    border-color: rgba(136,157,196,0.16);
+  }
+  html[data-theme="dark"] .source-badge.sb-training {
+    background: rgba(196,149,74,0.12);
+    color: #c4954a;
+    border-color: rgba(196,149,74,0.18);
+  }
+  html[data-theme="dark"] .source-badge.sb-ai {
+    background: rgba(110,168,120,0.12);
+    color: #6ea878;
+    border-color: rgba(110,168,120,0.18);
+  }
+  html[data-theme="dark"] .source-badge.sb-user {
+    background: rgba(196,114,135,0.12);
+    color: #c47287;
+    border-color: rgba(196,114,135,0.18);
+  }
+  .source-badge::before {
+    content: ''; width: 4px; height: 4px; border-radius: 50%;
+    background: currentColor; opacity: 0.6; flex-shrink: 0;
+  }
+
+  /* Engine design note */
+  .engine-design-note {
+    margin-top: 48px;
+    padding: 18px 24px;
+    background: var(--accent-bg);
+    border: 1px solid var(--accent-subtle);
+    border-radius: 10px;
+    font-size: 13px;
+    color: var(--slate);
+    line-height: 1.7;
+    text-align: center;
+    font-family: var(--font-sans);
+  }
+  .engine-design-note strong { color: var(--accent); font-weight: 600; }
+  .engine-design-note em { font-family: var(--font-serif); color: var(--ink); font-style: italic; }
+
+  @media (max-width: 900px) {
+    .engine-nodes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .engine-node:nth-child(2)::after { display: none; }
+    .engine-node:nth-child(3)::after { right: -12px; top: 56px; display: block; }
+    .engine-node:last-child::after { display: none; }
+  }
+  @media (max-width: 600px) {
+    .engine-nodes { grid-template-columns: 1fr; }
+    .engine-node::after { display: none !important; }
+    .engine-node { padding: 28px 20px 24px; }
+  }
+
+  /* ══════════════════════════════════════════
+     ARGUMENT CHAIN DEMO
+     ══════════════════════════════════════════ */
+  .arg-demo { padding: 96px 0; background: var(--bg-elevated); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .arg-demo-layout {
+    display: grid;
+    grid-template-columns: 1fr 1.25fr;
+    gap: 44px;
+    margin-top: 44px;
+    align-items: start;
+  }
+
+  /* ── Left panel: Input ── */
+  .arg-demo-input {
+    background: var(--surface-elevated);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 32px;
+    box-shadow: var(--shadow-soft);
+    position: sticky; top: 90px;
+  }
+  .arg-demo-input h3 {
+    font-family: var(--font-sans);
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .arg-demo-input .input-sub {
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-bottom: 22px;
+    font-family: var(--font-sans);
+  }
+  .arg-demo-textarea {
+    width: 100%;
+    min-height: 140px;
+    padding: 16px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 14.5px;
+    line-height: 1.75;
+    resize: vertical;
+    font-family: var(--font-sans);
+    outline: none;
+    transition: border-color 0.25s, box-shadow 0.25s;
+    margin-bottom: 18px;
+  }
+  .arg-demo-textarea::placeholder { color: var(--muted); font-size: 13.5px; }
+  .arg-demo-textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-subtle);
+  }
+  .arg-demo-actions { display: flex; gap: 10px; align-items: center; }
+  .arg-demo-btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 12px 24px; border-radius: 8px;
+    font-size: 14px; font-weight: 600; cursor: pointer;
+    border: none; transition: all 0.25s;
+    font-family: var(--font-sans); letter-spacing: 0.04em;
+  }
+  .arg-demo-btn.primary {
+    background: var(--accent); color: var(--on-accent);
+  }
+  .arg-demo-btn.primary:hover {
+    background: var(--accent-hover);
+  }
+  .arg-demo-btn.secondary {
+    background: transparent; color: var(--slate);
+    border: 1px solid var(--border);
+  }
+  .arg-demo-btn.secondary:hover {
+    border-color: var(--accent); color: var(--accent);
+  }
+  .arg-demo-btn:disabled {
+    opacity: 0.5; cursor: not-allowed;
+  }
+  .arg-demo-hint {
+    font-size: 11.5px;
+    color: var(--muted);
+    margin-top: 14px;
+    font-family: var(--font-sans);
+    line-height: 1.6;
+  }
+  .arg-demo-hint code {
+    background: var(--accent-subtle);
+    color: var(--accent);
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-family: var(--font-mono);
+  }
+
+  /* ── Right panel: Output ── */
+  .arg-demo-output {
+    display: flex; flex-direction: column; gap: 18px;
+  }
+  .arg-demo-card {
+    background: var(--surface-elevated);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px 26px;
+    box-shadow: var(--shadow-soft);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .arg-demo-card::before {
+    content: '';
+    position: absolute; left: 0; top: 0; bottom: 0;
+    width: 3px;
+    border-radius: 0 2px 2px 0;
+  }
+  .arg-demo-card.card-concepts::before { background: #4a6fa5; }
+  .arg-demo-card.card-chain::before { background: #3a7d6a; }
+  .arg-demo-card.card-weighing::before { background: #a67c2e; }
+  .arg-demo-card.card-paragraph::before { background: #9e5670; }
+
+  html[data-theme="dark"] .arg-demo-card.card-concepts::before { background: #6b8fc0; }
+  html[data-theme="dark"] .arg-demo-card.card-chain::before { background: #5ea88a; }
+  html[data-theme="dark"] .arg-demo-card.card-weighing::before { background: #d4a85a; }
+  html[data-theme="dark"] .arg-demo-card.card-paragraph::before { background: #cc7a90; }
+
+  .arg-demo-card .card-step {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin: 0 0 4px 8px;
+  }
+  .arg-demo-card.card-concepts .card-step { color: #4a6fa5; }
+  .arg-demo-card.card-chain .card-step { color: #3a7d6a; }
+  .arg-demo-card.card-weighing .card-step { color: #a67c2e; }
+  .arg-demo-card.card-paragraph .card-step { color: #9e5670; }
+  html[data-theme="dark"] .arg-demo-card.card-concepts .card-step { color: #6b8fc0; }
+  html[data-theme="dark"] .arg-demo-card.card-chain .card-step { color: #5ea88a; }
+  html[data-theme="dark"] .arg-demo-card.card-weighing .card-step { color: #d4a85a; }
+  html[data-theme="dark"] .arg-demo-card.card-paragraph .card-step { color: #cc7a90; }
+
+  .arg-demo-card h4 {
+    font-family: var(--font-sans);
+    font-size: 14.5px;
+    font-weight: 700;
+    margin: 0 0 10px 8px;
+    color: var(--ink);
+  }
+
+  /* Concepts */
+  .concept-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-left: 8px; }
+  .concept-chip {
+    padding: 7px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: var(--font-sans);
+    background: var(--accent-bg);
+    color: var(--accent);
+    border: 1px solid var(--accent-subtle);
+    letter-spacing: 0.02em;
+  }
+
+  /* Causal Chain */
+  .chain-flow {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
+    margin-left: 8px;
+  }
+  .chain-node-item {
+    padding: 7px 13px;
+    border-radius: 6px;
+    font-size: 12.5px;
+    font-family: var(--font-sans);
+    background: var(--green-tint);
+    color: var(--slate);
+    border: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  .chain-arrow {
+    font-size: 14px;
+    color: var(--muted);
+    font-family: var(--font-sans);
+    flex-shrink: 0;
+  }
+
+  /* Weighing */
+  .weighing-text {
+    font-size: 14px;
+    color: var(--slate);
+    line-height: 1.7;
+    margin-left: 8px;
+    font-family: var(--font-sans);
+  }
+  .weighing-text strong { color: var(--warm); font-weight: 600; }
+
+  /* Paragraph */
+  .paragraph-en {
+    font-family: var(--font-serif);
+    font-size: 14.5px;
+    line-height: 1.85;
+    color: var(--ink);
+    background: var(--bg);
+    padding: 16px 18px;
+    border-radius: 8px;
+    border-left: 3px solid var(--accent-subtle);
+    margin-left: 8px;
+  }
+  .paragraph-en em { font-style: italic; color: var(--accent); }
+
+  /* Output placeholder */
+  .arg-demo-placeholder {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 60px 24px;
+    text-align: center;
+    color: var(--muted);
+    border: 1px dashed var(--border);
+    border-radius: 18px;
+    background: var(--bg);
+  }
+  .arg-demo-placeholder svg {
+    width: 40px; height: 40px;
+    stroke: var(--muted); stroke-width: 1.2;
+    margin-bottom: 14px; opacity: 0.4;
+  }
+  .arg-demo-placeholder p {
+    font-size: 14px; font-family: var(--font-sans);
+  }
+  .arg-demo-placeholder .hint {
+    font-size: 12px; margin-top: 6px;
+    color: var(--muted); opacity: 0.7;
+    font-family: var(--font-sans);
+  }
+
+  /* Loading pulse */
+  .arg-demo-loading {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 60px 24px; gap: 16px;
+  }
+  .arg-demo-loading .pulse {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: 3px solid var(--accent-subtle);
+    border-top-color: var(--accent);
+    animation: argDemoSpin 0.8s linear infinite;
+  }
+  .arg-demo-loading p {
+    font-size: 13.5px; color: var(--slate);
+    font-family: var(--font-sans);
+  }
+  @keyframes argDemoSpin { to { transform: rotate(360deg); } }
+
+  @media (max-width: 860px) {
+    .arg-demo-layout { grid-template-columns: 1fr; }
+    .arg-demo-input { position: static; top: auto; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .arg-demo-loading .pulse { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Theme Toggle -->
+<div class="theme-toggle-wrap">
+  <button class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle reading mode / dark mode">
+    <span class="theme-toggle-icon" id="theme-icon">
+      <svg id="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      <svg id="icon-moon" viewBox="0 0 24 24" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </span>
+    <span class="theme-toggle-label" id="theme-label">Reading Mode</span>
+  </button>
+</div>
+
+
+<!-- ═══ Header ═══ -->
+<header>
+  <nav class="nav">
+    <div class="logo">Argue<span>Lab</span><span class="logo-tagline">外刊表达训练</span></div>
+    <div class="nav-links">
+      <a href="#why" data-section="why">为什么做这个</a>
+      <a href="#receive" data-section="receive">每期内容</a>
+      <a href="#engine" data-section="engine">AI 引擎</a>
+      <a href="#sample" data-section="sample">内容样例</a>
+      <a href="#demo" data-section="demo">论证演示</a>
+      <a href="#how" data-section="how">怎么用</a>
+      <a href="#pricing" data-section="pricing">加入内测</a>
+    </div>
+    <a href="#cta" class="nav-cta">免费加入</a>
+  </nav>
+</header>
+
+<!-- ═══ 1. Hero ═══ -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-left">
+      <div class="hero-badge"><span class="bdot"></span> ArgueLab · Beta</div>
+      <h1>
+        <span class="en">From Reading to Argument.</span>
+        <span class="cn">把外刊议题，转化成可写、可讲、可迁移的英文论证能力</span>
+      </h1>
+      <p class="hero-sub">由学习者创建，面向想认真提高英文论证能力的人。每周两到三期，每期一个议题，约 20 分钟——不是课，不是新闻，而是一个你可以坚持的输出训练。</p>
+      <div class="hero-cta">
+        <a href="#cta" class="btn-primary">免费加入内测 →</a>
+        <a href="#sample" class="btn-outline">查看内容样例</a>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="arg-card">
+        <div class="arg-label">Argument Lab</div>
+        <div class="arg-step">
+          <div class="step-icon">中</div>
+          <div class="step-body">
+            <div class="step-head">Chinese Thought</div>
+            <div class="step-text">社交媒体让人更难专注</div>
+          </div>
+        </div>
+        <div class="arg-step">
+          <div class="step-icon">En</div>
+          <div class="step-body">
+            <div class="step-head">English Concept</div>
+            <div class="step-text">Attention economy + cognitive cost</div>
+          </div>
+        </div>
+        <div class="arg-step">
+          <div class="step-icon">→</div>
+          <div class="step-body">
+            <div class="step-head">Causal Chain</div>
+            <div class="step-text">Engagement algorithms → fragmented attention → reduced deep-reading</div>
+          </div>
+        </div>
+        <div class="arg-step">
+          <div class="step-icon">"</div>
+          <div class="step-body">
+            <div class="step-head">Argument Output</div>
+            <div class="step-text"><em>What social media has engineered is not connection, but the systematic erosion of our capacity for sustained attention.</em></div>
+          </div>
+        </div>
+        <div class="arg-glow"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ Metrics Strip ═══ -->
+<section class="metrics">
+  <div class="metrics-inner">
+    <div class="metric-item">
+      <div class="metric-num">3 <small>期/周</small></div>
+      <div class="metric-label">保持输出节奏</div>
+    </div>
+    <div class="metric-item">
+      <div class="metric-num">6</div>
+      <div class="metric-label">完整训练步骤</div>
+    </div>
+    <div class="metric-item">
+      <div class="metric-num">20 <small>分钟</small></div>
+      <div class="metric-label">平均完成时间</div>
+    </div>
+    <div class="metric-item">
+      <div class="metric-num">5 <small>个/期</small></div>
+      <div class="metric-label">每期可积累</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 2. Why This Exists ═══ -->
+<section class="why" id="why">
+  <div class="section-inner">
+    <div class="section-label fade-in">A Note on Why</div>
+    <h2 class="section-title fade-in">我猜你可能也在经历这些</h2>
+    <p class="section-desc fade-in">外刊读了一堆，写作口语还是「有想法，说不出」。问题不在词汇量，在 argument 迁移能力。</p>
+    <div class="why-grid">
+      <div class="why-card fade-in">
+        <div class="why-num">01</div>
+        <h3>读得懂，写不出</h3>
+        <p>外刊每句话都认识，换自己写 argument，就退回到 <em>"I think… because…"</em> 的初级结构。输入和输出之间有一道墙。</p>
+        <div class="cn">本质：积累了理解，没有训练映射。</div>
+      </div>
+      <div class="why-card fade-in">
+        <div class="why-num">02</div>
+        <h3>有观点，没结构</h3>
+        <p>中文能说清楚，转成英文就变成 simple sentences 的堆砌，没有 <strong>premise → conclusion</strong> 的推进感。</p>
+        <div class="cn">本质：缺少 argument chain 的训练。</div>
+      </div>
+      <div class="why-card fade-in">
+        <div class="why-num">03</div>
+        <h3>背了词汇，不会用</h3>
+        <p>单词表和 AWL 背了，写作时还是只能用 <em>good / important / think</em>——因为没人教你在什么 argument 场景该用哪个表达。</p>
+        <div class="cn">本质：词汇是按「列表」学的，不是按「功能」学的。</div>
+      </div>
+      <div class="why-card fade-in">
+        <div class="why-num">04</div>
+        <h3>精读营「毕业即止」</h3>
+        <p>跟了半年外刊精读营，停下来就不知道读什么、怎么练。没有持续的输出训练路径。</p>
+        <div class="cn">本质：精读是「内容消费」，不是「能力训练」。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 3. Training Blueprint ═══ -->
+<section class="receive" id="receive">
+  <div class="section-inner">
+    <div class="section-heading centered">
+      <span class="eyebrow fade-in">Training Blueprint</span>
+      <h2 class="section-title fade-in">一份训练卡如何展开</h2>
+      <p class="section-desc fade-in">每封邮件包含 6 个模块，围绕一个真实议题，从输入到输出走完一次完整训练。核心内容直接呈现在训练卡中，无需外部链接。</p>
+    </div>
+    <div class="briefing-blueprint">
+
+      <article class="blueprint-item fade-in">
+        <div class="blueprint-index">01</div>
+        <div class="icon-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg></div>
+        <h3>今日议题背景</h3>
+        <div class="blueprint-en-sub">Context Building · 中文</div>
+        <p>用中文解释议题背景、核心争议和关键概念。不依赖 VPN，不依赖外部链接，快速进入状态。</p>
+        <div class="blueprint-example"><strong>例：</strong>「AI 是否应该被允许在学术写作中使用？」——先理解正反双方的核心关切。</div>
+      </article>
+
+      <article class="blueprint-item fade-in">
+        <div class="blueprint-index">02</div>
+        <div class="icon-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 3h12l2 4H4l2-4z"/><path d="M4 7h16v11a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V7z"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="14" y2="16"/></svg></div>
+        <h3>核心英文段落</h3>
+        <div class="blueprint-en-sub">Selected Passage · 论证密度</div>
+        <p>精选有分量的英文评论段落，标注 thesis / premise / evidence / counter-argument / conclusion 位置。</p>
+        <div class="blueprint-example"><strong>标注：</strong>段落上直接标出论证结构，不是全文——是「值得拆解的那一段」。</div>
+      </article>
+
+      <article class="blueprint-item fade-in">
+        <div class="blueprint-index">03</div>
+        <div class="icon-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><circle cx="5" cy="12" r="2"/><circle cx="19" cy="12" r="2"/><circle cx="12" cy="19" r="2"/><line x1="10.5" y1="6.5" x2="6.5" y2="10.5"/><line x1="13.5" y1="6.5" x2="17.5" y2="10.5"/><line x1="10.5" y1="17.5" x2="6.5" y2="13.5"/><line x1="13.5" y1="17.5" x2="17.5" y2="13.5"/></svg></div>
+        <h3>5 个可迁移表达</h3>
+        <div class="blueprint-en-sub">Transferable Expressions · 按功能学</div>
+        <p>不是单词表。每个表达带 argument 功能标注 + register + collocation + 仿写范例。</p>
+        <div class="blueprint-example"><strong>例：</strong><code>be engineered to</code> → 因果论证 · formal → 雅思 Task 2</div>
+      </article>
+
+      <article class="blueprint-item fade-in">
+        <div class="blueprint-index">04</div>
+        <div class="icon-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="4 7 12 3 20 7"/><polyline points="4 12 12 8 20 12"/><line x1="4" y1="17" x2="12" y2="13"/><line x1="20" y1="17" x2="12" y2="13"/><line x1="4" y1="17" x2="4" y2="21"/><line x1="20" y1="17" x2="20" y2="21"/><line x1="12" y1="13" x2="12" y2="21"/></svg></div>
+        <h3>高级句型拆解</h3>
+        <div class="blueprint-en-sub">Syntax Deconstruction · 从句到用</div>
+        <p>深度拆解高级句式：语法结构 + 修辞功能 + 适用场景 + 仿写模板。不只告诉你「高级」，而是告诉你「在哪用」。</p>
+        <div class="blueprint-example"><strong>例：</strong>分号并列 + 破折号延迟 → 仿写模板 → 你的任务</div>
+      </article>
+
+      <article class="blueprint-item fade-in">
+        <div class="blueprint-index">05</div>
+        <div class="icon-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/><line x1="12" y1="6.5" x2="12" y2="10.5"/><line x1="12" y1="13.5" x2="12" y2="17.5"/><path d="M7 8l3.5 4L7 16"/></svg></div>
+        <h3>中文观点 → Argument Chain</h3>
+        <div class="blueprint-en-sub">Guided Argument Construction</div>
+        <p>给你一个中文观点，引导你把模糊想法展开成 structured chain：thesis → premise → evidence → counter-argument → conclusion。</p>
+        <div class="blueprint-example"><strong>训练流程：</strong>先自己写 → 看参考 chain → 对比差距 → 标注可复用表达</div>
+      </article>
+
+      <article class="blueprint-item fade-in">
+        <div class="blueprint-index">06</div>
+        <div class="icon-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>
+        <h3>输出任务 + Self-check</h3>
+        <div class="blueprint-en-sub">Output Task · 写作/口语双通道</div>
+        <p>专四/专八/雅思 Task 2 写作命题 + 口语 Part 3 / 演讲话题。带结构指引、self-check 清单和 sample answer。</p>
+        <div class="blueprint-example"><strong>任务样例：</strong>「To what extent do you agree?」→ 写作 280–320 词</div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 4. AI Training Engine ═══ -->
+<section class="engine" id="engine">
+  <div class="section-inner wide">
+    <div class="section-heading centered">
+      <span class="eyebrow fade-in">AI Training Engine</span>
+      <h2 class="section-title fade-in">Not a Generator. <span style="color:var(--muted);font-weight:400;">A Trainer.</span></h2>
+      <p class="section-desc fade-in">ArgueLab 不是让 AI 替你写文章，而是设计一个 multi-step 分析引擎：每封邮件背后，AI 完成了从源头归纳到评分反馈的完整训练流程。</p>
+    </div>
+
+    <div class="engine-flow">
+      <div class="engine-nodes">
+
+        <!-- Node 01: Source-Aware Context Summary -->
+        <div class="engine-node fade-in">
+          <span class="source-badge sb-source">SOURCE-BASED</span>
+          <div class="engine-index">ENGINE 01</div>
+          <div class="engine-icon-wrap" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/><line x1="8" y1="2" x2="8" y2="5"/><line x1="16" y1="2" x2="16" y2="5"/><line x1="12" y1="2" x2="12" y2="5"/></svg>
+          </div>
+          <h3>Source-Aware<br>Context Summary</h3>
+          <div class="engine-sub">→ 议题背景</div>
+          <p>抓取 Guardian / BBC 等真实外刊的当日议题，提炼背景与争议焦点，标注来源——不是泛化摘要，是<strong>可溯源的内容 synthesis</strong>。</p>
+        </div>
+
+        <!-- Node 02: Sentence Anatomy & Expression Transfer -->
+        <div class="engine-node fade-in">
+          <span class="source-badge sb-training">TRAINING PASSAGE</span>
+          <div class="engine-index">ENGINE 02</div>
+          <div class="engine-icon-wrap" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h12M4 17h16"/><line x1="16" y1="9" x2="16" y2="15"/><line x1="13" y1="12" x2="19" y2="12"/></svg>
+          </div>
+          <h3>Sentence Anatomy<br>&amp; Expression Transfer</h3>
+          <div class="engine-sub">→ 句型拆解 · 表达迁移</div>
+          <p>定位论证段落中的 Thesis→Conclusion 结构，拆解高级句式的语法与修辞功能，按<strong>论证功能</strong>（因果/让步/反事实）分类提取可迁移表达。</p>
+        </div>
+
+        <!-- Node 03: Argument Chain Mapping -->
+        <div class="engine-node fade-in">
+          <span class="source-badge sb-ai">AI-ASSISTED ANALYSIS</span>
+          <div class="engine-index">ENGINE 03</div>
+          <div class="engine-icon-wrap" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="5" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/><line x1="10.5" y1="6.5" x2="6.5" y2="10.5"/><line x1="13.5" y1="6.5" x2="17.5" y2="10.5"/><line x1="10.5" y1="17.5" x2="6.5" y2="13.5"/><line x1="13.5" y1="17.5" x2="17.5" y2="13.5"/></svg>
+          </div>
+          <h3>Argument Chain<br>Mapping</h3>
+          <div class="engine-sub">→ 论证链构建</div>
+          <p>将中文观点转化为英文 structured argument：core concepts → causal chain → impact weighing → academic paragraph——<strong>不是翻译，是论证思维的映射</strong>。</p>
+        </div>
+
+        <!-- Node 04: Rubric-Based Feedback -->
+        <div class="engine-node fade-in">
+          <span class="source-badge sb-user">USER PRACTICE</span>
+          <div class="engine-index">ENGINE 04</div>
+          <div class="engine-icon-wrap" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          </div>
+          <h3>Rubric-Based<br>Feedback</h3>
+          <div class="engine-sub">→ 输出任务 · 评分反馈</div>
+          <p>输出任务基于 TEM-4/8 和雅思 rubric 设计，提供结构化 self-check 清单——你的练习不是「做完了」，而是<strong>可对照评分标准自我评估的</strong>。</p>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="engine-design-note fade-in">
+      <strong>设计原则</strong> — 每一个 AI 节点都是「训练辅助」，不是「答案替代」：<em>AI doesn't write for the learner — it structures the path, highlights the patterns, and lets the learner do the work.</em>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══ 5. Argument Chain Demo ═══ -->
+<section class="arg-demo" id="demo">
+  <div class="section-inner wide">
+    <div class="section-heading centered">
+      <span class="eyebrow fade-in">Interactive Demo</span>
+      <h2 class="section-title fade-in">中文观点 → 英文论证链</h2>
+      <p class="section-desc fade-in">输入一个中文观点，看看 ArgueLab 如何将它拆解为 core concepts、causal chain、impact weighing 和 academic paragraph。当前使用示例输出——后续将对接 <code>/api/argument-chain</code> 实时生成。</p>
+    </div>
+
+    <div class="arg-demo-layout">
+      <!-- LEFT: Input -->
+      <div class="arg-demo-input fade-in">
+        <span class="source-badge sb-user" style="margin-bottom:16px;">USER PRACTICE</span>
+        <h3>你的中文观点</h3>
+        <p class="input-sub">用中文写出你想论证的核心观点。越具体越好——避免笼统判断。</p>
+        <textarea
+          class="arg-demo-textarea"
+          id="arg-demo-ta"
+          placeholder="例如：社交媒体平台通过算法推荐机制，正在系统性地削弱年轻一代的深度阅读能力和批判性思维——但这种伤害不是用户自愿选择的，而是被「注意力经济」的商业逻辑强制施加的。"
+        >社交媒体平台通过算法推荐机制，正在系统性地削弱年轻一代的深度阅读能力和批判性思维——但这种伤害不是用户自愿选择的，而是被「注意力经济」的商业逻辑强制施加的。</textarea>
+
+        <div class="arg-demo-actions">
+          <button class="arg-demo-btn primary" id="arg-demo-run" onclick="runArgDemo()">
+            <svg viewBox="0 0 16 16" width="14" height="14" style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><polygon points="3,2 13,8 3,14"/></svg>
+            生成论证链
+          </button>
+          <button class="arg-demo-btn secondary" id="arg-demo-reset" onclick="resetArgDemo()">重置</button>
+        </div>
+
+        <p class="arg-demo-hint">
+          <svg viewBox="0 0 16 16" width="14" height="14" style="display:inline-block;vertical-align:-2px;fill:none;stroke:var(--accent);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;margin-right:3px;"><circle cx="8" cy="8" r="3"/><path d="M8 2V1M8 15v-1M2.5 4.5l-.7-.7M14.2 12.2l-.7-.7M1 8H0M16 8h-1M2.5 11.5l-.7.7M14.2 3.8l-.7.7"/></svg>试试改成你自己的观点，比如：<code>「学历贬值正在改变年轻人对"好工作"的定义——从追求稳定转向追求个人意义」</code>
+        </p>
+      </div>
+
+      <!-- RIGHT: Output -->
+      <div class="arg-demo-output fade-in" id="arg-demo-output">
+        <!-- Placeholder -->
+        <div class="arg-demo-placeholder" id="arg-demo-placeholder">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="12" x2="12" y2="12"/></svg>
+          <p>点击「生成论证链」查看 AI 分析结果</p>
+          <p class="hint">引擎将依次展示：Core Concepts → Causal Chain → Impact Weighing → Academic Paragraph</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══ 4. Sample Issue ═══ -->
+<section class="sample" id="sample">
+  <div class="section-inner">
+    <div class="section-label fade-in">Sample Issue</div>
+    <h2 class="section-title fade-in">看看每期收到的是什么</h2>
+    <p class="section-desc fade-in">以下为完整样例。每期围绕一个真实议题，按输入→输出训练闭环设计。核心内容直接呈现在训练卡中，你不需要依赖外部链接完成训练。</p>
+    <div class="sample-tabs" role="tablist" aria-label="内容样例导航">
+        <button class="sample-tab active" role="tab" aria-selected="true" tabindex="0" onclick="switchTab(this,'bg')">今日议题</button>
+        <button class="sample-tab" role="tab" aria-selected="false" tabindex="-1" onclick="switchTab(this,'passage')">核心段落</button>
+        <button class="sample-tab" role="tab" aria-selected="false" tabindex="-1" onclick="switchTab(this,'expressions')">表达迁移</button>
+        <button class="sample-tab" role="tab" aria-selected="false" tabindex="-1" onclick="switchTab(this,'sentence')">句型拆解</button>
+        <button class="sample-tab" role="tab" aria-selected="false" tabindex="-1" onclick="switchTab(this,'chain')">Argument Chain</button>
+        <button class="sample-tab" role="tab" aria-selected="false" tabindex="-1" onclick="switchTab(this,'output')">输出任务</button>
+    </div>
+    <div class="sample-body">
+      <!-- Pane: 今日议题 -->
+      <div class="sample-pane active" id="pane-bg">
+        <h3>今日议题（中文）</h3>
+        <div class="pane-sub">无需依赖外部链接。先建立 context，再进入英文材料。</div>
+        <div class="pane-block">
+          <div class="block-title">议题：优绩主义（Meritocracy）是否正在制造一种系统性的精神疲惫？</div>
+          <p class="zh">「只要够努力，就能成功」——这条承诺曾是美国梦和中国高考叙事的共同内核。但越来越多的社会学研究和外刊评论指出，优绩主义已经从一种「激励性信念」演变为一种「道德负担」：如果你没有成功，那一定是你不够努力。这种叙事正在系统性地制造焦虑、倦怠和自我否定——尤其在年轻一代中。</p>
+          <p class="zh" style="margin-top:12px;"><strong>争议焦点：</strong>一方认为，优绩主义是社会流动的根本驱动力，放弃它意味着放弃对个人奋斗的信仰。另一方则指出，当结构性的不平等被包装成「个人不够努力」的故事时，优绩主义就不再是激励，而是一种隐性的暴力——它让失败者不仅承受失败的后果，还要背负「失败是你自己的错」的道德审判。</p>
+          <p class="zh" style="margin-top:12px;"><strong>为什么选这个议题？</strong></p>
+          <p class="zh">这是 TEM-8 和雅思 Task 2 中「社会价值观」类话题的高频考察方向。它让你练习 <em>problem-solution（问题-对策论证）</em> 和 <em>evaluating a contested concept（对争议性概念的审视）</em> 两种核心 argument 技能。同时，这个话题和你自己的学习生活高度相关——你很可能已经在经历它。</p>
+          <p class="zh" style="margin-top:12px;"><strong>常见 framing 方式：</strong></p>
+          <ul class="checklist" style="margin-top:8px;">
+            <li><em>the tyranny of merit</em>（优绩的暴政）</li>
+            <li><em>burnout as a status symbol</em>（倦怠成为身份象征）</li>
+            <li><em>hustle culture</em>（内卷文化 / 拼搏崇拜）</li>
+            <li><em>self-optimization</em>（自我优化——无止境提升自我的压力）</li>
+            <li><em>structural inequality</em>（结构性不平等——优绩主义掩盖了什么）</li>
+          </ul>
+        </div>
+      </div>
+      <!-- Pane: 核心段落 -->
+      <div class="sample-pane" id="pane-passage">
+        <h3>核心英文段落</h3>
+        <div class="pane-sub">Training passage · Editorial-style sample for expression practice</div>
+        <div class="pane-block">
+          <div class="block-title">Argument Structure 标注</div>
+          <p class="en" style="background:var(--bg);padding:16px;border-radius:6px;border-left:3px solid var(--accent);line-height:1.85;">
+          <span style="color:var(--accent);font-weight:700;">[Thesis · 主论点]</span> The promise of meritocracy — that hard work and talent will be rewarded — has become, for many, a source of exhaustion rather than inspiration.<br><br>
+          <span style="color:#16a34a;font-weight:700;">[Premise 1 · 因果链]</span> When failure is framed as a personal deficiency rather than a structural outcome, individuals are left not only with the consequences of failure but with the moral weight of having "deserved" it. This is <em>the tyranny of merit</em> — a system in which success legitimizes itself, and failure blames itself.<br><br>
+          <span style="color:#d97706;font-weight:700;">[Evidence · 支撑研究]</span> Recent workplace studies have linked internalized meritocratic beliefs with higher levels of burnout and self-blame — not because people work harder, but because they attribute every setback to their own inadequacy.<br><br>
+          <span style="color:#7c3aed;font-weight:700;">[Counter-argument · 让步 + 反驳]</span> Proponents maintain that meritocracy, for all its imperfections, remains the least bad system for allocating opportunity — and that abandoning it risks creating a society of complacency. Critics counter that this is a false choice: the alternative is not the abandonment of standards, but the recognition that talent is distributed far more evenly than opportunity ever has been.<br><br>
+          <span style="color:#db2777;font-weight:700;">[Conclusion · 结论]</span> The question is not whether effort should be rewarded — it should. The question is whether we have built a culture that confuses reward with worth, and effort with virtue — a confusion that, in the end, exhausts those it promised to liberate.</p>
+        </div>
+        <div class="pane-block" style="background:var(--accent-bg);">
+          <div class="block-title">阅读指引</div>
+          <p class="zh">这段文字最值得学习的是两个修辞策略：<strong>① 将 meritocracy 重新定义为 tyranny——</strong>不是否认努力的價值，而是揭示当「奖励」被等同于「价值」时，这套话语对失败者的道德伤害。② <strong>最后一句话的平行结构：</strong><em>confuses reward with worth, and effort with virtue</em>——两组对仗在一个从句中完成，节奏感极强，适合在雅思 conclusion 段或 TEM-8 结尾中模仿。</p>
+        </div>
+      </div>
+      <!-- Pane: 表达迁移 -->
+      <div class="sample-pane" id="pane-expressions">
+        <h3>5 个可迁移表达</h3>
+        <div class="pane-sub">不是背单词。每个表达带 argument 功能标注 + register/collocation 说明。</div>
+        <div class="pane-block">
+          <div class="tag">揭示本质 · high register · 题目概念界定</div>
+          <p><strong>the tyranny of [noun]</strong> <code>nominal phrase · conceptual framing</code></p>
+          <p class="zh">「……的暴政/专制」，极强的批判性框架词。将某个制度/观念重新定义为一种压迫性力量。比 <em>the problem of X</em> 或 <em>the downside of X</em> 有力得多，因为它不仅指出问题，还赋予问题一个道德维度。大学议论文和高分雅思作文中用来「定义题目核心概念」。</p>
+          <p class="zh" style="margin-top:4px;font-size:12.5px;color:var(--muted);"><strong>常见搭配：</strong>the tyranny of merit / the tyranny of choice / the tyranny of productivity / the tyranny of convenience</p>
+          <p class="en" style="font-size:13px;color:var(--slate);margin-top:6px;"><em>Example: In an age of infinite streaming options, we have fallen victim to the tyranny of choice — more options, paradoxically, producing less satisfaction.</em></p>
+        </div>
+        <div class="pane-block">
+          <div class="tag">因果论证 · semi-formal register</div>
+          <p><strong>a recipe for [noun]</strong> <code>noun phrase · causal framing</code></p>
+          <p class="zh">「……的配方/导火索」，用比喻来表达因果关系。比 <em>leads to</em> 或 <em>causes</em> 更有画面感，暗示多个因素的组合必然导向某个结果——就像食谱一样。议论文中用来总结因果链时特别有效。</p>
+          <p class="zh" style="margin-top:4px;font-size:12.5px;color:var(--muted);"><strong>常见搭配：</strong>a recipe for disaster / a recipe for stagnation / a recipe for burnout / a recipe for resentment</p>
+          <p class="en" style="font-size:13px;color:var(--slate);margin-top:6px;"><em>Example: Telling an entire generation that success is purely a function of effort — while ignoring structural barriers — is a recipe for collective burnout and disillusionment.</em></p>
+        </div>
+        <div class="pane-block">
+          <div class="tag">让步反驳 · formal register</div>
+          <p><strong>for all its/their [noun], [subject] remains…</strong> <code>concessive frame</code></p>
+          <p class="zh">「尽管有……的（优点/缺点），某事仍然是……」。高级让步句式——先承认对方观点的合理性（或承认某事物的缺陷），再用 <em>remains</em> 引出自己的判断。比 <em>Although X has advantages, …</em> 更自然、更正式。</p>
+          <p class="zh" style="margin-top:4px;font-size:12.5px;color:var(--muted);"><strong>结构模板：</strong>For all its [positive noun], [system/idea] remains [critical judgment].</p>
+          <p class="en" style="font-size:13px;color:var(--slate);margin-top:6px;"><em>Example: For all its economic dynamism, the gig economy remains a system that externalizes risk onto the most vulnerable workers.</em></p>
+        </div>
+        <div class="pane-block">
+          <div class="tag">对比论证 · academic register</div>
+          <p><strong>X is distributed far more evenly than Y ever has been</strong> <code>comparative structure</code></p>
+          <p class="zh">「X 的分配远比 Y 曾经做到的更加均匀」。这是一个极度优雅的比较结构——用一个简单的比较级揭穿一个系统性谎言。也是议论文中「用事实反驳假设」的高分句型。</p>
+          <p class="zh" style="margin-top:4px;font-size:12.5px;color:var(--muted);"><strong>可替换主语：</strong>talent / intelligence / potential / ambition / capacity for hard work</p>
+          <p class="en" style="font-size:13px;color:var(--slate);margin-top:6px;"><em>Example: The capacity for intellectual achievement is distributed far more evenly than access to quality education ever has been.</em></p>
+        </div>
+        <div class="pane-block">
+          <div class="tag">概念辨析 · evaluative · 结论段专属</div>
+          <p><strong>confuse X with Y</strong> <code>verb phrase · conceptual correction</code></p>
+          <p class="zh">「将 X 与 Y 混为一谈」。议论文 conclusion 段的神器——当你想指出某个流行观念的「混淆」时，这个词组一针见血。它不直接说某观点「错」，而是说它「搞混了两个不同的东西」——这比直接否定更有说服力。</p>
+          <p class="zh" style="margin-top:4px;font-size:12.5px;color:var(--muted);"><strong>常见混淆对：</strong>confuse correlation with causation / confuse effort with virtue / confuse busyness with productivity / confuse access with equality</p>
+          <p class="en" style="font-size:13px;color:var(--slate);margin-top:6px;"><em>Example: We have spent decades confusing busyness with productivity — measuring hours rather than outcomes, presence rather than contribution.</em></p>
+        </div>
+      </div>
+      <!-- Pane: 句型拆解 -->
+      <div class="sample-pane" id="pane-sentence">
+        <h3>高级句型拆解</h3>
+        <div class="pane-sub">不只是「这句话很高级」，而是「我能在什么场景用它」。</div>
+        <div class="pane-block">
+          <div class="block-title">目标句</div>
+          <p class="en" style="font-size:15px;background:var(--bg);padding:14px;border-radius:6px;"><em>"Proponents maintain that meritocracy, for all its imperfections, remains the least bad system for allocating opportunity — and that abandoning it risks creating a society of complacency. Critics counter that this is a false choice: the alternative is not the abandonment of standards, but the recognition that talent is distributed far more evenly than opportunity ever has been."</em></p>
+        </div>
+        <div class="pane-block">
+          <div class="block-title">结构拆解</div>
+          <p class="zh">这是一个 <strong>double-counterpoint（双重对峙）</strong> 结构。第一句构建正方论证，用 <em>for all its imperfections</em> 做嵌入式让步，用 <em>remains the least bad system</em> 承认其相对合理性。句号后，<em>Critics counter that…</em> 引入反驳——但反駁不是简单的「我不同意」，而是<strong>重新定义问题的框架</strong>：用冒号引出 <em>the alternative is not X, but Y</em> 的 not-A-but-B 结构，把对方的「要么 meritocracy 要么 complacency」二元选择拆解掉。这种「我先承认你说的有道理，但你的问题本身问错了」的论证技巧，是高分写作和高质量学术讨论的标志。</p>
+          <p class="zh" style="margin-top:10px;"><strong>四层结构：</strong></p>
+          <p class="en" style="font-size:13px;background:var(--accent-bg);padding:10px;border-radius:6px;">
+          <code>[Side A] maintains that [X] — for all its [flaw], remains [qualified defense]. [Side B] counters that this is a false choice: the alternative is not [extreme A], but [nuanced B].</code>
+          </p>
+        </div>
+        <div class="pane-block">
+          <div class="block-title">语法要点</div>
+          <ul class="checklist">
+            <li><strong>嵌入式让步：</strong><code>for all its imperfections</code> —— 插入在两个破折号或逗号之间，不打断主句节奏，但瞬间完成了「承认对方部分正确」的动作</li>
+            <li><strong>not A, but B 升级版：</strong><code>the alternative is not the abandonment of standards, but the recognition that…</code> —— 不是简单否定，而是用一个抽象名词 + that-clause 来精准命名「第三条路」</li>
+            <li><strong>冒号的论证功能：</strong><code>this is a false choice:</code> 后的冒号引出对「为什么是 false choice」的解释——英文中用冒号引出解释/例证是学术写作的基础动作</li>
+            <li><strong>far more evenly than… ever has been：</strong>副词 far 加强比较级 + ever 强调「从未」——双重强化制造了论据的不可辩驳感</li>
+          </ul>
+        </div>
+        <div class="pane-block">
+          <div class="block-title">仿写模板</div>
+          <p class="en" style="font-size:14px;"><code>[Group A] maintain(s) that [X], for all its [flaw], remains [qualified positive]; [Group B] counter(s) that this is a false choice: the alternative is not [extreme position], but the recognition that [deeper truth].</code></p>
+          <p class="zh" style="margin-top:10px;"><strong>适用场景：</strong>任何涉及「两种对立观点」的议论文——雅思 Task 2 discuss both views、TEM-8 议论文、甚至口语 Part 3 中对复杂社会议题的深度回答。</p>
+          <p class="zh" style="margin-top:8px;"><strong>你的仿写（参考——用教育话题练手）：</strong></p>
+          <p class="en" style="font-size:13.5px;color:var(--muted);background:var(--bg);padding:10px;border-radius:6px;"><em>Traditionalists maintain that standardized testing, for all its rigidity, remains the fairest mechanism for comparing students across diverse backgrounds; reformers counter that this is a false choice: the alternative is not the elimination of assessment, but the recognition that the capacity to think critically is distributed far more evenly than the capacity to perform well on timed multiple-choice exams.</em></p>
+        </div>
+      </div>
+      <!-- Pane: Argument Chain -->
+      <div class="sample-pane" id="pane-chain">
+        <h3>中文观点 → 英文 Argument Chain</h3>
+        <div class="pane-sub">最有价值的训练环节。把模糊的中文想法，转成有结构的英文 argument。</div>
+        <div class="pane-block">
+          <div class="block-title">中文观点</div>
+          <p class="zh" style="font-size:15px;font-weight:600;background:var(--accent-bg);padding:14px;border-radius:6px;">「优绩主义的初衷是好的——奖励努力、鼓励奋斗。但当社会把『成功』完全归因于个人努力时，它忽视了一个基本事实：努力和天赋的分布是均匀的，但机会从来不是。真正的公平不是让所有人都相信『只要努力就能成功』，而是让努力的人——无论出身——都有接近成功的通道。」</p>
+        </div>
+        <div class="pane-block" style="background:var(--bg);">
+          <div class="block-title" style="color:var(--accent);">English Core Concept</div>
+          <p class="en" style="font-size:14px;color:var(--slate);"><em>Meritocracy was well-intentioned — it rewards effort. But when societies attribute success entirely to individual effort, they ignore a basic truth: effort and talent are evenly distributed, but opportunity has never been. Real fairness is not convincing everyone they can succeed through hard work, but ensuring that those who work hard — regardless of background — have a pathway to success.</em></p>
+        </div>
+        <div class="pane-block" style="background:var(--bg);">
+          <div class="block-title" style="color:#16a34a;">Causal Chain</div>
+          <p class="en" style="font-size:13.5px;background:var(--green-tint);padding:14px;border-radius:6px;line-height:1.9;">
+          <strong>Meritocratic belief</strong> (<em>"success = effort + talent"</em>)<br>
+          <span style="color:var(--accent);">→</span> <strong>Failure internalized</strong> (<em>setbacks attributed to personal inadequacy, not structural barriers</em>)<br>
+          <span style="color:var(--accent);">→</span> <strong>Chronic burnout</strong> (<em>linked to internalized meritocratic beliefs in workplace studies</em>)<br>
+          <span style="color:var(--accent);">→</span> <strong>Self-blame spiral</strong> (<em>burnout → feel inadequate → work harder → more burnout</em>)<br>
+          <span style="color:var(--accent);">→</span> <strong>Systemic illusion reinforced</strong> (<em>the cycle itself becomes evidence that the individual "wasn't good enough"</em>)
+          </p>
+        </div>
+        <div class="pane-block" style="background:var(--bg);">
+          <div class="block-title" style="color:#d97706;">Weighing — 为什么「机会公平」比「奖励努力」更根本</div>
+          <p class="en" style="font-size:13.5px;background:var(--warm-bg);padding:14px;border-radius:6px;line-height:1.8;">
+          <strong>Rewarding effort</strong> is necessary but insufficient — effort alone cannot bridge gaps created by unequal starting points. A student working three part-time jobs is "working harder" than a student with tutors, but that effort is being <em>absorbed by survival</em>, not channeled into achievement.<br>
+          <strong>Equalizing opportunity</strong> — through early education investment, accessible mentorship, and structural support — addresses the <em>root asymmetry</em>. It does not guarantee equal outcomes, but it removes the moral burden of failure from those who never had a fair chance. <strong>You cannot tell someone they failed because they didn't try hard enough, when the race was never run on the same track.</strong>
+          </p>
+        </div>
+        <div class="pane-block" style="background:var(--accent-bg);">
+          <div class="block-title" style="color:var(--accent);">Sample Argument Paragraph</div>
+          <p class="en" style="font-size:14px;line-height:1.85;"><em>Meritocracy, <strong>for all its</strong> rhetorical appeal, has become <strong>a recipe for</strong> collective exhaustion rather than collective motivation. When a society frames every failure as a personal deficiency, it imposes what philosopher Michael Sandel calls <strong>the tyranny of merit</strong> — a system in which those who succeed feel entitled to their success, and those who fail are left not only with the consequences of failure, but with the shame of having "deserved" it. <strong>Critics counter that</strong> abandoning meritocracy would mean abandoning standards altogether — but this is a false choice. The alternative is not the rejection of excellence, but the recognition that <strong>talent is distributed far more evenly than opportunity ever has been</strong>. We do not need to stop rewarding effort; we need to stop <strong>confusing effort with virtue</strong> in a world where not everyone has the same capacity to convert effort into achievement.</em></p>
+          <p class="zh" style="font-size:12.5px;color:var(--muted);margin-top:10px;">注意：这段用了全部 5 个今日表达（<strong>加粗标出</strong>），并且 thesis → causal chain → counter-argument → reframing → conclusion 一气呵成。注意最后一句的节奏：否定 + 肯定在同一句中完成，不拖泥带水。对比你自己的版本，找出差距。</p>
+        </div>
+      </div>
+      <!-- Pane: 输出任务 -->
+      <div class="sample-pane" id="pane-output">
+        <h3>今日输出任务</h3>
+        <div class="pane-sub">TEM-8 / IELTS Task 2 / 课堂 presentation 风格。带结构指引和 self-check。</div>
+        <div class="pane-block">
+          <div class="block-title">写作任务（IELTS Task 2 / TEM-8 风格）</div>
+          <p class="zh" style="background:var(--accent-bg);padding:14px;border-radius:6px;font-weight:600;">Some people believe that in a fair society, success should be determined entirely by individual effort and talent. Others argue that external factors — such as family background, education quality, and social connections — play a far greater role, and that the belief in "pure" meritocracy is therefore harmful. Discuss both views and give your own opinion. <em>（建议 280–320 词）</em></p>
+        </div>
+        <div class="pane-block">
+          <div class="block-title">口语任务（IELTS Part 3 / 课堂 presentation）</div>
+          <p class="zh" style="background:var(--accent-bg);padding:14px;border-radius:6px;font-weight:600;">In your country, do young people generally believe that hard work guarantees success? Has this belief changed compared to your parents' generation? Why do you think so? <em>（建议 1.5–2 分钟）</em></p>
+        </div>
+        <div class="pane-block">
+          <div class="block-title">结构指引</div>
+          <ul class="checklist">
+            <li><strong>Step 1 — Thesis：</strong>不要直接说「我同意/不同意」。用 <code>for all its [appeal], X has become…</code> 句式开门见山，既承认对方合理之处，又立自己的论</li>
+            <li><strong>Step 2 — Causal chain：</strong>解释「为什么 meritocracy 会导致 burnout」。用 <code>a recipe for</code> 来总结因果关系</li>
+            <li><strong>Step 3 — Counter-argument：</strong>用 <code>critics counter that this is a false choice…</code> 结构，展示你的论证深度——不是简单反驳，而是重新定义问题的框架</li>
+            <li><strong>Step 4 — Conclusion：</strong>用 <code>confuse X with Y</code> 做最后的 punch line：指出我们混淆了什么，让文章以「概念澄清」收束</li>
+          </ul>
+        </div>
+        <div class="pane-block">
+          <div class="block-title">Self-check 清单——写完后逐条检查</div>
+          <ul class="checklist">
+            <li><strong>□ 概念界定：</strong>第一段有没有清晰地定义「meritocracy」？还是默认读者都知道你在说什么？</li>
+            <li><strong>□ 表达迁移：</strong>是否用了至少 4 个今日 Expression Bank 中的表达？它们的功能标签（因果论证/让步反驳/揭示本质）和你实际使用场景是否匹配？</li>
+            <li><strong>□ 结构完整：</strong>有没有 thesis → causal chain → counter-argument → reframing → conclusion 这五层？缺了任何一层，你的 argument 都会有缺口</li>
+            <li><strong>□ 修辞密度：</strong>有没有至少一处平行结构或 not-A-but-B 句式？如果没有，你的文章可能过于平铺直叙</li>
+            <li><strong>□ 去模板化：</strong>检查有没有 <code>with the development of society</code>、<code>every coin has two sides</code>、<code>as far as I am concerned</code> 等雅思模板——这些是高分作文的第一杀手</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 5. How It Works (Card Deck) ═══ -->
+<section class="how" id="how">
+  <div class="section-inner">
+    <div class="section-label fade-in">How It Works</div>
+    <h2 class="section-title fade-in">完整训练路径：Input → Noticing → Analysis → Output → Reuse</h2>
+    <p class="section-desc fade-in">不是「读了就行」——每一步都对准一个明确的输出能力。每期 20 分钟，完成一个完整闭环。点击卡片或键盘 ← → 切换。</p>
+    <div class="deck-wrapper">
+      <div class="deck-stage" id="deck-stage">
+        <!-- Card 01: Input -->
+        <div class="deck-card active" data-index="0">
+          <div class="step-num">Step 01 / 05</div>
+          <div class="step-en">INPUT</div>
+          <div class="step-cn">输入 — 建立语境，识别论证框架</div>
+          <div class="divider"></div>
+          <p>读今日议题背景（中文）+ 核心英文段落。你不需要依赖外部链接，中文背景帮你快速进入议题语境，在不查词典的前提下定位英文段落的论证框架。</p>
+          <div class="en-quote">Read to notice, not just to understand.</div>
+        </div>
+        <!-- Card 02: Noticing -->
+        <div class="deck-card" data-index="1">
+          <div class="step-num">Step 02 / 05</div>
+          <div class="step-en">NOTICING</div>
+          <div class="step-cn">留意 — 训练识别 argument 结构的眼力</div>
+          <div class="divider"></div>
+          <p>主动标注英文段落中 thesis / premise / evidence / counter-argument / conclusion 的位置。把「被动阅读」升级为「主动标注」，培养一眼看穿论证结构的习惯。</p>
+          <div class="en-quote">Find the skeleton beneath the prose.</div>
+        </div>
+        <!-- Card 03: Analysis -->
+        <div class="deck-card" data-index="2">
+          <div class="step-num">Step 03 / 05</div>
+          <div class="step-en">ANALYSIS</div>
+          <div class="step-cn">拆解 — 把「看懂了」变成「我能用」</div>
+          <div class="divider"></div>
+          <p>拆解 5 个可迁移表达（带 argument 功能标注 + register / collocation 详解）+ 1 个高级句型（语法结构 + 修辞功能 + 仿写模板）。每个表达都标注了「在什么论证场景里用它」。</p>
+          <div class="en-quote">Words by function, not by list.</div>
+        </div>
+        <!-- Card 04: Output -->
+        <div class="deck-card" data-index="3">
+          <div class="step-num">Step 04 / 05</div>
+          <div class="step-en">OUTPUT</div>
+          <div class="step-cn">输出 — 把学到的表达和结构用出来</div>
+          <div class="divider"></div>
+          <p>完成今日输出任务：专四 / 专八 / 雅思 Task 2 风格写作，或口语 Part 3 / Presentation 话题。附带结构指引 + 5 项 self-check 清单，确保你真正「产出了东西」。</p>
+          <div class="en-quote">From reading comprehension to argument production.</div>
+        </div>
+        <!-- Card 05: Reuse -->
+        <div class="deck-card" data-index="4">
+          <div class="step-num">Step 05 / 05</div>
+          <div class="step-en">REUSE</div>
+          <div class="step-cn">复用 — 一个表达，五个场景</div>
+          <div class="divider"></div>
+          <p>对照 sample answer 反思自己的输出差距。把今日表达存入个人 Expression Bank，同一个表达在环境议题、教育议题、科技议题中反复迁移使用。真正的 fluency 来自跨场景复用，而非一次性记忆。</p>
+          <div class="en-quote">One expression, five contexts, real fluency.</div>
+        </div>
+      </div>
+      <!-- Controls -->
+      <div class="deck-controls">
+        <button class="deck-btn" id="deck-prev" disabled aria-label="Previous">←</button>
+        <div class="deck-dots" id="deck-dots"></div>
+        <button class="deck-btn" id="deck-next" aria-label="Next">→</button>
+      </div>
+      <div class="deck-progress" id="deck-progress" style="margin-top:12px;">01 / 05</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 6. Who It Is For ═══ -->
+<section class="who" id="who">
+  <div class="section-inner">
+    <div class="section-heading centered">
+      <span class="eyebrow fade-in">Who It Is For</span>
+      <h2 class="section-title fade-in">适合谁</h2>
+      <p class="section-desc fade-in">不是给每个人的。如果你只是随便看看，这个产品可能不适合你。</p>
+    </div>
+    <div class="audience-grid">
+
+      <article class="audience-card fade-in">
+        <div class="icon-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div>
+        <h3>英专生（TEM-4 / TEM-8）</h3>
+        <p>能读懂外刊大意，但写作/口语时感到「表达受限」。需要一个系统性的 argument 训练路径，从中文想法到英文论证，每一期都在练专八真实考点。</p>
+        <div class="audience-quote">「专八作文写来写去还是 simple sentences。」</div>
+      </article>
+
+      <article class="audience-card fade-in">
+        <div class="icon-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+        <h3>IELTS 备考者（写作 6.0→7.5）</h3>
+        <p>Task 2 反复卡在 6.0。问题通常不在词汇量，而在 argument structure 和 cohesive devices 的使用。每期训练让你积累真正能在考场上复用的论证框架。</p>
+        <div class="audience-quote">「写作一直 6.0，不知道怎么突破 7.0。」</div>
+      </article>
+
+      <article class="audience-card fade-in">
+        <div class="icon-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+        <h3>口语 Part 3 / Presentation 需求者</h3>
+        <p>Part 1–2 没问题，但 Part 3 被追问就「卡壳」。或者课堂 presentation 需要即兴发表有深度的英文观点。训练的是从抽象问题到 structured argument 的能力。</p>
+        <div class="audience-quote">「Part 3 一被追问就退回到 I think… because…」</div>
+      </article>
+
+      <article class="audience-card fade-in">
+        <div class="icon-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
+        <h3>外刊精读营「毕业」学员</h3>
+        <p>跟完精读营，停下来不知道下一步学什么。ArgueLab 是精读的自然延伸——从「读懂这篇文章在说什么」到「这篇文章的 argument，我可以怎么用」。</p>
+        <div class="audience-quote">「精读营学了很多，但自己写还是写不出来。」</div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══ Comparison ═══ -->
+<section class="compare" id="compare">
+  <div class="section-inner">
+    <div class="section-label fade-in">Why ArgueLab</div>
+    <h2 class="section-title fade-in">和普通外刊精读 / 新闻订阅的区别</h2>
+    <p class="section-desc fade-in">市面上的东西在教「这篇文章讲了什么」；ArgueLab 关心的是「这篇文章的论证方式，你能不能自己用出来」。</p>
+    <div class="compare-table">
+      <table>
+        <thead>
+        <tr>
+          <th>对比维度</th>
+          <th>普通外刊精读</th>
+          <th>新闻订阅 / 词汇推送</th>
+          <th class="highlight-col">ArgueLab</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td><strong>核心目标</strong></td>
+          <td>阅读理解</td>
+          <td>信息获取</td>
+          <td class="highlight-col"><span class="product-name">表达输出</span></td>
+        </tr>
+        <tr>
+          <td><strong>词汇处理</strong></td>
+          <td>逐字逐句翻译</td>
+          <td>单词表 + 释义</td>
+          <td class="highlight-col">collocations + argument 功能标注 + 仿写指引</td>
+        </tr>
+        <tr>
+          <td><strong>句型关注</strong></td>
+          <td>语法分析</td>
+          <td>无</td>
+          <td class="highlight-col">rhetorical structure + argument 功能 + 可迁移句式</td>
+        </tr>
+        <tr>
+          <td><strong>输出训练</strong></td>
+          <td>无 / 可选</td>
+          <td>无</td>
+          <td class="highlight-col"><span class="check">每期输出任务 + 结构指引 + self-check</span></td>
+        </tr>
+        <tr>
+          <td><strong>中文辅助</strong></td>
+          <td>全文翻译</td>
+          <td>无</td>
+          <td class="highlight-col">议题背景（中文）+ argument 分析（英文）——按需使用</td>
+        </tr>
+        <tr>
+          <td><strong>适用阶段</strong></td>
+          <td>中级学习者</td>
+          <td>泛读者</td>
+          <td class="highlight-col">高阶 / 英专 / TEM-8 / IELTS 7+</td>
+        </tr>
+        <tr>
+          <td><strong>用户主动度</strong></td>
+          <td>被动阅读</td>
+          <td>被动阅读</td>
+          <td class="highlight-col"><span class="check">主动输出 · 有训练闭环</span></td>
+        </tr>
+        <tr>
+          <td><strong>外部依赖</strong></td>
+          <td><span class="dash">通常需要</span></td>
+          <td><span class="dash">通常需要</span></td>
+          <td class="highlight-col"><span class="check">不需要——核心内容内嵌在训练卡中</span></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 7. Pricing / Beta Plan ═══ -->
+<section class="pricing" id="pricing">
+  <div class="section-inner">
+    <div class="section-label fade-in">Where We Are</div>
+    <h2 class="section-title fade-in">一起打磨这个产品</h2>
+    <p class="section-desc fade-in">ArgueLab 正在迭代中。目前接受 Beta 用户免费体验全部内容，你的反馈会直接影响产品方向。</p>
+    <div class="pricing-grid">
+      <div class="price-card featured">
+        <div class="price-name">Beta 内测 · 免费加入</div>
+        <div class="price-tag">¥0 <small>/ Beta 期间</small></div>
+        <div class="price-desc">加入即可在 Beta 阶段免费接收全部训练内容。</div>
+        <ul class="price-features">
+          <li>每周 3 期完整训练内容</li>
+          <li>议题背景（中文）+ 核心英文段落</li>
+          <li>5 个可迁移表达 + 功能标注</li>
+          <li>1 个高级句型拆解 + 仿写模板</li>
+          <li>中文观点 → Argument Chain 引导</li>
+          <li>输出任务 + 结构指引 + self-check</li>
+        </ul>
+        <a href="#cta" class="price-btn price-btn-dark">免费加入</a>
+      </div>
+      <div class="price-card">
+        <div class="price-name">正式版 · 后续推出</div>
+        <div class="price-tag"><small>价格待定</small></div>
+        <div class="price-desc">Beta 结束后推出。将在现有基础上增加 AI 批改、Expression Bank 等进阶功能。</div>
+        <ul class="price-features">
+          <li>Beta 全部内容</li>
+          <li>输出任务 sample answer</li>
+          <li>AI argument structure 批改</li>
+          <li>Expression Bank 可搜索历史库</li>
+          <li>每周学习进度报告</li>
+          <li>Intensive Bootcamp（线下训练营）</li>
+        </ul>
+        <a href="#cta" class="price-btn price-btn-outline">持续关注</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 8. FAQ ═══ -->
+<section class="faq" id="faq">
+  <div class="section-inner">
+    <div class="section-label fade-in">FAQ</div>
+    <h2 class="section-title fade-in">常见问题</h2>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">ArgueLab 和外刊精读营有什么区别？<span class="faq-arrow"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></button>
+        <div class="faq-a">精读营的核心是「读懂」——逐字逐句翻译，帮你建立理解。ArgueLab 的核心是「输出」——用英文高质量材料的 argument 结构，训练你自己的表达能力。你可以把 ArgueLab 理解为一个「精读之后」的东西：当你不满足于读懂，但还不知道怎么把读到的变成自己能写能说的——这就是 ArgueLab 做的事。</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">ArgueLab 不适合谁？<span class="faq-arrow"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></button>
+        <div class="faq-a">实话实说——如果你想要的是：零基础学英语 / 单纯的外刊翻译或逐句精读 / 速成应试技巧 / 和老师实时互动——那这个产品不是你需要的。ArgueLab 适合的是已经能读懂大部分外刊、但想突破「有想法，说不清」瓶颈的人。如果还不确定自己属不属于这类，先试几期——不收钱，感受一下就知道了。</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">我的英语水平适合吗？<span class="faq-arrow"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></button>
+        <div class="faq-a">ArgueLab 面向进阶学习者——大致是 IELTS 6.0+ / 专四通过 / 能读懂外刊大意但「自己写/说」时感到受限的学习者。如果你还处于「每篇外刊有很多单词不认识」的阶段，建议先巩固基础再回来。Beta 阶段可以免费试用，判断是否适合。</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">每周几期？每期需要多少时间？<span class="faq-arrow"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></button>
+        <div class="faq-a">Beta 阶段每周 3 期（周一、周三、周五发送）。每期约 20 分钟：议题背景（3 分钟）+ 英文段落（5 分钟）+ 表达+句型（7 分钟）+ 输出任务（5 分钟）。你可以灵活调整——但即使只做「表达+句型」部分，也是在积累 usable expressions。</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">需要访问外部网站吗？需要打开原文链接吗？<span class="faq-arrow"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></button>
+        <div class="faq-a">不需要。每份训练卡都包含完整的中文背景、英文核心材料、表达迁移、句型拆解、Argument Chain 和输出任务——你不需要访问任何外部网站就能完成一期完整的训练。原文链接如有提供，仅作为延伸阅读。</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">Beta 阶段持续多久？什么时候收费？<span class="faq-arrow"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></button>
+        <div class="faq-a">Beta 预计持续 2–3 个月，期间完全免费。正式版推出时会有付费方案（预计 ¥29/月左右），Beta 用户届时会有优惠。我们会提前至少两周通知所有用户——你不会在不知情的情况下被收费。</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">和「每日英语听力」「流利说」这类产品有什么不同？<span class="faq-arrow"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></button>
+        <div class="faq-a">这些产品解决的是「听力/口语流利度」——让你听懂、开口。ArgueLab 解决的是另一个问题：当你已经能听懂、能开口，但想在考试或学术场合用英文表达有深度、有结构的观点时——怎么训练。两者并不冲突。如果你正在用那些产品练流利度，ArgueLab 可以补上「argument 表达」这一块。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 9. Beta Intake Form / Subscribe ═══ -->
+<section class="beta-section" id="cta">
+  <div class="beta-grid">
+
+    <!-- Left: Intro -->
+    <div class="beta-intro">
+      <div class="section-label fade-in">TRY ARGUELAB</div>
+      <h2 class="section-title fade-in">加入 ArgueLab Beta</h2>
+      <div class="section-desc fade-in">
+        <p>ArgueLab 还在内测阶段。你将收到 3 份表达训练卡，每份围绕一个真实议题，包含中文背景、英文核心段落、表达迁移、句型拆解、Argument Chain 和输出任务。</p>
+        <p>这不是新闻订阅，也不是普通英文精读。我们想测试的是：这样的训练是否真的能帮助学习者从 reading comprehension 走向 argument production。</p>
+      </div>
+      <div class="beta-perks fade-in">
+        <span class="beta-perk">免费参与</span>
+        <span class="beta-perk">每周 2–3 份训练卡</span>
+        <span class="beta-perk">每份约 20 分钟</span>
+        <span class="beta-perk">可随时取消订阅</span>
+        <span class="beta-perk">你的反馈会帮助我们调整内容方向</span>
+      </div>
+    </div>
+
+    <!-- Right: Form -->
+    <div class="beta-form-card fade-in" id="beta-form-card">
+      <!-- Form Fields -->
+      <div class="beta-form-fields" id="beta-form-fields">
+
+        <!-- Error Banner -->
+        <div class="beta-error-banner" id="beta-error-banner"></div>
+
+        <!-- 1. Email -->
+        <div class="beta-field">
+          <label class="beta-label" for="beta-email">Email Address <span class="required">*</span></label>
+          <input type="email" class="beta-input" id="beta-email" placeholder="your@email.com" autocomplete="email">
+          <div class="beta-error" id="beta-error-email">Please enter a valid email address</div>
+        </div>
+
+        <!-- 2. Identity -->
+        <div class="beta-field">
+          <label class="beta-label" for="beta-identity">你现在的学习身份？ <span class="required">*</span></label>
+          <select class="beta-select" id="beta-identity">
+            <option value="">请选择…</option>
+            <option value="english-major">英语专业学生</option>
+            <option value="non-english">非英专大学生</option>
+            <option value="tem4-8">专四 / 专八备考</option>
+            <option value="ielts-toefl">IELTS / TOEFL 备考</option>
+            <option value="postgrad">考研 / 保研 / 留学申请</option>
+            <option value="advanced-learner">其他高阶英语学习者</option>
+          </select>
+        </div>
+
+        <!-- 3. Goals (chips) -->
+        <div class="beta-field">
+          <label class="beta-label">你最想提升什么？ <span class="required">*</span></label>
+          <div class="beta-chips" id="beta-goals">
+            <span class="beta-chip" data-value="writing">英文写作</span>
+            <span class="beta-chip" data-value="speaking">英文口语</span>
+            <span class="beta-chip" data-value="presentation">Presentation</span>
+            <span class="beta-chip" data-value="reading">外刊阅读</span>
+            <span class="beta-chip" data-value="vocab">词汇表达</span>
+            <span class="beta-chip" data-value="argument">论证结构</span>
+            <span class="beta-chip" data-value="cn2en">中文观点转英文表达</span>
+          </div>
+          <div class="beta-error" id="beta-error-goals">Please select at least one goal</div>
+        </div>
+
+        <!-- 4. Pain Point (radio cards) -->
+        <div class="beta-field">
+          <label class="beta-label">你现在最卡在哪里？ <span class="required">*</span></label>
+          <div class="beta-radios" id="beta-pain">
+            <div class="beta-radio" data-value="read-not-write">
+              <span class="beta-radio-dot"></span> 读得懂，但写不出
+            </div>
+            <div class="beta-radio" data-value="no-structure">
+              <span class="beta-radio-dot"></span> 有观点，但英文里没结构
+            </div>
+            <div class="beta-radio" data-value="vocab-unused">
+              <span class="beta-radio-dot"></span> 背了词汇，但不会用
+            </div>
+            <div class="beta-radio" data-value="no-chain">
+              <span class="beta-radio-dot"></span> 不会展开 argument chain
+            </div>
+            <div class="beta-radio" data-value="no-transfer">
+              <span class="beta-radio-dot"></span> 不知道如何把外刊表达迁移到写作 / 口语
+            </div>
+            <div class="beta-radio" data-value="no-routine">
+              <span class="beta-radio-dot"></span> 缺少持续训练节奏
+            </div>
+          </div>
+          <div class="beta-error" id="beta-error-pain">Please select your biggest challenge</div>
+        </div>
+
+        <!-- 5. Topics (chips) -->
+        <div class="beta-field">
+          <label class="beta-label">你最感兴趣的议题方向？ <span class="optional">(可多选)</span></label>
+          <div class="beta-chips" id="beta-topics">
+            <span class="beta-chip" data-value="ai-education">AI 与教育</span>
+            <span class="beta-chip" data-value="meritocracy">优绩主义与内卷</span>
+            <span class="beta-chip" data-value="social-media">社交媒体与注意力</span>
+            <span class="beta-chip" data-value="gender-body">性别与身体</span>
+            <span class="beta-chip" data-value="climate">气候与未来</span>
+            <span class="beta-chip" data-value="culture-critique">文化批评</span>
+            <span class="beta-chip" data-value="international">国际关系</span>
+            <span class="beta-chip" data-value="business-tech">商业与科技</span>
+            <span class="beta-chip" data-value="literature-modernity">文学 / 哲学 / 现代性</span>
+          </div>
+        </div>
+
+        <!-- 6. Frequency (radio) -->
+        <div class="beta-field">
+          <label class="beta-label">你更希望收到的频率？ <span class="required">*</span></label>
+          <div class="beta-radios" id="beta-frequency">
+            <div class="beta-radio" data-value="weekly-1">
+              <span class="beta-radio-dot"></span> 每周 1 份
+            </div>
+            <div class="beta-radio" data-value="weekly-2-3">
+              <span class="beta-radio-dot"></span> 每周 2–3 份
+            </div>
+            <div class="beta-radio" data-value="3-in-7-days">
+              <span class="beta-radio-dot"></span> 7 天内测收到 3 份
+            </div>
+            <div class="beta-radio" data-value="sample-only">
+              <span class="beta-radio-dot"></span> 暂时只想看样例
+            </div>
+          </div>
+          <div class="beta-error" id="beta-error-frequency">Please select your preferred frequency</div>
+        </div>
+
+        <!-- 7. Message (textarea) -->
+        <div class="beta-field">
+          <label class="beta-label" for="beta-message">留言 / 你希望 ArgueLab 帮你解决什么？ <span class="optional">(选填)</span></label>
+          <textarea class="beta-textarea" id="beta-message" placeholder="例如：我想提高专四材料作文 / 我想练雅思 Task 2 / 我想把中文观点转成更自然的英文表达……"></textarea>
+        </div>
+
+        <!-- 8. Consent -->
+        <div class="beta-field">
+          <label class="beta-consent" id="beta-consent-label">
+            <input type="checkbox" id="beta-consent-check">
+            <span class="beta-checkbox"></span>
+            <span>我同意接收 ArgueLab Beta 邮件，并理解可以随时取消订阅。</span>
+          </label>
+          <div class="beta-error" id="beta-error-consent">Please confirm that you agree to receive ArgueLab Beta emails.</div>
+        </div>
+
+        <!-- Submit -->
+        <button class="beta-submit" id="beta-submit-btn" onclick="handleBetaSubmit(event)">Subscribe to Beta</button>
+        <p class="beta-submit-note">We only use your email and learning preferences to send ArgueLab materials and improve the beta. No spam, no data selling.</p>
+      </div>
+
+      <!-- Success State -->
+      <div class="beta-success" id="beta-success-msg">
+        <div class="beta-success-icon">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="24" cy="24" r="22" stroke="var(--accent, #3B6EA8)" stroke-width="1" opacity="0.2"/>
+            <circle cx="24" cy="24" r="14" stroke="var(--accent, #3B6EA8)" stroke-width="0.75" opacity="0.12"/>
+            <path d="M17 24.5l3.5 3.5 7-7" stroke="var(--accent, #3B6EA8)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" opacity="0.65"/>
+          </svg>
+        </div>
+        <div class="beta-success-title">You're on the Beta list.</div>
+        <p class="beta-success-subtitle">第一份 ArgueLab 训练卡会发送到你的邮箱。</p>
+        <p class="beta-success-text">接下来你会收到 3 份表达训练卡。每份卡都会围绕一个真实议题，带你完成从 context 到 expression transfer，再到 argument output 的一次训练。<br><br>我们会根据你的学习偏好调整后续内容方向。你也可以直接回复邮件告诉我们：哪一部分最有用，哪一部分太重，或者你希望看到什么议题。</p>
+
+        <div class="beta-summary" id="beta-summary">
+          <div class="beta-summary-title">Your Beta Profile</div>
+          <div class="beta-summary-rows" id="beta-summary-rows"></div>
+        </div>
+
+        <div class="beta-success-actions">
+          <button class="beta-success-btn primary" onclick="document.getElementById('sample').scrollIntoView({behavior:'smooth'})">View Sample Issue</button>
+          <button class="beta-success-btn secondary" onclick="restoreFormState()">Edit My Response</button>
+        </div>
+
+        <p class="beta-success-footer">No spam. No data selling. You can unsubscribe or request deletion anytime.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══ Footer ═══ -->
+<!-- Mini CTA (floating bottom bar) -->
+<div class="mini-cta" id="mini-cta">
+  <p>ArgueLab Beta · <strong>免费内测中</strong></p>
+  <a href="#cta" class="btn-primary">免费加入 →</a>
+</div>
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">ArgueLab<small>From Reading to Argument.</small></div>
+    <div class="footer-links">
+      <a href="#">关于我们</a>
+      <a href="#">隐私政策</a>
+      <a href="#">联系我们</a>
+    </div>
+  </div>
+  <div class="footer-manifesto">ArgueLab 是一个由学习者创建、为学习者迭代的表达训练产品。我们认为：真正的外语能力，不是能读懂多少，而是能表达多少。</div>
+  <div class="footer-copy">© 2026 ArgueLab</div>
+</footer>
+
+<script>
+  /* ── Theme Toggle ── */
+  var STORAGE_KEY = 'arguelab-theme';
+
+  function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem(STORAGE_KEY, theme);
+    var iconSun = document.getElementById('icon-sun');
+    var iconMoon = document.getElementById('icon-moon');
+    var label = document.getElementById('theme-label');
+    if (theme === 'dark') {
+      if (iconSun) iconSun.style.display = 'none';
+      if (iconMoon) iconMoon.style.display = '';
+      if (label) label.textContent = 'Dark Mode';
+    } else {
+      if (iconSun) iconSun.style.display = '';
+      if (iconMoon) iconMoon.style.display = 'none';
+      if (label) label.textContent = 'Reading Mode';
+    }
+  }
+
+  var savedTheme = localStorage.getItem(STORAGE_KEY);
+  if (savedTheme) {
+    applyTheme(savedTheme);
+  } else {
+    applyTheme('light');
+  }
+
+  var toggleBtn = document.getElementById('theme-toggle');
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', function() {
+      var current = document.documentElement.getAttribute('data-theme');
+      applyTheme(current === 'dark' ? 'light' : 'dark');
+    });
+  }
+
+
+  /* ── 1. Tab switching (stable, no transitionend dependency) ── */
+  function switchTab(btn, name) {
+    var nextPane = document.getElementById('pane-' + name);
+    if (!nextPane) {
+      console.warn('Sample pane not found:', name);
+      return;
+    }
+
+    // Update tab buttons
+    var allTabs = document.querySelectorAll('.sample-tab');
+    allTabs.forEach(function(t) {
+      t.classList.remove('active');
+      t.setAttribute('aria-selected', 'false');
+      t.setAttribute('tabindex', '-1');
+    });
+    btn.classList.add('active');
+    btn.setAttribute('aria-selected', 'true');
+    btn.setAttribute('tabindex', '0');
+
+    // Switch pane — animation is pure CSS via .active class
+    document.querySelectorAll('.sample-pane').forEach(function(p) {
+      p.classList.remove('active');
+      p.setAttribute('aria-hidden', 'true');
+    });
+    nextPane.classList.add('active');
+    nextPane.setAttribute('aria-hidden', 'false');
+  }
+
+  // Safety: ensure first pane is visible on load
+  document.addEventListener('DOMContentLoaded', function() {
+    var anyActive = document.querySelector('.sample-pane.active');
+    if (!anyActive) {
+      var defaultPane = document.getElementById('pane-bg');
+      if (defaultPane) { defaultPane.classList.add('active'); defaultPane.setAttribute('aria-hidden', 'false'); }
+    }
+    // Ensure first tab matches
+    var activeTab = document.querySelector('.sample-tab.active');
+    if (!activeTab) {
+      var firstTab = document.querySelector('.sample-tab');
+      if (firstTab) { firstTab.classList.add('active'); firstTab.setAttribute('aria-selected', 'true'); firstTab.setAttribute('tabindex', '0'); }
+    }
+    // Add keyboard navigation for tabs (arrow keys)
+    var tabList = document.querySelector('.sample-tabs');
+    if (tabList) {
+      tabList.addEventListener('keydown', function(e) {
+        var tabs = Array.from(tabList.querySelectorAll('.sample-tab'));
+        var idx = tabs.indexOf(document.activeElement);
+        if (idx === -1) return;
+        if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+          e.preventDefault();
+          var next = e.key === 'ArrowRight' ? (idx + 1) % tabs.length : (idx - 1 + tabs.length) % tabs.length;
+          tabs[next].focus();
+          tabs[next].click();
+        }
+      });
+    }
+  });
+
+  /* ── 2. FAQ smooth height toggle ── */
+  function toggleFaq(btn) {
+    var item = btn.parentElement;
+    var answer = item.querySelector('.faq-a');
+    var isOpen = item.classList.contains('open');
+
+    if (isOpen) {
+      // Close: set explicit height, then animate to 0
+      answer.style.maxHeight = answer.scrollHeight + 'px';
+      answer.offsetHeight; // force reflow
+      answer.style.maxHeight = '0px';
+      item.classList.remove('open');
+      // Clean up after transition
+      answer.addEventListener('transitionend', function h() {
+        answer.removeEventListener('transitionend', h);
+        answer.style.maxHeight = '';
+      });
+    } else {
+      // Open: set max-height to actual content height
+      item.classList.add('open');
+      answer.style.maxHeight = answer.scrollHeight + 'px';
+      // Clean up after transition
+      answer.addEventListener('transitionend', function h() {
+        answer.removeEventListener('transitionend', h);
+        answer.style.maxHeight = '';
+      });
+    }
+  }
+
+  /* ── 3. Beta Form ── */
+  /* Standalone demo mode — form shows success state without any backend fetch.
+     Set DEMO_MODE=false and inject window.ARGUELAB_API_BASE_URL to wire to a real API. */
+  var DEMO_MODE = true;
+  var _savedFormState = null;
+  var API_BASE_URL = window.ARGUELAB_API_BASE_URL || '';
+
+  /* Label maps for summary display */
+  var GOAL_LABELS = {
+    writing: '英文写作', speaking: '英文口语', presentation: 'Presentation',
+    reading: '外刊阅读', vocab: '词汇表达', argument: '论证结构',
+    'cn2en': '中文观点转英文表达'
+  };
+  var TOPIC_LABELS = {
+    'ai-education': 'AI 与教育', meritocracy: '优绩主义与内卷',
+    'social-media': '社交媒体与注意力', 'gender-body': '性别与身体',
+    climate: '气候与未来', 'culture-critique': '文化批评',
+    international: '国际关系', 'business-tech': '商业与科技',
+    'literature-modernity': '文学 / 哲学 / 现代性'
+  };
+  var FREQ_LABELS = {
+    'weekly-1': '每周 1 份', 'weekly-2-3': '每周 2–3 份',
+    '3-in-7-days': '7 天内测收到 3 份', 'sample-only': '暂时只想看样例'
+  };
+
+  /* Chip toggle */
+  function initBetaChips() {
+    document.querySelectorAll('.beta-chip').forEach(function(chip) {
+      chip.addEventListener('click', function() {
+        this.classList.toggle('selected');
+      });
+    });
+  }
+
+  function getSelectedChips(containerId) {
+    var chips = document.querySelectorAll('#' + containerId + ' .beta-chip.selected');
+    return Array.from(chips).map(function(c) { return c.getAttribute('data-value'); });
+  }
+
+  function setSelectedChips(containerId, values) {
+    var chips = document.querySelectorAll('#' + containerId + ' .beta-chip');
+    chips.forEach(function(c) {
+      var val = c.getAttribute('data-value');
+      if (values.indexOf(val) !== -1) c.classList.add('selected');
+      else c.classList.remove('selected');
+    });
+  }
+
+  /* Radio card toggle */
+  function initBetaRadios() {
+    document.querySelectorAll('.beta-radios').forEach(function(group) {
+      group.querySelectorAll('.beta-radio').forEach(function(radio) {
+        radio.addEventListener('click', function() {
+          group.querySelectorAll('.beta-radio').forEach(function(r) { r.classList.remove('selected'); });
+          this.classList.add('selected');
+        });
+      });
+    });
+  }
+
+  function setSelectedRadio(containerId, value) {
+    var radios = document.querySelectorAll('#' + containerId + ' .beta-radio');
+    radios.forEach(function(r) {
+      r.classList.toggle('selected', r.getAttribute('data-value') === value);
+    });
+  }
+
+  /* Consent toggle */
+  function initBetaConsent() {
+    var label = document.getElementById('beta-consent-label');
+    var check = document.getElementById('beta-consent-check');
+    label.addEventListener('click', function() {
+      check.checked = !check.checked;
+      label.classList.toggle('checked', check.checked);
+    });
+  }
+
+  /* ── Form data collection ── */
+  function collectFormPayload() {
+    var painRadio = document.querySelector('#beta-pain .beta-radio.selected');
+    var freqRadio = document.querySelector('#beta-frequency .beta-radio.selected');
+    return {
+      email: document.getElementById('beta-email').value.trim(),
+      identity: document.getElementById('beta-identity').value,
+      goals: getSelectedChips('beta-goals'),
+      painPoint: painRadio ? painRadio.getAttribute('data-value') : '',
+      topics: getSelectedChips('beta-topics'),
+      frequency: freqRadio ? freqRadio.getAttribute('data-value') : '',
+      message: document.getElementById('beta-message').value.trim(),
+      consent: document.getElementById('beta-consent-check').checked,
+      createdAt: new Date().toISOString()
+    };
+  }
+
+  /* ── Validation ── */
+  function validateBetaForm(payload) {
+    var errors = {};
+    if (!payload.email || !payload.email.includes('@')) errors.email = 'Please enter a valid email address.';
+    if (!payload.goals || !payload.goals.length) errors.goals = 'Please select at least one goal.';
+    if (!payload.painPoint) errors.pain = 'Please select your biggest challenge.';
+    if (!payload.frequency) errors.frequency = 'Please select your preferred frequency.';
+    if (!payload.consent) errors.consent = 'Please confirm that you agree to receive ArgueLab Beta emails.';
+    return { valid: Object.keys(errors).length === 0, errors: errors };
+  }
+
+  /* ── Error display ── */
+  function showFieldError(fieldName, message) {
+    if (fieldName === 'banner' || fieldName === 'submit') {
+      var banner = document.getElementById('beta-error-banner');
+      if (banner) { banner.textContent = message || ''; banner.classList.toggle('visible', !!message); }
+      return;
+    }
+    var el = document.getElementById('beta-error-' + fieldName);
+    if (el && message) { el.textContent = message; }
+    if (el) { el.classList.toggle('visible', !!message); }
+    // Also toggle .error class on the input/container
+    var input = document.getElementById('beta-' + fieldName);
+    if (input) { input.classList.toggle('error', !!message); }
+    // For pain/frequency (radio groups), also style the container
+    if (fieldName === 'pain' || fieldName === 'frequency') {
+      var container = document.getElementById('beta-' + fieldName);
+      if (container) container.classList.toggle('error', !!message);
+    }
+    // For goals/topics (chip groups), also style the container
+    if (fieldName === 'goals' || fieldName === 'topics') {
+      var container = document.getElementById('beta-' + fieldName);
+      if (container) container.classList.toggle('error', !!message);
+    }
+  }
+
+  function clearErrors() {
+    // Banner
+    var banner = document.getElementById('beta-error-banner');
+    if (banner) banner.classList.remove('visible');
+    // Field errors
+    ['email','goals','pain','frequency','consent'].forEach(function(f) { showFieldError(f, null); });
+  }
+
+  /* ── Loading state ── */
+  function showLoadingState() {
+    var card = document.getElementById('beta-form-card');
+    var btn = document.getElementById('beta-submit-btn');
+    if (card) card.classList.add('loading');
+    if (btn) { btn.textContent = 'Subscribing…'; btn.disabled = true; }
+  }
+
+  function hideLoadingState() {
+    var card = document.getElementById('beta-form-card');
+    var btn = document.getElementById('beta-submit-btn');
+    if (card) card.classList.remove('loading');
+    if (btn) { btn.textContent = 'Subscribe to Beta'; btn.disabled = false; }
+  }
+
+  /* ── Save / restore form state ── */
+  function saveFormState() {
+    _savedFormState = collectFormPayload();
+  }
+
+  function restoreFormState() {
+    var card = document.getElementById('beta-form-card');
+    if (!card) return;
+    card.classList.remove('success-state');
+    // Use timeout to let CSS transition reset before repopulating
+    setTimeout(function() {
+      if (!_savedFormState) return;
+      var s = _savedFormState;
+      document.getElementById('beta-email').value = s.email || '';
+      document.getElementById('beta-identity').value = s.identity || '';
+      setSelectedChips('beta-goals', s.goals || []);
+      setSelectedRadio('beta-pain', s.painPoint || '');
+      setSelectedChips('beta-topics', s.topics || []);
+      setSelectedRadio('beta-frequency', s.frequency || '');
+      document.getElementById('beta-message').value = s.message || '';
+      var check = document.getElementById('beta-consent-check');
+      var label = document.getElementById('beta-consent-label');
+      if (check) check.checked = s.consent || false;
+      if (label) label.classList.toggle('checked', s.consent || false);
+      clearErrors();
+      document.getElementById('beta-form-card').scrollIntoView({behavior:'smooth'});
+    }, 150);
+  }
+
+  /* ── Success state ── */
+  function showSuccessState(payload) {
+    // Build summary rows
+    var rows = document.getElementById('beta-summary-rows');
+    if (!rows) return;
+    var html = '';
+    if (payload.email) {
+      html += '<div class="beta-summary-row"><span class="beta-summary-label">Email</span><span class="beta-summary-value">' + escHtml(payload.email) + '</span></div>';
+    }
+    if (payload.goals && payload.goals.length) {
+      var goalLabels = payload.goals.map(function(g) { return GOAL_LABELS[g] || g; });
+      html += '<div class="beta-summary-row"><span class="beta-summary-label">Focus</span><span class="beta-summary-value">' + escHtml(goalLabels.join(', ')) + '</span></div>';
+    }
+    if (payload.topics && payload.topics.length) {
+      var topicLabels = payload.topics.map(function(t) { return TOPIC_LABELS[t] || t; });
+      html += '<div class="beta-summary-row"><span class="beta-summary-label">Topics</span><span class="beta-summary-value">' + escHtml(topicLabels.join(', ')) + '</span></div>';
+    }
+    if (payload.frequency) {
+      html += '<div class="beta-summary-row"><span class="beta-summary-label">Frequency</span><span class="beta-summary-value">' + escHtml(FREQ_LABELS[payload.frequency] || payload.frequency) + '</span></div>';
+    }
+    rows.innerHTML = html;
+
+    // Show/hide summary if no rows
+    var summary = document.getElementById('beta-summary');
+    if (summary) summary.style.display = html ? '' : 'none';
+
+    // Transition to success
+    saveFormState();
+    var card = document.getElementById('beta-form-card');
+    card.classList.add('success-state');
+  }
+
+  function escHtml(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  /* ── Main submit handler ── */
+  async function handleBetaSubmit(e) {
+    e.preventDefault();
+    var payload = collectFormPayload();
+    clearErrors();
+
+    // Validate
+    var result = validateBetaForm(payload);
+    if (!result.valid) {
+      var fields = Object.keys(result.errors);
+      for (var i = 0; i < fields.length; i++) {
+        showFieldError(fields[i], result.errors[fields[i]]);
+      }
+      // Focus first errored field
+      var firstInput = document.getElementById('beta-' + fields[0]);
+      if (firstInput) firstInput.focus();
+      return;
+    }
+
+    showLoadingState();
+
+    if (DEMO_MODE) {
+      console.log('ArgueLab Beta form submitted (demo)');
+      setTimeout(function() {
+        hideLoadingState();
+        showSuccessState(payload);
+      }, 600);
+      return;
+    }
+
+    // Production mode — hit the backend
+    try {
+      var resp = await fetch(API_BASE_URL + '/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      // 200: new or updated  |  409: email exists, preferences updated
+      if (resp.ok || resp.status === 409) {
+        if (DEMO_MODE) {
+          resp.clone().json().then(function(data) {
+            console.log('ArgueLab response:', data);
+          }).catch(function(){});
+        }
+        hideLoadingState();
+        showSuccessState(payload);
+      } else {
+        // Try to extract error message from response body
+        var errorMsg = 'Something went wrong. Please try again, or contact us directly.';
+        try {
+          var body = await resp.json();
+          if (body && body.error) errorMsg = body.error;
+        } catch (parseErr) {}
+        hideLoadingState();
+        showFieldError('banner', errorMsg);
+      }
+    } catch (err) {
+      if (DEMO_MODE) console.error('ArgueLab subscription error:', err);
+      hideLoadingState();
+      showFieldError('banner', 'Something went wrong. Please try again, or contact us directly.');
+    }
+  }
+
+  /* Init all beta form interactions */
+  initBetaChips();
+  initBetaRadios();
+  initBetaConsent();
+
+  /* ── 4. Header scroll effect ── */
+  var header = document.querySelector('header');
+  var scrollTicking = false;
+  window.addEventListener('scroll', function() {
+    if (!scrollTicking) {
+      requestAnimationFrame(function() {
+        if (window.scrollY > 30) header.classList.add('scrolled');
+        else header.classList.remove('scrolled');
+        scrollTicking = false;
+      });
+      scrollTicking = true;
+    }
+  }, {passive: true});
+
+  /* ── 6. Nav section highlight ── */
+  (function() {
+    var navLinks = document.querySelectorAll('.nav-links a[data-section]');
+    var sections = [];
+    navLinks.forEach(function(a) {
+      var el = document.getElementById(a.getAttribute('data-section'));
+      if (el) sections.push({ link: a, el: el });
+    });
+    if (!sections.length) return;
+
+    var navTicking = false;
+    window.addEventListener('scroll', function() {
+      if (!navTicking) {
+        requestAnimationFrame(function() {
+          var scrollPos = window.scrollY + window.innerHeight / 3;
+          var active = null;
+          for (var i = 0; i < sections.length; i++) {
+            if (sections[i].el.offsetTop <= scrollPos) active = sections[i];
+          }
+          sections.forEach(function(s) { s.link.classList.toggle('active', s === active); });
+          navTicking = false;
+        });
+        navTicking = true;
+      }
+    }, {passive: true});
+  })();
+
+  /* ── 7. Mini CTA show/hide ── */
+  (function() {
+    var miniCta = document.getElementById('mini-cta');
+    if (!miniCta) return;
+    var pricingEl = document.getElementById('pricing');
+    var ctaEl = document.getElementById('cta');
+    var ticking = false;
+
+    window.addEventListener('scroll', function() {
+      if (!ticking) {
+        requestAnimationFrame(function() {
+          if (!pricingEl || !ctaEl) { ticking = false; return; }
+          var showAfter = pricingEl.offsetTop + pricingEl.offsetHeight * 0.6;
+          var hideAt = ctaEl.offsetTop - 100;
+          if (window.scrollY + window.innerHeight > showAfter && window.scrollY < hideAt) {
+            miniCta.classList.add('visible');
+          } else {
+            miniCta.classList.remove('visible');
+          }
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, {passive: true});
+  })();
+
+  /* ── 8. Card Deck ── */
+  (function(){
+    var cards = document.querySelectorAll('.deck-card');
+    var stage = document.getElementById('deck-stage');
+    var dotsContainer = document.getElementById('deck-dots');
+    var prevBtn = document.getElementById('deck-prev');
+    var nextBtn = document.getElementById('deck-next');
+    var progressEl = document.getElementById('deck-progress');
+    if (!cards.length || !dotsContainer) return;
+    var total = cards.length, idx = 0, dotEls = [];
+    function pad(n) { return n < 10 ? '0' + n : '' + n; }
+    for (var i = 0; i < total; i++) {
+      var d = document.createElement('button');
+      d.className = 'deck-dot' + (i === 0 ? ' active' : '');
+      d.setAttribute('aria-label', 'Jump to Step ' + (i + 1));
+      (function(j){ d.onclick = function(){ goTo(j); }; })(i);
+      dotsContainer.appendChild(d);
+      dotEls.push(d);
+    }
+    if (idx < total - 1) cards[idx + 1].classList.add('peek-right');
+    prevBtn.addEventListener('click', function(){ goTo(idx - 1); });
+    nextBtn.addEventListener('click', function(){ goTo(idx + 1); });
+    function syncHeight() {
+      if (!stage || window.innerWidth <= 768) { if (stage) stage.style.minHeight = ''; return; }
+      var h = cards[idx].offsetHeight;
+      stage.style.minHeight = (h + 80) + 'px';
+    }
+    function goTo(target) {
+      if (target < 0 || target >= total || target === idx) return;
+      for (var i = 0; i < total; i++) cards[i].classList.remove('active','peek-left','peek-right');
+      idx = target;
+      cards[idx].classList.add('active');
+      if (idx > 0) cards[idx - 1].classList.add('peek-left');
+      if (idx < total - 1) cards[idx + 1].classList.add('peek-right');
+      prevBtn.disabled = idx === 0;
+      nextBtn.disabled = idx === total - 1;
+      if (progressEl) progressEl.textContent = pad(idx + 1) + ' / ' + pad(total);
+      for (var j = 0; j < total; j++) dotEls[j].classList.toggle('active', j === idx);
+      syncHeight();
+    }
+    window.deckPrev = function(){ goTo(idx - 1); };
+    window.deckNext = function(){ goTo(idx + 1); };
+    document.addEventListener('keydown', function(e) {
+      var section = document.getElementById('how');
+      if (!section) return;
+      var rect = section.getBoundingClientRect();
+      if (rect.top < window.innerHeight && rect.bottom > 0) {
+        // Don't intercept arrow keys if user is typing in a form field
+        var active = document.activeElement;
+        var isFormField = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.tagName === 'SELECT' || active.isContentEditable);
+        if (isFormField) return;
+        if (e.key === 'ArrowLeft') { e.preventDefault(); goTo(idx - 1); }
+        if (e.key === 'ArrowRight') { e.preventDefault(); goTo(idx + 1); }
+      }
+    });
+    if (stage) {
+      var tx0 = 0, ty0 = 0;
+      stage.addEventListener('touchstart', function(e){ tx0 = e.touches[0].clientX; ty0 = e.touches[0].clientY; }, {passive: true});
+      stage.addEventListener('touchend', function(e) {
+        var dx = e.changedTouches[0].clientX - tx0, dy = e.changedTouches[0].clientY - ty0;
+        if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) { if (dx < 0) goTo(idx + 1); else goTo(idx - 1); }
+      });
+    }
+    syncHeight();
+    window.addEventListener('resize', syncHeight);
+  })();
+
+  /* ── 9. Scroll reveal (fade-in on enter) ── */
+  (function() {
+    var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReduced) {
+      // Show everything immediately if user prefers reduced motion
+      document.querySelectorAll('.fade-in').forEach(function(el) { el.classList.add('visible'); });
+      return;
+    }
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.12, rootMargin: '0px 0px -30px 0px' });
+    document.querySelectorAll('.fade-in').forEach(function(el) { observer.observe(el); });
+  })();
+
+  /* ── 10. Smooth scroll for anchor links ── */
+  document.querySelectorAll('a[href^="#"]').forEach(function(a) {
+    a.addEventListener('click', function(e) {
+      e.preventDefault();
+      var target = document.querySelector(a.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+
+  /* ── 10. Argument Chain Demo ── */
+  var ARG_DEMO_API = null; // Future: '/api/argument-chain'
+
+  /* Mock output for default input */
+  var MOCK_ARG_OUTPUT = {
+    concepts: [
+      { en: 'Algorithmic curation', zh: '算法策展' },
+      { en: 'Attention economy', zh: '注意力经济' },
+      { en: 'Deep reading atrophy', zh: '深度阅读能力萎缩' },
+      { en: 'Involuntary cognitive cost', zh: '非自愿认知代价' },
+      { en: 'Critical thinking erosion', zh: '批判性思维侵蚀' }
+    ],
+    chain: [
+      'Engagement-driven algorithms',
+      'Fragment content exposure',
+      'Reduced sustained attention',
+      'Diminished deep reading capacity',
+      'Weakened critical thinking'
+    ],
+    weighing: 'The core issue is <strong>not technological determinism but commercial design</strong>: the harm to deep reading is a <strong>byproduct of profit-maximizing algorithms</strong>, not an inevitable consequence of digital media. Students do not &ldquo;choose&rdquo; short-form content — the platform engineers an environment where deep reading becomes increasingly effortful. The <strong>asymmetry</strong> lies in who designs the choice architecture and who bears the cognitive cost.',
+    paragraph: '<em>Social media platforms, through engagement-optimized algorithmic curation, are systematically eroding the deep-reading capacity and critical-thinking faculties of the younger generation. This is not, however, a voluntary trade-off — users do not freely exchange attention span for convenience. Rather, it is an involuntary cognitive cost imposed by the commercial logic of the attention economy, in which profit-maximizing algorithms engineer a choice architecture that makes sustained, reflective reading increasingly effortful. The result is a generation trained to scan, react, and move on — ill-equipped for the kind of deliberative reasoning that democratic citizenship and academic inquiry alike demand.</em>'
+  };
+
+  function runArgDemo() {
+    var outputEl = document.getElementById('arg-demo-output');
+    var inputText = document.getElementById('arg-demo-ta').value.trim();
+    var runBtn = document.getElementById('arg-demo-run');
+
+    if (!inputText) {
+      alert('请先输入你的中文观点。');
+      return;
+    }
+
+    // Show loading state
+    runBtn.disabled = true;
+    outputEl.innerHTML = '<div class="arg-demo-loading"><div class="pulse"></div><p>AI 引擎分析中：提取核心概念 → 构建因果链 → 评估影响 → 生成论证段落…</p></div>';
+
+    // Simulate async processing (ready for real API)
+    setTimeout(function() {
+      var data;
+
+      if (ARG_DEMO_API) {
+        // Future: real API call
+        // data = await fetch(ARG_DEMO_API, { method: 'POST', body: JSON.stringify({ viewpoint: inputText }) }).then(r => r.json());
+      }
+
+      // Use mock data for now
+      data = MOCK_ARG_OUTPUT;
+      renderArgDemoOutput(outputEl, data);
+      runBtn.disabled = false;
+    }, 1800);
+  }
+
+  function renderArgDemoOutput(container, data) {
+    var conceptsHtml = data.concepts.map(function(c) {
+      return '<span class="concept-chip" title="' + (c.zh || '') + '">' + c.en + '</span>';
+    }).join('');
+
+    var chainHtml = data.chain.map(function(node, i) {
+      var arrow = i < data.chain.length - 1 ? '<span class="chain-arrow">→</span>' : '';
+      return '<span class="chain-node-item">' + node + '</span>' + arrow;
+    }).join('');
+
+    container.innerHTML =
+      '<div class="arg-demo-card card-concepts" style="animation: sampleFadeIn 0.4s ease both;">' +
+        '<div class="card-step">Step 1</div>' +
+        '<h4>Core Concepts · 核心概念映射</h4>' +
+        '<div class="concept-chips">' + conceptsHtml + '</div>' +
+      '</div>' +
+
+      '<div class="arg-demo-card card-chain" style="animation: sampleFadeIn 0.4s 0.1s ease both;">' +
+        '<div class="card-step">Step 2</div>' +
+        '<h4>Causal Chain · 因果链构建</h4>' +
+        '<div class="chain-flow">' + chainHtml + '</div>' +
+      '</div>' +
+
+      '<div class="arg-demo-card card-weighing" style="animation: sampleFadeIn 0.4s 0.2s ease both;">' +
+        '<div class="card-step">Step 3</div>' +
+        '<h4>Impact Weighing · 影响权重评估</h4>' +
+        '<div class="weighing-text">' + data.weighing + '</div>' +
+      '</div>' +
+
+      '<div class="arg-demo-card card-paragraph" style="animation: sampleFadeIn 0.4s 0.3s ease both;">' +
+        '<div class="card-step">Step 4</div>' +
+        '<h4>Academic Paragraph · 学术段落输出</h4>' +
+        '<div class="paragraph-en">' + data.paragraph + '</div>' +
+      '</div>';
+  }
+
+  function resetArgDemo() {
+    var outputEl = document.getElementById('arg-demo-output');
+    var runBtn = document.getElementById('arg-demo-run');
+    runBtn.disabled = false;
+    outputEl.innerHTML =
+      '<div class="arg-demo-placeholder" id="arg-demo-placeholder">' +
+        '<svg viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>' +
+        '<p>点击「生成论证链」查看 AI 分析结果</p>' +
+        '<p class="hint">引擎将依次展示：Core Concepts → Causal Chain → Impact Weighing → Academic Paragraph</p>' +
+      '</div>';
+  }
+</script>
+</body>
+</html>
