@@ -1332,6 +1332,9 @@ ISSUE_PAGE_CSS = r"""
     --color-output: #9E7E3E;
     --color-output-soft: rgba(158,126,62,0.07);
     --color-output-border: rgba(158,126,62,0.18);
+    --color-source: #5E6B7D;
+    --color-source-soft: rgba(94,107,125,0.06);
+    --color-source-border: rgba(94,107,125,0.15);
     --color-check: #4A7C80;
     --color-check-soft: rgba(74,124,128,0.07);
     --color-check-border: rgba(74,124,128,0.16);
@@ -1404,6 +1407,9 @@ ISSUE_PAGE_CSS = r"""
     --color-output: #D3AA63;
     --color-output-soft: rgba(211,170,99,0.10);
     --color-output-border: rgba(211,170,99,0.20);
+    --color-source: #9DA9BB;
+    --color-source-soft: rgba(157,169,187,0.08);
+    --color-source-border: rgba(157,169,187,0.18);
     --color-check: #7BA3A8;
     --color-check-soft: rgba(123,163,168,0.10);
     --color-check-border: rgba(123,163,168,0.18);
@@ -2353,6 +2359,8 @@ ISSUE_PAGE_CSS = r"""
   .toc-link.toc-chain.active::before { background: var(--color-chain); width: 22px; }
   .toc-link.toc-output.active { color: var(--color-output); }
   .toc-link.toc-output.active::before { background: var(--color-output); width: 22px; }
+  .toc-link.toc-source.active { color: var(--color-source); }
+  .toc-link.toc-source.active::before { background: var(--color-source); width: 22px; }
 
   /* Mobile TOC (horizontal scroll) */
   .toc-mobile {
@@ -2387,6 +2395,7 @@ ISSUE_PAGE_CSS = r"""
   .toc-mobile .toc-chip.active.toc-sentence { background: var(--color-sentence-soft); border-color: var(--color-sentence-border); color: var(--color-sentence); }
   .toc-mobile .toc-chip.active.toc-chain { background: var(--color-chain-soft); border-color: var(--color-chain-border); color: var(--color-chain); }
   .toc-mobile .toc-chip.active.toc-output { background: var(--color-output-soft); border-color: var(--color-output-border); color: var(--color-output); }
+  .toc-mobile .toc-chip.active.toc-source { background: var(--color-source-soft); border-color: var(--color-source-border); color: var(--color-source); }
 
   @media (max-width: 860px) {
     .issue-toc { display: none; }
@@ -2503,6 +2512,8 @@ ISSUE_PAGE_CSS = r"""
   .section-chain .section-heading h2 { color: var(--color-chain); }
   .section-output .section-badge { background: var(--color-output-soft); color: var(--color-output); }
   .section-output .section-heading h2 { color: var(--color-output); }
+  .section-source_notes .section-badge { background: var(--color-source-soft); color: var(--color-source); }
+  .section-source_notes .section-heading h2 { color: var(--color-source); }
 
   /* ── Source Badges ── */
   .source-badge-row {
@@ -2801,6 +2812,51 @@ ISSUE_PAGE_CSS = r"""
     line-height: 1.75;
   }
   .guide-block strong { color: var(--color-passage); }
+
+  /* ── Source Notes (Section 7) ── */
+  .source-notes-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .source-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--card-radius);
+    padding: 24px 28px;
+    box-shadow: var(--shadow-sm);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .source-card:hover {
+    border-color: var(--color-source-border);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  }
+  .src-category {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-source);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+    font-family: var(--font-sans);
+  }
+  .src-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .src-entry {
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--ink-dim);
+    padding: 4px 0;
+    font-family: var(--font-serif);
+  }
+  .src-entry a { color: var(--accent); text-decoration: none; }
+  .src-entry a:hover { text-decoration: underline; }
+  .src-entry strong { color: var(--ink); font-weight: 600; }
 
   /* ── Expression Cards ── */
   .expr-card {
@@ -4578,8 +4634,8 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
         sections.append((current_section, current_lines))
 
     # ── Determine section module types ──
-    # Map section index to module type: 0=context, 1=passage, 2=expression, 3=sentence, 4=chain, 5=output
-    MODULE_MAP = ["context", "passage", "expression", "sentence", "chain", "output"]
+    # Map section index to module type: 0=context, 1=passage, 2=expression, 3=sentence, 4=chain, 5=output, 6=sources
+    MODULE_MAP = ["context", "passage", "expression", "sentence", "chain", "output", "source_notes"]
     MODULE_NAMES = {
         "context": "Context",
         "passage": "Core Passage",
@@ -4587,11 +4643,13 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
         "sentence": "Sentence Anatomy",
         "chain": "Argument Chain",
         "output": "Output Tasks",
+        "source_notes": "Sources Used in This Issue",
     }
     TOC_CLASSES = {
         "context": "toc-context", "passage": "toc-passage",
         "expression": "toc-expression", "sentence": "toc-sentence",
         "chain": "toc-chain", "output": "toc-output",
+        "source_notes": "toc-source",
     }
 
     # ── Extract keywords for toolbar ──
@@ -4757,24 +4815,10 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
         ],
     }
 
-    # Attempt to parse sources from markdown (look for Section 7 or "## 7" or "Sources")
-    sources = []
-    in_sources = False
-    for line in lines:
-        s = line.strip()
-        if re.match(r'^##\s+7\.', s) or re.match(r'^##\s+Sources', s, re.IGNORECASE):
-            in_sources = True
-            continue
-        if in_sources:
-            if s.startswith("## "):
-                in_sources = False
-            elif s and not s.startswith("#"):
-                sources.append(s)
-
     # Render each section
     for idx, (section_title, section_items) in enumerate(sections):
         if idx >= len(MODULE_MAP):
-            break  # Only render the 6 main modules
+            break
         mod = MODULE_MAP[idx]
         section_num = idx + 1
 
@@ -4815,7 +4859,7 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
 
         # For all sections (context, passage, expression, sentence, chain, output),
         # combine all text into one block so specialized renderers can detect the full structure.
-        if mod in ("passage", "expression", "sentence", "chain", "output", "context"):
+        if mod in ("passage", "expression", "sentence", "chain", "output", "context", "source_notes"):
             all_text = []
             for item_type, item_text in section_items:
                 if item_type == "code":
@@ -4849,23 +4893,6 @@ def _render_issue_page(md_text: str, issue_date: str = "") -> str:
 
         html_parts.append('</section>')
 
-    # Source list (if sources were parsed)
-    if sources:
-        src_items = ""
-        for s in sources:
-            s = s.strip()
-            if not s or s.startswith("*") and s.endswith("*"):
-                continue  # skip italic metadata lines
-            if s.startswith("```") or s == "---":
-                continue
-            src_items += "<li>{}</li>".format(_markdown_inline_to_html(s))
-        if src_items:
-            html_parts.append(
-                '<div class="source-list">'
-                '<div class="source-list-title">Sources Used in This Issue</div>'
-                '<ul>{}</ul>'
-                '</div>'.format(src_items)
-            )
 
     # Footer
     html_parts.append(f'''<div class="page-footer">
@@ -7221,6 +7248,70 @@ def _render_context_section(text: str) -> str:
     return "\n".join(results)
 
 
+def _render_source_notes_section(text: str) -> str:
+    """Render the source notes section as structured category cards.
+
+    Parses content like:
+        *内部参考，不在网页/PDF上显示。*
+        ### Science / Environment
+        - **Article title** (Source)
+        ### World / Politics
+        - **Another article** (Source)
+
+    Returns HTML with category-grouped source cards.
+    """
+    lines = text.strip().split("\n")
+    categories = []  # list of (category_name, [source_lines])
+    current_cat = None
+    current_sources = []
+
+    for line in lines:
+        stripped = line.strip()
+        if not stripped:
+            continue
+        # Skip italic metadata notes
+        if stripped.startswith("*") and not stripped.startswith("**") and stripped.endswith("*"):
+            # Check if it's a single-line italic note (like "*内部参考...*")
+            if "\n" not in line:
+                continue
+        # H3 category header
+        m = re.match(r'^###\s+(.+)', stripped)
+        if m:
+            if current_cat and current_sources:
+                categories.append((current_cat, current_sources))
+            current_cat = m.group(1).strip()
+            current_sources = []
+            continue
+        # Source entries
+        item = _markdown_inline_to_html(stripped)
+        if item:
+            current_sources.append(item)
+
+    if current_cat and current_sources:
+        categories.append((current_cat, current_sources))
+
+    if not categories:
+        return ""
+
+    parts = []
+    for cat_name, sources in categories:
+        source_items = []
+        for src in sources:
+            # Clean bullet prefix if present
+            src = src.strip()
+            if src.startswith("- "):
+                src = src[2:]
+            source_items.append(f'<li class="src-entry">{src}</li>')
+        parts.append(
+            f'<div class="source-card">'
+            f'<div class="src-category">{_escape_html(cat_name)}</div>'
+            f'<ul class="src-list">{"".join(source_items)}</ul>'
+            f'</div>'
+        )
+
+    return f'<div class="source-notes-grid">{"".join(parts)}</div>'
+
+
 def _render_paragraph(text: str, module_type: str = "context") -> str:
     """Render a paragraph block with intelligent formatting.
 
@@ -7246,6 +7337,10 @@ def _render_paragraph(text: str, module_type: str = "context") -> str:
     # --- Context section (combined mode): delegate to _render_context_section ---
     if module_type == "context":
         return _render_context_section(text)
+
+    # --- Source notes: render as structured source cards ---
+    if module_type == "source_notes":
+        return _render_source_notes_section(text)
 
     # --- Passage block: starts with [Thesis], **Thesis**, Thesis etc (with optional > blockquote prefix) ---
     if re.match(r'^(> )?(\*\*)?\[?(Thesis|Premise|Evidence|Counter-?argument|Conclusion)\]?\s*$', first_line):
